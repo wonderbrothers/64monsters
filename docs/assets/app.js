@@ -1,4 +1,4 @@
-/* ===== 64タイプ性格診断 — アプリケーション ===== */
+/* ===== 64モンスターズ — アプリケーション ===== */
 (function(){
   "use strict";
   var Q = window.QUESTIONS, AXES = window.AXES, BASE = window.BASE_TYPES, SUB = window.SUBTYPES;
@@ -301,7 +301,7 @@
   });
   $("copyBtn").addEventListener("click", function(){
     var r = window.__result; if (!r) return;
-    var txt = "【64タイプ性格診断】\n" + r.code + "　" + r.base.name + "／" + r.sub.label + "\n" +
+    var txt = "【64モンスターズ】\n" + r.code + "　" + r.base.name + "／" + r.sub.label + "\n" +
               r.base.tagline + "\n\n" + r.sub.desc;
     var btn = this;
     navigator.clipboard.writeText(txt).then(function(){

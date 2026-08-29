@@ -60,6 +60,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .intro-head{ border-bottom:1px solid var(--line); padding-bottom:34px; }
 .title{ font-size:clamp(2.25rem, 7vw, 3.5rem); letter-spacing:.02em; margin-top:14px; }
 .title .num{ font-family:var(--f-mono); color:var(--shu); font-weight:500; }
+.subtitle{ font-size:var(--fs-xl); color:var(--ink-2); margin-top:10px; letter-spacing:.02em; }
 .lede{ color:var(--ink-2); font-size:var(--fs-base); margin-top:20px; max-width:34em; }
 .axis-list{ display:grid; gap:0; margin:34px 0 0; }
 .axis-row{
