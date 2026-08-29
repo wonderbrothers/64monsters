@@ -34,6 +34,8 @@
     <div>判定タイプ<span class="mono">64通り</span></div>
   </div>
 
+  <p class="savenote hidden" id="saveNote"></p>
+
   <div class="start-row">
     <button class="btn" id="startBtn">診断をはじめる</button>
     <button class="btn ghost hidden" id="resumeBtn">途中から再開する</button>
@@ -51,6 +53,7 @@
 <section id="quiz" class="wrap hidden">
   <div class="qbar">
     <div class="qbar-inner">
+      <button class="qhome" id="homeBtn">← HOME</button>
       <div class="seg" id="seg"></div>
       <div class="qcount"><span id="qNow">1</span> / 90</div>
     </div>
@@ -70,6 +73,7 @@
   <div class="qfoot">
     <button class="btn ghost" id="backBtn">← 前の設問</button>
     <span class="qhint">キーボードの <span class="mono">1</span>〜<span class="mono">5</span> でも回答できます</span>
+    <button class="btn ghost" id="pauseBtn">保存して中断</button>
   </div>
 </section>
 

@@ -38,7 +38,8 @@
 
   /* ---------- 保存・復元 ---------- */
   function save(){
-    try { localStorage.setItem(KEY, JSON.stringify({ a:answers, p:pos })); } catch(e){}
+    try { localStorage.setItem(KEY, JSON.stringify({ a:answers, p:pos })); return true; }
+    catch(e){ return false; }
   }
   function load(){
     try { var s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; } catch(e){ return null; }
@@ -222,6 +223,7 @@
 
   /* ---------- イベント ---------- */
   $("startBtn").addEventListener("click", function(){
+    $("saveNote").classList.add("hidden");
     answers = new Array(Q.length).fill(null); pos = 0; clearSave();
     show("quiz"); renderQuestion(); window.scrollTo(0,0);
   });
@@ -240,6 +242,8 @@
   });
   $("againBtn").addEventListener("click", function(){
     location.hash = ""; answers = new Array(Q.length).fill(null); pos = 0; clearSave();
+    $("saveNote").classList.add("hidden");
+    refreshIntroButtons();
     show("intro"); window.scrollTo(0,0);
   });
   $("tableBtn").addEventListener("click", function(){
@@ -271,22 +275,50 @@
     if (SUB[h]) renderResult(h, null);
     else if (h === "" && $("quiz").classList.contains("hidden")) show("intro");
   });
-  (function init(){
-    var h = hashCode();
-    if (SUB[h]){ renderResult(h, null); return; }
+  function refreshIntroButtons(){
+    var btn = $("resumeBtn");
+    btn.classList.add("hidden");
     var d = load();
     if (d && d.p > 0){
-      $("resumeBtn").dataset.mode = "resume";
-      $("resumeBtn").textContent = "途中から再開する（" + (d.p + 1) + "問目）";
-      $("resumeBtn").classList.remove("hidden");
+      btn.dataset.mode = "resume";
+      btn.textContent = "途中から再開する（" + (d.p + 1) + "問目）";
+      btn.classList.remove("hidden");
       return;
     }
     var L = null;
     try { L = JSON.parse(localStorage.getItem(KEY + ".last")); } catch(e){}
     if (L && SUB[L.code]){
-      $("resumeBtn").dataset.mode = "last";
-      $("resumeBtn").textContent = "前回の結果を見る（" + L.code + "）";
-      $("resumeBtn").classList.remove("hidden");
+      btn.dataset.mode = "last";
+      btn.textContent = "前回の結果を見る（" + L.code + "）";
+      btn.classList.remove("hidden");
     }
+  }
+
+  /* 設問画面から抜けてイントロへ戻る。saved=true なら保存した旨を伝える */
+  function leaveQuiz(saved){
+    var ok = save();
+    var n = answeredCount();
+    var note = $("saveNote");
+    if (saved && n > 0 && ok){
+      note.textContent = "ここまでの回答（" + n + "問）を保存しました。「途中から再開する」でこの続きから答えられます。";
+      note.classList.remove("hidden");
+    } else if (saved && n > 0 && !ok){
+      note.textContent = "このブラウザでは回答を保存できませんでした（プライベートモードなどの可能性があります）。";
+      note.classList.remove("hidden");
+    } else {
+      note.classList.add("hidden");
+    }
+    refreshIntroButtons();
+    show("intro");
+    window.scrollTo(0, 0);
+  }
+
+  $("homeBtn").addEventListener("click", function(){ leaveQuiz(false); });
+  $("pauseBtn").addEventListener("click", function(){ leaveQuiz(true); });
+
+  (function init(){
+    var h = hashCode();
+    if (SUB[h]){ renderResult(h, null); return; }
+    refreshIntroButtons();
   })();
 })();

@@ -108,7 +108,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .opt.sel{ background:var(--c); border-color:var(--c); }
 .opt.sel .k{ opacity:0; }
 .opt-lab{ font-size:var(--fs-sm); color:var(--ink-3); text-align:center; margin-top:10px; height:1.4em; }
-.qfoot{ display:flex; justify-content:space-between; align-items:center; padding:20px 0 40px; border-top:1px solid var(--line-2); }
+.qfoot{ display:flex; justify-content:space-between; align-items:center; gap:16px; padding:20px 0 40px; border-top:1px solid var(--line-2); }
+.qfoot .qhint{ flex:1; text-align:center; }
 .qhint{ font-size:var(--fs-sm); color:var(--ink-3); }
 @media (max-width:560px){
   .opt{ --sz:48px !important; }
@@ -242,3 +243,20 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 
 .copy{ display:inline-block; margin-top:10px; font-family:var(--f-mono); font-size:var(--fs-sm);
   letter-spacing:.04em; color:var(--ink-3); }
+
+/* 設問画面のナビゲーション */
+.qhome{
+  font-size:var(--fs-sm); color:var(--ink-3); letter-spacing:.04em; white-space:nowrap;
+  padding:4px 2px; transition:color .15s ease;
+}
+.qhome:hover{ color:var(--ink); }
+
+/* 中断して保存したときの案内 */
+.savenote{
+  margin:30px 0 20px; padding:14px 18px; border:1px solid var(--line); border-left:3px solid var(--shu);
+  border-radius:var(--r); background:var(--surface-2); color:var(--ink-2); font-size:var(--fs-md);
+}
+@media (max-width:560px){
+  .qfoot{ flex-wrap:wrap; }
+  .qfoot .qhint{ display:none; }
+}
