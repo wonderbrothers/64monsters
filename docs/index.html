@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ja" >
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>64タイプ性格診断</title>
+<meta name="description" content="6つの軸で64通りの性格タイプを判定する診断。全90問。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- ============ イントロ ============ -->
+<section id="intro" class="wrap">
+  <div class="intro-head">
+    <p class="eyebrow">6 axes &nbsp;/&nbsp; 90 questions</p>
+    <h1 class="title"><span class="num">64</span>タイプ性格診断</h1>
+    <p class="lede">
+      よく知られた4つの軸に、<b>決断のリズム</b>と<b>対人の温度</b>という2軸を加えた6軸構成。
+      16タイプでは同じ枠に入っていた人が、64通りに分かれます。
+    </p>
+  </div>
+
+  <div class="strip" id="strip"></div>
+  <p class="strip-note">16体のキャラクターが、それぞれ4つのサブタイプで登場します（全64体）。</p>
+
+  <div class="axis-list" id="axisList"></div>
+
+  <div class="meta">
+    <div>設問数<span class="mono">90問</span></div>
+    <div>所要時間<span class="mono">約10分</span></div>
+    <div>判定タイプ<span class="mono">64通り</span></div>
+  </div>
+
+  <div class="start-row">
+    <button class="btn" id="startBtn">診断をはじめる</button>
+    <button class="btn ghost hidden" id="resumeBtn">途中から再開する</button>
+    <a class="btn ghost" href="types.html" style="text-decoration:none">64タイプ一覧を見る</a>
+  </div>
+
+  <p class="note">
+    直感で、いまの自分に近いほうを選んでください。深く考え込むより、最初に浮かんだ答えのほうが結果は正確になります。<br>
+    ※ 本診断はユング心理学の類型論を参考にした独自のものです。特定の心理検査や既存の性格診断サービスとは関係ありません。
+  </p>
+</section>
+
+<!-- ============ 設問 ============ -->
+<section id="quiz" class="wrap hidden">
+  <div class="qbar">
+    <div class="qbar-inner">
+      <div class="seg" id="seg"></div>
+      <div class="qcount"><span id="qNow">1</span> / 90</div>
+    </div>
+  </div>
+
+  <div class="qmain">
+    <p class="eyebrow qaxis" id="qAxis">エネルギーの向き</p>
+    <h2 class="qtext" id="qText">—</h2>
+
+    <div class="scale">
+      <div class="scale-ends"><span>そう思わない</span><span>そう思う</span></div>
+      <div class="opts" id="opts"></div>
+      <p class="opt-lab" id="optLab"></p>
+    </div>
+  </div>
+
+  <div class="qfoot">
+    <button class="btn ghost" id="backBtn">← 前の設問</button>
+    <span class="qhint">キーボードの <span class="mono">1</span>〜<span class="mono">5</span> でも回答できます</span>
+  </div>
+</section>
+
+<!-- ============ 結果 ============ -->
+<section id="result" class="wrap hidden">
+  <div class="res-head">
+    <div class="hero"><span class="thumb"><img id="rThumb" src="" alt=""></span></div>
+    <p class="eyebrow">your type</p>
+    <p class="code" id="rCode"></p>
+    <h1 class="res-name" id="rName"></h1>
+    <p class="res-tag" id="rTag"></p>
+    <p class="res-label" id="rLabel"></p>
+  </div>
+
+  <div class="sec" id="secGauge">
+    <h2>6軸のスコア</h2>
+    <div class="gauges" id="gauges"></div>
+    <button class="tablebtn" id="tableBtn">数値の一覧を表示</button>
+    <div id="tableWrap" class="hidden"></div>
+  </div>
+
+  <div class="sec">
+    <h2>あなたという人</h2>
+    <p class="body-text" id="rSummary"></p>
+    <p class="body-text" id="rSubDesc"></p>
+  </div>
+
+  <div class="sec">
+    <h2>4つのサブタイプの中での位置</h2>
+    <div class="matrix" id="matrix"></div>
+    <p class="g-note" style="margin-top:14px">同じ基本タイプでも、決断のリズム（A / O）と対人の温度（H / C）で現れ方が変わります。</p>
+  </div>
+
+  <div class="sec">
+    <h2>強みと、気をつけたいところ</h2>
+    <div class="cols">
+      <div><p class="sub-h">強み</p><ul class="list plus" id="rStrengths"></ul></div>
+      <div><p class="sub-h">気をつけたいところ</p><ul class="list minus" id="rWatch"></ul></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>仕事での適性</h2>
+    <div class="cols">
+      <div><p class="sub-h">力を発揮する環境</p><p class="body-text" id="rEnv"></p></div>
+      <div><p class="sub-h">向いている役割</p><p class="body-text" id="rRole"></p></div>
+    </div>
+    <p class="body-text" id="rSubWork" style="margin-top:22px"></p>
+    <div class="jobs" id="rJobs"></div>
+  </div>
+
+  <div class="sec">
+    <h2>相性</h2>
+    <div id="matches"></div>
+  </div>
+
+  <div class="res-foot">
+    <button class="btn" id="againBtn">もう一度診断する</button>
+    <button class="btn ghost" id="copyBtn">結果をコピー</button>
+  </div>
+
+  <p class="disclaimer">
+    この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。結果は自分を理解する手がかりとして扱い、可能性を狭める枠としては使わないでください。<br>
+    ※ ユング心理学の類型論を参考にした独自の診断です。特定の心理検査や既存の性格診断サービスとは関係ありません。
+  </p>
+</section>
+
+<script src="assets/questions.js"></script>
+<script src="assets/types.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

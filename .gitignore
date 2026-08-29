@@ -1,0 +1,17 @@
+# ===== type64 / GitHub 公開の対象外 =====
+# 公開するのは docs/ だけ。それ以外の制作用ファイルはリポジトリに含めない。
+
+# イラスト生成プロンプト一式（制作用）
+/prompts/
+/prompts.html
+
+# 生成した原寸画像（1枚1.5MB前後・合計134MB）。公開には docs/images/thumbs/ を使う
+/images/
+
+# OS・エディタ
+.DS_Store
+Thumbs.db
+._*
+.vscode/
+.idea/
+*.swp
