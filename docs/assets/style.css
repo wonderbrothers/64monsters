@@ -172,7 +172,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .matrix .side{ place-items:center start; line-height:1.5; }
 .cell{ background:var(--surface); border:1px solid var(--line-2); border-radius:var(--r); padding:14px; }
 .cell .c-code{ font-family:var(--f-mono); font-size:var(--fs-sm); color:var(--ink-3); }
-.cell .c-lab{ font-size:var(--fs-lg); margin-top:4px; line-height:1.6; }
+.cell .c-lab{ font-size:var(--fs-md); margin-top:4px; line-height:1.55; word-break:auto-phrase; }
 .cell.on{ border-color:var(--shu); background:var(--surface-2); box-shadow:var(--shadow); }
 .cell.on .c-code{ color:var(--shu); }
 
@@ -198,7 +198,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .chip .thumb{ width:42px; height:42px; border-radius:6px; flex:0 0 auto; }
 .chip .c-txt{ display:block; }
 .chip .c1{ display:block; font-family:var(--f-mono); font-size:var(--fs-md); letter-spacing:.04em; }
-.chip .c2{ display:block; font-size:var(--fs-sm); color:var(--ink-3); margin-top:2px; }
+.chip .c2{ display:block; font-size:var(--fs-sm); color:var(--ink-3); margin-top:2px; line-height:1.5; }
 .match-why{ font-size:var(--fs-md); color:var(--ink-2); margin-top:8px; }
 
 .res-foot{ padding-top:40px; display:flex; flex-wrap:wrap; gap:14px; align-items:center; }
@@ -241,7 +241,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .tcard .thumb{ border-radius:0; }
 .tcard .tbody{ display:block; padding:18px 20px 22px; }
 .tcard .tcode{ font-family:var(--f-mono); font-size:var(--fs-sm); letter-spacing:.04em; color:var(--ink-3); }
-.tcard .tlab{ font-size:var(--fs-base); margin-top:6px; line-height:1.6; }
+.tcard .tlab{ font-size:var(--fs-base); margin-top:6px; line-height:1.55; word-break:auto-phrase; }
 .tcard .tdesc{ font-size:var(--fs-md); color:var(--ink-2); line-height:1.85; margin-top:12px; }
 
 .copy{ display:inline-block; margin-top:10px; font-family:var(--f-mono); font-size:var(--fs-sm);

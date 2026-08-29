@@ -175,7 +175,7 @@
       var chips = g.list.map(function(t){
         var code = partnerCode(t, g.ao, g.hc);
         return '<a class="chip" href="#' + code + '"><span class="thumb"><img src="' + THUMB(code) + '" alt="" loading="lazy"></span>' +
-               '<span class="c-txt"><span class="c1">' + code + '</span><span class="c2">' + BASE[t].name + '・' + SUB[code].label + '</span></span></a>';
+               '<span class="c-txt"><span class="c1">' + code + '</span><span class="c2">' + SUB[code].label + '</span></span></a>';
       }).join("");
       return '<div class="match-group"><p class="sub-h">' + g.title + '</p>' +
              '<div class="match-list">' + chips + '</div>' +
@@ -332,7 +332,7 @@
     $("myThumb").querySelector("img").src = THUMB(code);
     $("myThumb").querySelector("img").alt = b.name + "（" + s.label + "）";
     $("myCode").textContent = code;
-    $("myName").textContent = b.name + "・" + s.label;
+    $("myName").textContent = s.label;
     $("myView").href = "#" + code;
     box.classList.remove("hidden");
   }
