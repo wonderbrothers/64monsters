@@ -73,7 +73,7 @@ python3 tools/make-thumbs.py
 
 ## 権利について
 
-© 2026 株式会社ワンダーブラザース. All rights reserved.
+© 2026 WONDER BROTHERS INC. All rights reserved.
 
 本リポジトリにオープンソースライセンスは設定していません。ソースコードを閲覧できる状態で公開していますが、
 著作権は放棄しておらず、以下は許可していません。
