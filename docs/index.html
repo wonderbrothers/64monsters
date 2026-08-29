@@ -34,12 +34,40 @@
     <div>判定タイプ<span class="mono">64通り</span></div>
   </div>
 
+  <div class="mytype hidden" id="myType">
+    <a class="thumb" id="myThumb" href="#"><img src="" alt=""></a>
+    <div class="my-txt">
+      <p class="eyebrow">my type</p>
+      <p class="my-code mono" id="myCode"></p>
+      <p class="my-name" id="myName"></p>
+    </div>
+    <div class="my-act">
+      <a class="btn ghost" id="myView" href="#">結果を見る</a>
+      <button class="btn ghost" id="myClear">登録を解除</button>
+    </div>
+  </div>
+
   <p class="savenote hidden" id="saveNote"></p>
 
   <div class="start-row">
     <button class="btn" id="startBtn">診断をはじめる</button>
     <button class="btn ghost hidden" id="resumeBtn">途中から再開する</button>
     <a class="btn ghost" href="types.html" style="text-decoration:none">64タイプ一覧を見る</a>
+  </div>
+
+  <div class="picker">
+    <p class="sub-h">すでに自分のタイプがわかっている方</p>
+    <div class="picker-row">
+      <select id="pkBase" aria-label="基本タイプ"></select>
+      <span class="seg-toggle" id="pkAO" role="group" aria-label="決断のリズム">
+        <button data-v="A">A・即断</button><button data-v="O">O・熟慮</button>
+      </span>
+      <span class="seg-toggle" id="pkHC" role="group" aria-label="対人の温度">
+        <button data-v="H">H・温和</button><button data-v="C">C・沈静</button>
+      </span>
+      <button class="btn" id="pkGo">このタイプを見る</button>
+    </div>
+    <p class="picker-note" id="pkNote"></p>
   </div>
 
   <p class="note">
@@ -132,6 +160,7 @@
 
   <div class="res-foot">
     <button class="btn" id="againBtn">もう一度診断する</button>
+    <button class="btn ghost" id="saveMyBtn">マイタイプに登録</button>
     <button class="btn ghost" id="copyBtn">結果をコピー</button>
   </div>
 

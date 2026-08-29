@@ -5,6 +5,12 @@
   var KEY = "shindan64.v1";
   var $ = function(id){ return document.getElementById(id); };
   var THUMB = function(code){ return "images/thumbs/" + code + ".webp"; };
+  var MYKEY = KEY + ".mytype";
+  function getMyType(){
+    try { var c = localStorage.getItem(MYKEY); return (c && SUB[c]) ? c : null; } catch(e){ return null; }
+  }
+  function setMyType(code){ try { localStorage.setItem(MYKEY, code); } catch(e){} }
+  function clearMyType(){ try { localStorage.removeItem(MYKEY); } catch(e){} }
 
   /* --- 出題順：6軸をラウンドロビンで交互に出す（連続する類似設問を避ける） --- */
   var byAxis = {};
@@ -34,6 +40,41 @@
     $("strip").innerHTML = picks.map(function(c){
       return '<a class="thumb" href="#' + c + '" title="' + c + '"><img src="' + THUMB(c) + '" alt="' + c + '" loading="lazy"></a>';
     }).join("");
+  })();
+
+  /* ---------- タイプを選ぶ（診断せずに見る） ---------- */
+  var pk = { base:"INTJ", ao:"A", hc:"H" };
+  (function buildPicker(){
+    var my = getMyType();
+    if (my){ var mp = my.split("-"); pk.base = mp[0]; pk.ao = mp[1]; pk.hc = mp[2]; }
+    $("pkBase").innerHTML = Object.keys(BASE).map(function(k){
+      return '<option value="' + k + '">' + k + '　' + BASE[k].name + '</option>';
+    }).join("");
+    function paint(){
+      ["pkAO","pkHC"].forEach(function(id){
+        Array.prototype.forEach.call($(id).children, function(b){
+          b.classList.toggle("on", b.dataset.v === (id === "pkAO" ? pk.ao : pk.hc));
+        });
+      });
+      var code = pk.base + "-" + pk.ao + "-" + pk.hc;
+      $("pkNote").innerHTML = '<span class="mono">' + code + '</span>　' + SUB[code].label;
+      $("pkGo").dataset.code = code;
+    }
+    $("pkBase").value = pk.base;
+    $("pkBase").addEventListener("change", function(){ pk.base = this.value; paint(); });
+    $("pkAO").addEventListener("click", function(e){
+      var b = e.target.closest("button"); if (!b) return; pk.ao = b.dataset.v; paint();
+    });
+    $("pkHC").addEventListener("click", function(e){
+      var b = e.target.closest("button"); if (!b) return; pk.hc = b.dataset.v; paint();
+    });
+    $("pkGo").addEventListener("click", function(){
+      var code = this.dataset.code;
+      setMyType(code);
+      location.hash = code;
+      renderResult(code, null);
+    });
+    paint();
   })();
 
   /* ---------- 保存・復元 ---------- */
@@ -189,9 +230,9 @@
       cells += '<div class="hd side">' + x + (x === "A" ? "・即断" : "・熟慮") + '</div>';
       ["H","C"].forEach(function(y){
         var c = base + "-" + x + "-" + y;
-        cells += '<div class="cell' + (c === code ? " on" : "") + '">' +
+        cells += '<a class="cell' + (c === code ? " on" : "") + '" href="#' + c + '">' +
           '<span class="thumb"><img src="' + THUMB(c) + '" alt="" loading="lazy"></span>' +
-          '<div class="c-txt"><div class="c-code">' + c + '</div><div class="c-lab">' + SUB[c].label + '</div></div></div>';
+          '<span class="c-txt"><span class="c-code">' + c + '</span><span class="c-lab">' + SUB[c].label + '</span></span></a>';
       });
     });
     $("matrix").innerHTML = cells;
@@ -204,6 +245,11 @@
     $("rJobs").innerHTML = b.work.jobs.map(function(t){ return "<span>" + t + "</span>"; }).join("");
     $("matches").innerHTML = matchHTML(base, ao, hc);
 
+    var my = $("saveMyBtn"), isMine = getMyType() === code;
+    my.textContent = isMine ? "マイタイプに登録済み" : "マイタイプに登録";
+    my.classList.toggle("done", isMine);
+    my.dataset.code = code;
+
     show("result");
     window.scrollTo(0, 0);
     window.__result = { code: code, base: b, sub: s, sc: sc };
@@ -213,6 +259,7 @@
     var sc = score(), code = codeFrom(sc);
     clearSave();
     try { localStorage.setItem(KEY + ".last", JSON.stringify({ code: code, sc: sc })); } catch(e){}
+    setMyType(code);
     renderResult(code, sc);
   }
 
@@ -275,7 +322,21 @@
     if (SUB[h]) renderResult(h, null);
     else if (h === "" && $("quiz").classList.contains("hidden")) show("intro");
   });
+  function renderMyType(){
+    var code = getMyType(), box = $("myType");
+    if (!code){ box.classList.add("hidden"); return; }
+    var b = BASE[code.split("-")[0]], s = SUB[code];
+    $("myThumb").href = "#" + code;
+    $("myThumb").querySelector("img").src = THUMB(code);
+    $("myThumb").querySelector("img").alt = b.name + "（" + s.label + "）";
+    $("myCode").textContent = code;
+    $("myName").textContent = b.name + "・" + s.label;
+    $("myView").href = "#" + code;
+    box.classList.remove("hidden");
+  }
+
   function refreshIntroButtons(){
+    renderMyType();
     var btn = $("resumeBtn");
     btn.classList.add("hidden");
     var d = load();
@@ -312,6 +373,17 @@
     show("intro");
     window.scrollTo(0, 0);
   }
+
+  $("saveMyBtn").addEventListener("click", function(){
+    var code = this.dataset.code; if (!code) return;
+    if (getMyType() === code){
+      clearMyType(); this.textContent = "マイタイプに登録"; this.classList.remove("done");
+    } else {
+      setMyType(code); this.textContent = "マイタイプに登録済み"; this.classList.add("done");
+    }
+    renderMyType();
+  });
+  $("myClear").addEventListener("click", function(){ clearMyType(); renderMyType(); });
 
   $("homeBtn").addEventListener("click", function(){ leaveQuiz(false); });
   $("pauseBtn").addEventListener("click", function(){ leaveQuiz(true); });
