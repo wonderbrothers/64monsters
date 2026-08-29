@@ -121,7 +121,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 }
 
 /* ---------- 結果 ---------- */
-#result{ padding:44px 0 90px; }
+#result{ padding:0 0 90px; }
+#result .res-head{ margin-top:34px; }
 .res-head{ text-align:center; padding:26px 0 34px; border-bottom:1px solid var(--line); }
 .code{
   font-family:var(--f-mono); font-size:clamp(2rem, 7.5vw, 3.25rem); font-weight:500;
@@ -310,4 +311,5 @@ a.cell:hover{ border-color:var(--shu); }
   border-bottom:1px solid var(--line-2); padding:14px 0; margin-bottom:8px;
 }
 .topbar .wrap-inner{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.topbar .tb-title{ letter-spacing:.06em; }
 .topbar .tb-title{ font-size:var(--fs-md); color:var(--ink-3); letter-spacing:.04em; }

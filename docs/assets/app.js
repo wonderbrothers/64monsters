@@ -245,6 +245,8 @@
     $("rJobs").innerHTML = b.work.jobs.map(function(t){ return "<span>" + t + "</span>"; }).join("");
     $("matches").innerHTML = matchHTML(base, ao, hc);
 
+    $("tbCode").textContent = code;
+
     var my = $("saveMyBtn"), isMine = getMyType() === code;
     my.textContent = isMine ? "マイタイプに登録済み" : "マイタイプに登録";
     my.classList.toggle("done", isMine);
@@ -384,6 +386,15 @@
     renderMyType();
   });
   $("myClear").addEventListener("click", function(){ clearMyType(); renderMyType(); });
+
+  function backToIntro(){
+    if (location.hash) location.hash = "";
+    refreshIntroButtons();
+    show("intro");
+    window.scrollTo(0, 0);
+  }
+  $("resHomeBtn").addEventListener("click", backToIntro);
+  $("resHomeBtn2").addEventListener("click", backToIntro);
 
   $("homeBtn").addEventListener("click", function(){ leaveQuiz(false); });
   $("pauseBtn").addEventListener("click", function(){ leaveQuiz(true); });
