@@ -1,0 +1,16 @@
+{
+  "name": "64monsters",
+  "version": "1.0.0",
+  "private": true,
+  "description": "6軸でわかる64通りの性格診断。docs/ をそのまま GitHub Pages で配信する静的サイト",
+  "homepage": "https://64monsters.wonder-bros.com",
+  "scripts": {
+    "dev": "node tools/serve.js",
+    "build": "npm run pages && npm run stamp",
+    "pages": "node tools/build-pages.js",
+    "ogp": "python3 tools/make-ogp.py",
+    "stamp": "node tools/stamp-assets.js",
+    "prompts": "node prompts/build-prompts.js"
+  },
+  "engines": { "node": ">=18" }
+}

@@ -30,6 +30,8 @@ tools/make-thumbs.py      サムネイル生成スクリプト
 tools/make-ogp.py         タイプ別OGP画像の生成スクリプト
 tools/build-pages.js      個別ページ64枚と sitemap.xml の生成スクリプト
 tools/stamp-assets.js     キャッシュ対策のハッシュ付与
+tools/serve.js            ローカル確認用の静的サーバー（依存パッケージなし）
+package.json              npm scripts の入り口。依存パッケージはありません
 ```
 
 ## ページの構成
@@ -44,22 +46,49 @@ tools/stamp-assets.js     キャッシュ対策のハッシュ付与
 
 - 公開するのは `docs/` の中身だけです。GitHub Pages は「リポジトリ直下」か「/docs」のどちらかを公開元に選べるため、フォルダ名を `docs` にしてあります（Settings → Pages → Source を `main` / `/docs` に設定するだけで公開できます）。Vercel や Netlify を使う場合は公開ディレクトリに `docs` を指定してください。
 - `.gitignore` で `prompts/`・`prompts.html`・`images/` を除外しています。原寸PNGは合計134MBあり、GitHubは100MB超の単一ファイルを拒否するうえリポジトリが重くなるため、手元にだけ残す運用です。
-- ローカルで確認するときは `docs/index.html` をダブルクリックしてください。
+
+## ローカルで確認する
+
+```bash
+npm run dev            # http://localhost:5173/ で docs/ を配信
+npm run dev -- --port 5174   # ポートを変えたいとき
+```
+
+インストールは不要です（依存パッケージなし。Node 18以上のみ）。
+
+- `docs/` を公開ルートとして配信するので、本番と同じ `/t/ENTP-A-H/` や `/pair/?a=...` がそのまま開けます。
+- `docs/` 内のファイルを保存すると、開いているブラウザが自動でリロードします（切るときは `-- --no-reload`）。
+- キャッシュは無効にしてあるので、CSS を直したのに反映されない、が起きません。
+
+**`docs/index.html` のダブルクリック（`file://`）では正しく確認できません。**
+`/t/<CODE>/` のようなディレクトリURLが解決されず、90問を答え終えたあとの遷移先がフォルダ一覧になります。
+また `file://` はページごとに別オリジン扱いになる場合があり、マイタイプや途中保存（localStorage）がページをまたいで引き継がれません。
+
+| コマンド | 何をするか |
+|---|---|
+| `npm run dev` | ローカルサーバーを起動 |
+| `npm run build` | 個別ページ64枚＋sitemap を作り直し、続けてハッシュを付け直す |
+| `npm run pages` | 個別ページ64枚と sitemap.xml だけを生成 |
+| `npm run stamp` | アセットURLのハッシュだけを付け直す |
+| `npm run ogp` | OGP画像64枚を生成（原寸画像とPythonが必要） |
+| `npm run prompts` | イラスト生成プロンプトを書き出す（制作用） |
 
 ## 公開前に必ず実行するもの
 
 **タイプの解説（`assets/types.js`）を変えたとき**は、個別ページを作り直します。
 
 ```bash
-node tools/build-pages.js      # docs/t/<CODE>/index.html を64枚 + sitemap.xml
-python3 tools/make-ogp.py      # docs/images/ogp/<CODE>.jpg を64枚（原寸画像が必要）
+npm run pages                  # docs/t/<CODE>/index.html を64枚 + sitemap.xml
+npm run ogp                    # docs/images/ogp/<CODE>.jpg を64枚（原寸画像が必要）
 ```
 
 そのうえで、**CSS や JS を変更したとき**は、コミットの前に次を実行してください。
 
 ```bash
-node tools/stamp-assets.js
+npm run stamp
 ```
+
+`npm run build` は `pages` → `stamp` をまとめて実行します（OGPは原寸画像が要るので別扱い）。
 
 `docs/` 以下のすべての HTML（`/t/<CODE>/` と `/pair/` を含む）と `assets/settings.js` が読み込むアセットの URL に、**中身のハッシュを `?v=` として付け直します**。
 `build-pages.js` が書き出した直後のページにはハッシュが付いていないので、**必ず build のあとに実行**してください。
@@ -133,7 +162,7 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 - **タイプ解説を変える** … `docs/assets/types.js`。
   - `BASE_TYPES` … 基本16タイプの本文・強み・注意点・仕事・相性。**同じ基本タイプの4ページで共通**の内容。
   - `SUBTYPES` … 64通りの `label`（呼称）/ `desc`（説明）/ `edge`（このタイプならではの強み）/ `care`（落とし穴）/ `work`（仕事での現れ方）。**そのサブタイプにしかない**内容。
-  - 変更したら `node tools/build-pages.js` で個別ページを作り直す。
+  - 変更したら `npm run build` で個別ページを作り直す。
 - **配色・書体・文字サイズを変える** … `docs/assets/style.css` 冒頭の `html{font-size}` と `:root` 変数。文字サイズはすべて base（16px）の倍数（rem）で定義しています。
 - **相性のロジック** … `docs/assets/render.js` の `matchGroups()` / `relation()`。基本タイプの相性リスト（`types.js` の `match`）に、A/O・H/C の組み合わせルールを掛け合わせて64タイプ表記に変換しています。画面表示と個別ページのビルドが同じ関数を使うので、直すのはここ1か所だけです。
 - **相性ページの文面** … `docs/assets/pair.js` の `NOTE`（軸ごとに「同じとき／違うとき」の一言）と `verdictOf()`。
