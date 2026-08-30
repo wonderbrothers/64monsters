@@ -29,8 +29,8 @@
   /* ---------- UI を差し込む ---------- */
   /* ---------- 共通ヘッダー（左：予備／中央：ロゴ／右：設定） ---------- */
   var LOGO =
-    '<img class="logo logo-light" src="assets/logo.svg" alt="" width="1238" height="280">' +
-    '<img class="logo logo-dark" src="assets/logo-dark.svg" alt="" width="1238" height="280">';
+    '<img class="logo logo-light" src="assets/logo.svg?v=5f144fbe" alt="" width="1238" height="280">' +
+    '<img class="logo logo-dark" src="assets/logo-dark.svg?v=4ac2348c" alt="" width="1238" height="280">';
   var head = document.createElement("header");
   head.className = "site-head";
   head.innerHTML =
