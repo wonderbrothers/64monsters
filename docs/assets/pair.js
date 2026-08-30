@@ -94,9 +94,7 @@
   /* 用途ごとのスコア。数値だけを置かず、どの軸が効いたかを開いて読めるようにする */
   function scoresHTML(a, b){
     return R.purposeScores(a, b).map(function(P){
-      var bar = P.rows.map(function(r){
-        return '<span class="ps-seg' + (r.ok ? " on" : "") + '" style="flex:' + r.w + '"></span>';
-      }).join("");
+      var bar = '<span class="ps-fill" style="width:' + P.score + '%"></span>';
       var rows = P.rows.map(function(r){
         return '<div class="ps-row' + (r.ok ? " on" : "") + '">' +
           '<div class="ps-w">' + (r.ok ? "+" + r.w : "±0") + '</div>' +

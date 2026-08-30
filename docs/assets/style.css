@@ -682,10 +682,12 @@ body.modal-open{ overflow:hidden; }
 }
 .ps-n{ font-size:clamp(1.5rem, 5vw, 2rem); font-weight:500; line-height:1; }
 .ps-pct{ font-size:var(--fs-md); }
-.ps-bar{ display:flex; gap:3px; height:8px; }
-.ps-seg{ background:var(--surface-2); border:1px solid var(--line-2); border-radius:2px; }
-.pscore[open] .ps-seg{ background:var(--paper); }
-.ps-seg.on{ background:var(--grad); border-color:transparent; }
+.ps-bar{
+  display:block; height:8px; border-radius:var(--r-full); overflow:hidden;
+  background:var(--surface-2); border:1px solid var(--line-2);
+}
+.pscore[open] .ps-bar{ background:var(--paper); }
+.ps-fill{ display:block; height:100%; background:var(--grad); border-radius:var(--r-full); }
 .ps-band{ font-size:var(--fs-sm); color:var(--ink-2); display:flex; justify-content:space-between; gap:12px; }
 .ps-more{ color:var(--ink-3); text-decoration:underline; text-underline-offset:3px; }
 .pscore[open] .ps-more{ visibility:hidden; }
