@@ -125,13 +125,13 @@
   function clearSave(){ try{ localStorage.removeItem(KEY); }catch(e){} }
 
   /* ---------- 設問の描画 ---------- */
+  /* 進み具合は1本の線で表す。分割すると、どこまで進んだかが読み取りにくい */
   function renderSeg(){
-    var per = Math.ceil(ORDER.length / 6), html = "";
-    for (var s = 0; s < 6; s++){
-      var done = Math.min(Math.max(answeredCount() - s*per, 0), per);
-      html += '<i><b style="width:' + (done/per*100) + '%"></b></i>';
-    }
-    $("seg").innerHTML = html;
+    var pct = answeredCount() / ORDER.length * 100;
+    var el = $("seg");
+    if (!el.firstChild) el.innerHTML = '<b></b>';
+    el.firstChild.style.width = pct + "%";
+    el.setAttribute("aria-valuenow", Math.round(pct));
   }
   function answeredCount(){
     var n = 0;
