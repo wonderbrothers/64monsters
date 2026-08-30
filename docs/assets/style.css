@@ -64,7 +64,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .rule{ height:1px; background:var(--line); border:0; margin:0; }
 
 /* ---------- イントロ ---------- */
-#intro{ padding:clamp(34px,7vh,72px) 0 80px; }
+#intro{ padding:clamp(34px,7vh,72px) 0 40px; }
 .intro-head{ border-bottom:1px solid var(--line); padding-bottom:34px; }
 .intro-head .eyebrow{ margin-bottom:14px; }
 .title{ font-size:clamp(2.25rem, 7vw, 3.5rem); letter-spacing:.02em; margin-top:14px; }
@@ -270,11 +270,13 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 
 /* コピーライト：常に1行・中央寄せ。狭い画面では文字サイズで収める */
 .copy{
-  display:block; margin-top:16px; text-align:center;
+  display:block; margin-top:80px; text-align:center;
   font-family:var(--f-mono); letter-spacing:.04em; color:var(--ink-3);
   white-space:nowrap;
   font-size:min(var(--fs-sm), calc((100vw - 44px) / 33));
 }
+.copy-link{ color:inherit; text-decoration:underline; text-underline-offset:3px; }
+.copy-link:hover{ color:var(--ink); }
 
 /* 設問画面のナビゲーション */
 .qhome{

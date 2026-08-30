@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://64monsters.wonder-bros.com/sitemap.xml
