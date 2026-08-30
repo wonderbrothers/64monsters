@@ -101,10 +101,10 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .meta div{ font-size:var(--fs-md); color:var(--ink-2); }
 .meta div span{ display:block; font-family:var(--f-mono); font-size:var(--fs-2xl); color:var(--ink); }
 /* ファーストビューのメインCTA */
-/* FVのボタン（診断をはじめる／途中から再開する） */
-.fv-cta{ margin-top:26px; display:flex; flex-direction:column; gap:12px; }
-.fv-cta .btn{ width:100%; }
-.savenote{ margin-top:14px; }
+/* FVのボタン（診断をはじめる／途中から再開する）は横並び・内容幅 */
+.fv-cta{ margin-top:26px; display:flex; flex-wrap:wrap; gap:12px; align-items:stretch; }
+.fv-cta .btn{ padding:12px 26px; font-size:var(--fs-md); }
+.savenote{ margin-top:16px; }
 /* 6軸の説明の下に置くモンスター一覧への導線 */
 .note{ font-size:var(--fs-md); color:var(--ink-3); line-height:1.8; margin-top:44px; }
 
@@ -397,9 +397,9 @@ a.cell:hover{ border-color:var(--shu); }
   .match-list{ flex-direction:column; }
   .match-list .chip{ width:100%; }
 
-  /* 64タイプ一覧を見る などのボタン列は横幅いっぱい */
-  .res-foot{ flex-direction:column; align-items:stretch; gap:12px; }
-  .res-foot .btn{ width:100%; flex:0 0 auto; }
+  /* FV・結果下部のボタン列は縦積みで横幅いっぱい */
+  .fv-cta, .res-foot{ flex-direction:column; align-items:stretch; gap:12px; }
+  .fv-cta .btn, .res-foot .btn{ width:100%; flex:0 0 auto; }
 
   /* 上段：モンスタープルダウン ／ 中段：A or O + H or C ／ 下段：このタイプを見る */
   .picker-row{
@@ -822,7 +822,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 /* 見出しと左端を揃えたいもの（左ぞろえのまま幅だけ止める） */
 .gauges, #tableWrap, .scoretable,
 .res-foot, .res-foot2,
-.fv-cta, .savenote{ max-width:var(--panel); }
+.savenote{ max-width:var(--panel); }
 
 /* もともと中央に置いている箱（枠の中央にとどめる） */
 .pair-cta, .pair-ask, .pair-verdict,
