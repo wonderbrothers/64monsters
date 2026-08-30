@@ -877,5 +877,12 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
   .sec.split #tableWrap,
   .sec.split .scoretable,
   .sec.split .matrix,
-  .sec.split .body-text{ max-width:none; }
+  .sec.split .body-text,
+  .sec.split .sec-note,
+  .sec.split .g-note,
+  .sec.split .match-why{ max-width:none; }
+  /* 見出しの下に潜り込ませていた注記は、右カラムの先頭に来るので戻す */
+  .sec.split > .sec-note{ margin-top:0; }
+  /* 中央寄せの箱は、グリッドの中では auto マージンで縮んでしまうので伸ばす */
+  .sec.split > .pair-cta{ max-width:none; margin-inline:0; }
 }

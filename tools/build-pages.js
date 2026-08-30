@@ -163,7 +163,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="g-note" style="margin-top:14px">同じ基本タイプでも、自分への確信（A / O）と人への構え（H / C）で現れ方が変わります。</p>
   </div>
 
-  <div class="sec">
+  <div class="sec split">
     <h2>強みと、気をつけたいところ</h2>
     <p class="sec-note">ここは基本タイプ（${bt}）に共通する性質です。</p>
     <div class="cols">
@@ -179,7 +179,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
-  <div class="sec">
+  <div class="sec split">
     <h2>仕事での適性</h2>
     <div class="cols">
       <div><p class="sub-h">力を発揮する環境</p><p class="body-text">${esc(b.work.env)}</p></div>
@@ -189,7 +189,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="jobs">${b.work.jobs.map(t => "<span>" + esc(t) + "</span>").join("")}</div>
   </div>
 
-  <div class="sec">
+  <div class="sec split">
     <h2>相性</h2>
     <div>${R.matchHTML(base, code)}</div>
     <div class="pair-cta">
