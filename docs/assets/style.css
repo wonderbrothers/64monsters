@@ -45,16 +45,16 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 :focus-visible{ outline:2px solid var(--shu); outline-offset:3px; }
 .mono{ font-family:var(--f-mono); font-variant-numeric:tabular-nums; }
 /* ページの枠は全ページ共通で1080px。ヘッダーもこの幅に揃う。
-   本文だけは --measure で行長を抑える（下の「読みやすさ」参照） */
+   読ませる本文だけは --measure で行長を抑える（下の「読みやすさ」参照） */
 .wrap{ width:min(100% - 40px, 1080px); margin-inline:auto; }
 .wrap.wide{ width:min(100% - 40px, 1080px); }
 
 /* 読みやすさ：日本語は1行35〜45文字が読みやすい。
-   em は使う側の font-size で解決されるので、小さい文字にも同じ文字数で効く。 */
+   em は使う側の font-size で解決されるので、小さい文字にも同じ文字数で効く。
+   読ませる本文だけを抑え、注釈・説明書きの類はコンテンツ幅いっぱいに伸ばす。 */
 :root{ --measure:46em; }
-.body-text, .note, .savenote, .strip-note, .picker-note, .disclaimer,
-.match-why, .g-note, .sec-note, .group-sum, .notice li, .acmp .ac-d,
-.pair-cta-txt, .drawer-empty{ max-width:var(--measure); }
+.body-text, .match-why, .g-note, .sec-note, .group-sum,
+.acmp .ac-d, .pair-cta-txt, .drawer-empty{ max-width:var(--measure); }
 .hidden{ display:none !important; }
 
 /* ---------- 共通パーツ ---------- */
@@ -821,8 +821,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 
 /* 見出しと左端を揃えたいもの（左ぞろえのまま幅だけ止める） */
 .gauges, #tableWrap, .scoretable,
-.res-foot, .res-foot2,
-.savenote{ max-width:var(--panel); }
+.res-foot, .res-foot2{ max-width:var(--panel); }
 
 /* もともと中央に置いている箱（枠の中央にとどめる） */
 .pair-cta, .pair-ask, .pair-verdict,
