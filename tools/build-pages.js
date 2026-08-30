@@ -144,20 +144,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="res-tag">${esc(b.tagline)}</p>
   </div>
 
-  <div class="sec hidden" id="secGauge">
+  <div class="sec split hidden" id="secGauge">
     <h2>6軸のスコア</h2>
     <div class="gauges" id="gauges"></div>
     <button class="tablebtn" id="tableBtn">数値の一覧を表示</button>
     <div id="tableWrap" class="hidden"></div>
   </div>
 
-  <div class="sec">
+  <div class="sec split">
     <h2>あなたという人</h2>
     <p class="body-text">${esc(b.summary)}</p>
     <p class="body-text">${esc(s.desc)}</p>
   </div>
 
-  <div class="sec">
+  <div class="sec split">
     <h2>4つのサブタイプの中での位置</h2>
     <div class="matrix">${R.matrixHTML(base, code)}</div>
     <p class="g-note" style="margin-top:14px">同じ基本タイプでも、自分への確信（A / O）と人への構え（H / C）で現れ方が変わります。</p>
