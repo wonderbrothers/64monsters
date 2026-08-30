@@ -39,12 +39,10 @@
   var SVG_MENU =
     '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">' +
     '<path d="M4 7h16M4 12h16M4 17h16"></path></svg>';
-  var SVG_GEAR =
-    '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" ' +
-    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-    '<circle cx="12" cy="12" r="3.2"></circle>' +
-    '<path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.9 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.7 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9.1A1.7 1.7 0 0 0 10.13 3V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.08a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.56 1.03z"></path>' +
-    '</svg>';
+  var SVG_CHEV =
+    '<svg class="chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M9 5l7 7-7 7"></path></svg>';
   var LOGO =
     '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=5f144fbe" alt="" width="1238" height="280">' +
     '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=4ac2348c" alt="" width="1238" height="280">';
@@ -64,7 +62,7 @@
       '<a class="sh-logo" href="' + HOME + '" aria-label="64モンスターズ ホーム">' + LOGO + '</a>' +
       '<nav class="sh-nav" aria-label="サイト内">' +
         '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
-        '<button type="button" class="sh-icon" id="shSet" aria-label="表示設定を開く">' + SVG_GEAR + '</button>' +
+        '<button type="button" class="sh-link" id="shSet">各種設定</button>' +
       '</nav>' +
       '<a class="btn sh-cta" href="' + HOME + '" id="shCta">診断</a>' +
     '</div>';
@@ -118,7 +116,8 @@
         '<button type="button" class="modal-x" data-dclose aria-label="メニューを閉じる">×</button>' +
       '</div>' +
       '<nav class="drawer-nav" aria-label="サイト内">' +
-        '<a href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
+        '<a href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>' +
+          '<span>モンスターギャラリー</span>' + SVG_CHEV + '</a>' +
       '</nav>' +
       '<div class="drawer-sec"><p class="drawer-h">My Type</p><div id="drawerMy"></div></div>' +
       '<div class="drawer-sec"><p class="drawer-h">表示設定</p><div id="drawerBody"></div></div>' +
