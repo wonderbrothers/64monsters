@@ -90,6 +90,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
   display:grid; grid-template-columns:auto 1fr; gap:18px; align-items:baseline;
   padding:16px 0; border-bottom:1px solid var(--line-2);
 }
+/* 最後の1本は消す。すぐ下の「すでに自分のタイプが〜」が罫線を持つため */
+.axis-row:last-child{ border-bottom:0; }
 .axis-row .pair{ font-family:var(--f-mono); font-size:var(--fs-base); letter-spacing:.06em; white-space:nowrap; }
 .axis-row .pair .l{ color:var(--ai); } .axis-row .pair .r{ color:var(--shu); }
 .axis-row .pair .sep{ color:var(--ink-3); }
@@ -330,7 +332,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 }
 
 /* ---------- タイプを選ぶ ---------- */
-.picker{ margin-top:40px; padding-top:26px; border-top:1px solid var(--line-2); }
+.picker{ margin-top:24px; padding-top:26px; border-top:1px solid var(--line-2); }
 /* 上段：モンスターのプルダウン（全幅）／下段：A・O ＋ H・C ＋ このタイプを見る */
 .picker-row{ display:grid; grid-template-columns:auto auto 1fr; gap:10px; align-items:stretch; }
 .picker-row select{ grid-column:1 / -1; width:100%; min-width:0; }
@@ -820,7 +822,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 /* 見出しと左端を揃えたいもの（左ぞろえのまま幅だけ止める） */
 .gauges, #tableWrap, .scoretable,
 .res-foot, .res-foot2,
-.picker, .fv-cta, .savenote{ max-width:var(--panel); }
+.fv-cta, .savenote{ max-width:var(--panel); }
 
 /* もともと中央に置いている箱（枠の中央にとどめる） */
 .pair-cta, .pair-ask, .pair-verdict,
@@ -845,7 +847,6 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 /* 「すでに自分のタイプがわかっている方」は、横幅に余裕があるときだけ1行に。
    プルダウンだけを伸縮させ、A/O・H/C と ボタンは折り返さない。 */
 @media (min-width:900px){
-  .picker{ max-width:var(--panel-w); }
   .picker-row{ display:flex; flex-wrap:nowrap; }
   .picker-row select{ grid-column:auto; flex:1 1 auto; width:auto; min-width:0; }
   .picker-row .seg-toggle{ flex:none; }
