@@ -138,8 +138,8 @@
         ctx.fillText(SITE, S - PAD, 92);
         ctx.fillStyle = LINE; ctx.fillRect(PAD, 118, S - PAD * 2, 1);
 
-        /* キャラクター。6軸を出さないとき（自分の結果ではないとき）は大きく見せる */
-        var cs = opts.sc ? 400 : 468, cx = (S - cs) / 2, cy = 152;
+        /* キャラクター */
+        var cs = 400, cx = (S - cs) / 2, cy = 152;
         ctx.save();
         ctx.beginPath(); ctx.roundRect(cx, cy, cs, cs, 12); ctx.clip();
         ctx.fillStyle = "#F2F2F4"; ctx.fillRect(cx, cy, cs, cs);
@@ -166,11 +166,11 @@
         if (opts.sc && window.AXES){
           drawAxes(ctx, opts.sc, y + 200);
         } else if (opts.desc){
-          /* 罫線とフッターのあいだに、行数に応じて中央ぞろえで置く */
+          /* 説明文は最大4行。罫線の下から順に置く（中央ぞろえだと罫線に食い込む） */
           ctx.font = "400 26px " + FD; ctx.fillStyle = INK2; ctx.textAlign = "center";
-          var ls = wrap(ctx, opts.desc, S - PAD * 2 - 40, 3);
-          var top = (y + 150 + (S - 100)) / 2 - (ls.length - 1) * 23;
-          ls.forEach(function(t, i){ ctx.fillText(t, S / 2, top + i * 46); });
+          wrap(ctx, opts.desc, S - PAD * 2 - 40, 4).forEach(function(t, i){
+            ctx.fillText(t, S / 2, y + 196 + i * 46);
+          });
         }
 
         /* フッター */

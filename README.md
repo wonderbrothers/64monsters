@@ -102,7 +102,10 @@ python3 tools/make-thumbs.py
 ## 編集するには
 
 - **設問を変える** … `docs/assets/questions.js`。軸ごとの問数を揃え、`dir` の正負のバランスを保ってください。
-- **タイプ解説を変える** … `docs/assets/types.js`。`BASE_TYPES`（16タイプの本文・強み・仕事・相性）と `SUBTYPES`（64通りの呼称と説明）。
+- **タイプ解説を変える** … `docs/assets/types.js`。
+  - `BASE_TYPES` … 基本16タイプの本文・強み・注意点・仕事・相性。**同じ基本タイプの4ページで共通**の内容。
+  - `SUBTYPES` … 64通りの `label`（呼称）/ `desc`（説明）/ `edge`（このタイプならではの強み）/ `care`（落とし穴）/ `work`（仕事での現れ方）。**そのサブタイプにしかない**内容。
+  - 変更したら `node tools/build-pages.js` で個別ページを作り直す。
 - **配色・書体・文字サイズを変える** … `docs/assets/style.css` 冒頭の `html{font-size}` と `:root` 変数。文字サイズはすべて base（16px）の倍数（rem）で定義しています。
 - **相性のロジック** … `docs/assets/render.js` の `matchGroups()` / `relation()`。基本タイプの相性リスト（`types.js` の `match`）に、A/O・H/C の組み合わせルールを掛け合わせて64タイプ表記に変換しています。画面表示と個別ページのビルドが同じ関数を使うので、直すのはここ1か所だけです。
 - **相性ページの文面** … `docs/assets/pair.js` の `NOTE`（軸ごとに「同じとき／違うとき」の一言）と `verdictOf()`。

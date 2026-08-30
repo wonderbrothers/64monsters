@@ -693,3 +693,24 @@ body.modal-open{ overflow:hidden; }
   .pick-card{ padding:18px 12px; }
   .pick-card .seg-toggle button{ padding:11px 2px; font-size:var(--fs-xs); letter-spacing:0; }
 }
+
+/* ---------- サブタイプ固有の枠（結果ページ） ---------- */
+.sec-note{
+  font-size:var(--fs-sm); color:var(--ink-3); margin:-6px 0 20px;
+}
+.stbox{
+  margin-top:30px; padding:26px 24px;
+  border:1px solid var(--line); border-radius:calc(var(--r) * 3);
+  background:var(--surface-2);
+}
+.stbox-h{
+  font-family:var(--f-disp); font-weight:700; font-size:var(--fs-lg);
+  margin:0 0 18px; padding-bottom:14px; border-bottom:1px solid var(--line-2);
+}
+.stbox-h .mono{
+  letter-spacing:.06em;
+  background:var(--grad-text); -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+}
+.stbox .sub-h{ margin-bottom:8px; }
+@media (max-width:560px){ .stbox{ padding:22px 18px; } }

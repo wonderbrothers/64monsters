@@ -165,9 +165,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="sec">
     <h2>強みと、気をつけたいところ</h2>
+    <p class="sec-note">ここは基本タイプ（${bt}）に共通する性質です。</p>
     <div class="cols">
       <div><p class="sub-h">強み</p><ul class="list plus">${b.strengths.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
       <div><p class="sub-h">気をつけたいところ</p><ul class="list minus">${b.watch.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
+    </div>
+    <div class="stbox">
+      <p class="stbox-h"><span class="mono">${code}</span> ならでは</p>
+      <div class="cols">
+        <div><p class="sub-h">このタイプの強み</p><p class="body-text">${esc(s.edge)}</p></div>
+        <div><p class="sub-h">落とし穴</p><p class="body-text">${esc(s.care)}</p></div>
+      </div>
     </div>
   </div>
 
