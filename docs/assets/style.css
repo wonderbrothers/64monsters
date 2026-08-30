@@ -659,3 +659,10 @@ body.modal-open{ overflow:hidden; }
 }
 .pair-ask .sub-h{ margin-bottom:10px; }
 .pair-ask p{ font-size:var(--fs-md); color:var(--ink-2); margin-bottom:16px; }
+
+/* SP ではボタンはコンテンツ幅いっぱいに揃える（既存の .res-foot と同じ扱い） */
+@media (max-width:560px){
+  .res-foot2, .pair-foot{ flex-direction:column; align-items:stretch; gap:12px; }
+  .res-foot2 .btn, .pair-foot .btn,
+  .pair-cta .btn, .pair-ask .btn, .pair-go .btn{ width:100%; flex:0 0 auto; }
+}
