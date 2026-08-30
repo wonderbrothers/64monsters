@@ -192,7 +192,6 @@
     $("rThumb").alt = b.name + "（" + s.label + "）のキャラクター";
     $("rCode").innerHTML = '<span class="base">' + base + '</span><span class="dash">-</span><span class="sub">' + ao +
                            '</span><span class="dash">-</span><span class="sub">' + hc + '</span>';
-    $("rName").textContent = b.name;
     $("rTag").textContent = b.tagline;
     $("rLabel").textContent = s.label;
     $("rSummary").textContent = b.summary;
@@ -301,11 +300,11 @@
   });
   $("copyBtn").addEventListener("click", function(){
     var r = window.__result; if (!r) return;
-    var txt = "【64モンスターズ】\n" + r.code + "　" + r.base.name + "／" + r.sub.label + "\n" +
-              r.base.tagline + "\n\n" + r.sub.desc;
+    /* このタイプを直接開けるURL（例：…/index.html#ENTP-A-H） */
+    var url = location.origin + location.pathname + "#" + r.code;
     var btn = this;
-    navigator.clipboard.writeText(txt).then(function(){
-      btn.textContent = "コピーしました"; setTimeout(function(){ btn.textContent = "結果をコピー"; }, 1800);
+    navigator.clipboard.writeText(url).then(function(){
+      btn.textContent = "コピーしました"; setTimeout(function(){ btn.textContent = "画面URLをコピー"; }, 1800);
     }).catch(function(){ btn.textContent = "コピーできませんでした"; });
   });
   document.addEventListener("keydown", function(e){
@@ -352,7 +351,7 @@
     try { L = JSON.parse(localStorage.getItem(KEY + ".last")); } catch(e){}
     if (L && SUB[L.code]){
       btn.dataset.mode = "last";
-      btn.textContent = "前回の結果を見る（" + L.code + "）";
+      btn.textContent = "前回の結果を見る";
       btn.classList.remove("hidden");
     }
   }
@@ -394,7 +393,6 @@
     window.scrollTo(0, 0);
   }
   $("resHomeBtn").addEventListener("click", backToIntro);
-  $("resHomeBtn2").addEventListener("click", backToIntro);
 
   $("homeBtn").addEventListener("click", function(){ leaveQuiz(false); });
   $("pauseBtn").addEventListener("click", function(){ leaveQuiz(true); });

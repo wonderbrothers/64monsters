@@ -9,6 +9,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="assets/style.css">
+<script>
+/* 表示設定を描画前に反映（ちらつき防止） */
+(function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
+</script>
+
 </head>
 <body>
 
@@ -16,12 +21,19 @@
 <section id="intro" class="wrap">
   <div class="intro-head">
     <p class="eyebrow">6 axes &nbsp;/&nbsp; 90 questions</p>
-    <h1 class="title"><span class="num">64</span>モンスターズ</h1>
-    <p class="subtitle">6軸でわかる64通りの性格診断</p>
+    <h1 class="subtitle">6軸でわかる64通りの性格診断</h1>
     <p class="lede">
       よく知られた4つの軸に、<b>決断のリズム</b>と<b>対人の温度</b>という2軸を加えた6軸構成。
       16タイプでは同じ枠に入っていた人が、64通りに分かれます。
     </p>
+    <div class="meta">
+      <div>設問数<span class="mono">90問</span></div>
+      <div>所要時間<span class="mono">約10分</span></div>
+      <div>判定タイプ<span class="mono">64通り</span></div>
+    </div>
+    <div class="fv-cta">
+      <button class="btn" id="startBtn">診断をはじめる</button>
+    </div>
   </div>
 
   <div class="strip" id="strip"></div>
@@ -29,10 +41,8 @@
 
   <div class="axis-list" id="axisList"></div>
 
-  <div class="meta">
-    <div>設問数<span class="mono">90問</span></div>
-    <div>所要時間<span class="mono">約10分</span></div>
-    <div>判定タイプ<span class="mono">64通り</span></div>
+  <div class="axis-cta">
+    <a class="btn ghost" href="types.html">モンスター一覧</a>
   </div>
 
   <div class="mytype hidden" id="myType">
@@ -51,9 +61,7 @@
   <p class="savenote hidden" id="saveNote"></p>
 
   <div class="start-row">
-    <button class="btn" id="startBtn">診断をはじめる</button>
     <button class="btn ghost hidden" id="resumeBtn">途中から再開する</button>
-    <a class="btn ghost" href="types.html" style="text-decoration:none">64タイプ一覧を見る</a>
   </div>
 
   <div class="picker">
@@ -61,10 +69,10 @@
     <div class="picker-row">
       <select id="pkBase" aria-label="基本タイプ"></select>
       <span class="seg-toggle" id="pkAO" role="group" aria-label="決断のリズム">
-        <button data-v="A">A・即断</button><button data-v="O">O・熟慮</button>
+        <button data-v="A"><span>A・即断</span></button><button data-v="O"><span>O・熟慮</span></button>
       </span>
       <span class="seg-toggle" id="pkHC" role="group" aria-label="対人の温度">
-        <button data-v="H">H・温和</button><button data-v="C">C・沈静</button>
+        <button data-v="H"><span>H・温和</span></button><button data-v="C"><span>C・沈静</span></button>
       </span>
       <button class="btn" id="pkGo">このタイプを見る</button>
     </div>
@@ -120,9 +128,8 @@
     <div class="hero"><span class="thumb"><img id="rThumb" src="" alt=""></span></div>
     <p class="eyebrow">your type</p>
     <p class="code" id="rCode"></p>
-    <h1 class="res-name" id="rName"></h1>
+    <h1 class="res-label" id="rLabel"></h1>
     <p class="res-tag" id="rTag"></p>
-    <p class="res-label" id="rLabel"></p>
   </div>
 
   <div class="sec" id="secGauge">
@@ -168,10 +175,9 @@
   </div>
 
   <div class="res-foot">
-    <button class="btn ghost" id="resHomeBtn2">← HOME</button>
     <button class="btn" id="againBtn">もう一度診断する</button>
     <button class="btn ghost" id="saveMyBtn">マイタイプに登録</button>
-    <button class="btn ghost" id="copyBtn">結果をコピー</button>
+    <button class="btn ghost" id="copyBtn">画面URLをコピー</button>
   </div>
 
   <p class="disclaimer">
@@ -185,5 +191,6 @@
 <script src="assets/questions.js"></script>
 <script src="assets/types.js"></script>
 <script src="assets/app.js"></script>
+<script src="assets/settings.js"></script>
 </body>
 </html>
