@@ -284,9 +284,9 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 @media (max-width:640px){ .strip{ grid-template-columns:repeat(4,1fr); } }
 .strip-note{ font-size:var(--fs-sm); color:var(--ink-3); margin-top:10px; }
 
-/* 2×2 マトリクスのセル内サムネイル */
-.cell{ display:grid; grid-template-columns:52px 1fr; gap:12px; align-items:center; }
-.cell .thumb{ width:52px; height:52px; border-radius:6px; }
+/* 2×2 マトリクスのセル：画像 → コード → 呼び名 を縦に積む */
+.cell{ display:grid; grid-template-columns:1fr; gap:12px; align-items:start; }
+.cell .thumb{ width:72px; height:72px; border-radius:6px; }
 .cell .c-txt{ min-width:0; }
 
 /* 一覧ページのタイプカード */
