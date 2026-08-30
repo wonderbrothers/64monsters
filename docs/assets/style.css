@@ -44,7 +44,17 @@ p{ margin:0; }
 button{ font:inherit; color:inherit; background:none; border:none; cursor:pointer; }
 :focus-visible{ outline:2px solid var(--shu); outline-offset:3px; }
 .mono{ font-family:var(--f-mono); font-variant-numeric:tabular-nums; }
-.wrap{ width:min(100% - 40px, 720px); margin-inline:auto; }
+/* ページの枠は全ページ共通で1080px。ヘッダーもこの幅に揃う。
+   本文だけは --measure で行長を抑える（下の「読みやすさ」参照） */
+.wrap{ width:min(100% - 40px, 1080px); margin-inline:auto; }
+.wrap.wide{ width:min(100% - 40px, 1080px); }
+
+/* 読みやすさ：日本語は1行35〜45文字が読みやすい。
+   em は使う側の font-size で解決されるので、小さい文字にも同じ文字数で効く。 */
+:root{ --measure:46em; }
+.body-text, .note, .savenote, .strip-note, .picker-note, .disclaimer,
+.match-why, .g-note, .sec-note, .group-sum, .notice li, .acmp .ac-d,
+.pair-cta-txt, .drawer-empty{ max-width:var(--measure); }
 .hidden{ display:none !important; }
 
 /* ---------- 共通パーツ ---------- */
@@ -249,7 +259,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .notice[open] > summary::before{ transform:translateY(-2px) rotate(45deg); }
 .notice > summary:hover{ color:var(--ink); }
 .notice ul{ margin:14px 0 0; padding-left:1.25em; }
-.notice li{ font-size:var(--fs-sm); color:var(--ink-3); line-height:1.9; margin-top:8px; max-width:62em; }
+.notice li{ font-size:var(--fs-sm); color:var(--ink-3); line-height:1.9; margin-top:8px; }
 @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
 
 
@@ -804,3 +814,36 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 
 /* PCではドロアーを使わない */
 @media (min-width:721px){ .drawer{ display:none !important; } }
+
+/* ============================================================
+   1080pxの枠の中での、要素ごとの適正幅
+   枠は全ページ1080に揃えたが、横に伸ばして良いのは
+   カードやチップのグリッドだけ。ゲージ・ボタン列・表などは
+   間延びするので、読みやすい幅で止める。
+   ============================================================ */
+:root{ --panel:760px; --panel-w:860px; }
+
+/* 見出しと左端を揃えたいもの（左ぞろえのまま幅だけ止める） */
+.gauges, #tableWrap, .scoretable,
+.res-foot, .res-foot2,
+.picker, .mytype, .start-row, .fv-cta, .axis-cta{ max-width:var(--panel); }
+
+/* もともと中央に置いている箱（枠の中央にとどめる） */
+.pair-cta, .pair-ask, .pair-verdict,
+.pair-foot, .pair-go{ max-width:var(--panel); margin-inline:auto; }
+/* 2体を並べるところは、離れすぎると「×」が効かなくなる */
+.pair-duo{ max-width:640px; margin-inline:auto; }
+
+/* 2×2のマトリクスは少しだけ広く取る */
+.matrix{ max-width:var(--panel-w); }
+.matrix .hd.side{ white-space:nowrap; }
+
+/* 軸の一覧の説明文も本文と同じ行長に */
+.axis-row .desc{ max-width:var(--measure); }
+
+/* 320px級の端末では、タイプ選択のA/O・H/Cを縦に積む。
+   「O・揺らぎ」のように5文字になると、2列では収まらないため */
+@media (max-width:400px){
+  .picker-row{ grid-template-columns:1fr; }
+  .picker-row > *{ min-width:0; }
+}
