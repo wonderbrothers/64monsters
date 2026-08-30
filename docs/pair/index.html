@@ -45,7 +45,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=cdb2f537">
+<link rel="stylesheet" href="../assets/style.css?v=c4b93f9e">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -116,10 +116,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="duo-x">×</div>
         <div class="duo-side" id="duoB"></div>
       </div>
+    </div>
+
+    <div class="sec split">
+      <h2>関係ごとの相性</h2>
+      <div class="pscores" id="pscores"></div>
+      <p class="g-note">6軸のうち、その関係で追い風になる軸の重みが全体の何割かを表しています。<b>低いほうが相性が悪い、という意味ではありません。</b>放っておくとずれる部分が多い、つまり先に話しておく価値があるところが多い、という意味です。重みは測定値ではなく、この診断で設計したものです。</p>
+    </div>
+
+    <div class="sec split">
+      <h2>基本タイプ同士の相性</h2>
       <div class="pair-verdict" id="verdict"></div>
     </div>
 
-    <div class="sec">
+    <div class="sec split">
       <h2>6軸の噛み合い</h2>
       <div class="axis-cmp" id="axisCmp"></div>
     </div>
@@ -156,10 +166,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <canvas id="shareCanvas" width="1080" height="1080" class="sr-only"></canvas>
 
-<script src="../assets/types.js?v=77a4961c"></script>
-<script src="../assets/render.js?v=04ce500a"></script>
-<script src="../assets/share.js?v=5eb6606a"></script>
-<script src="../assets/pair.js?v=86a56c82"></script>
+<script src="../assets/types.js?v=6a9f76a9"></script>
+<script src="../assets/render.js?v=9269135e"></script>
+<script src="../assets/share.js?v=0a987d6a"></script>
+<script src="../assets/pair.js?v=89450f7f"></script>
 <script src="../assets/settings.js?v=3f7c7e99"></script>
 </body>
 </html>

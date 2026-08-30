@@ -661,6 +661,52 @@ body.modal-open{ overflow:hidden; }
 .pair-verdict .pv-sub{ font-size:var(--fs-md); color:var(--ink-3); margin-top:6px; }
 .pair-verdict .pv-why{ font-size:var(--fs-md); color:var(--ink-2); line-height:1.95; margin-top:16px; max-width:40em; margin-inline:auto; }
 
+/* 用途ごとの相性スコア。数値の隣に必ず内訳を置く */
+.pscores{ display:grid; gap:12px; }
+.pscore{
+  border:1px solid var(--line); border-radius:calc(var(--r) * 2);
+  background:var(--surface); overflow:hidden;
+}
+.pscore[open]{ background:var(--surface-2); }
+.pscore > summary{
+  list-style:none; cursor:pointer; padding:18px 20px; display:grid; gap:10px;
+}
+.pscore > summary::-webkit-details-marker{ display:none; }
+.pscore > summary:hover{ background:var(--surface-2); }
+.ps-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; }
+.ps-title{ font-weight:700; font-size:var(--fs-lg); }
+.ps-num{
+  display:flex; align-items:baseline; gap:1px;
+  background:var(--grad-text); -webkit-background-clip:text; background-clip:text;
+  color:transparent; -webkit-text-fill-color:transparent;
+}
+.ps-n{ font-size:clamp(1.5rem, 5vw, 2rem); font-weight:500; line-height:1; }
+.ps-pct{ font-size:var(--fs-md); }
+.ps-bar{ display:flex; gap:3px; height:8px; }
+.ps-seg{ background:var(--surface-2); border:1px solid var(--line-2); border-radius:2px; }
+.pscore[open] .ps-seg{ background:var(--paper); }
+.ps-seg.on{ background:var(--grad); border-color:transparent; }
+.ps-band{ font-size:var(--fs-sm); color:var(--ink-2); display:flex; justify-content:space-between; gap:12px; }
+.ps-more{ color:var(--ink-3); text-decoration:underline; text-underline-offset:3px; }
+.pscore[open] .ps-more{ visibility:hidden; }
+.ps-body{ padding:4px 20px 20px; }
+.ps-row{
+  display:grid; grid-template-columns:3.4em 1fr; gap:14px;
+  padding:14px 0; border-top:1px solid var(--line-2); align-items:start;
+}
+.ps-w{
+  font-family:var(--f-mono); font-size:var(--fs-md); color:var(--ink-3);
+  text-align:right; padding-top:2px;
+}
+.ps-row.on .ps-w{ color:var(--shu); }
+.ps-ax{ font-weight:700; font-size:var(--fs-md); }
+.ps-state{
+  font-family:var(--f-mono); font-size:var(--fs-xs); letter-spacing:.08em;
+  margin-left:10px; padding:2px 8px; border-radius:var(--r-full);
+  border:1px solid var(--line); color:var(--ink-3); font-weight:400;
+}
+.ps-t{ font-size:var(--fs-md); color:var(--ink-2); line-height:1.9; margin-top:6px; }
+
 /* 軸ごとの一致・相違 */
 .axis-cmp{ display:grid; gap:0; margin-top:8px; }
 .acmp{
@@ -882,11 +928,14 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
   .sec.split .body-text,
   .sec.split .sec-note,
   .sec.split .g-note,
-  .sec.split .match-why{ max-width:none; }
+  .sec.split .match-why,
+  .sec.split .acmp .ac-d,
+  .sec.split .pair-verdict .pv-why{ max-width:none; }
   /* 見出しの下に潜り込ませていた注記は、右カラムの先頭に来るので戻す */
   .sec.split > .sec-note{ margin-top:0; }
   /* 中央寄せの箱は、グリッドの中では auto マージンで縮んでしまうので伸ばす */
-  .sec.split > .pair-cta{ max-width:none; margin-inline:0; }
+  .sec.split > .pair-cta,
+  .sec.split > .pair-verdict{ max-width:none; margin-inline:0; }
 }
 
 /* PCサイズでは、マトリクスのセルは左にサムネイル・右にコードと呼び名 */

@@ -74,19 +74,47 @@
            '<span class="dn">' + SUB[code].label + '</span>';
   }
 
+  /* 16の基本タイプ同士の、手書きの相性リストによる判定。
+     上の6軸スコアとは別系統なので、そう分かる言い方にしている。 */
   function verdictOf(a, b){
     var rel = R.relation(a, b);
-    if (rel && rel.exact) return { lab: rel.title, sub: "サブタイプまでぴたりと当てはまる組み合わせ", why: rel.why };
+    if (rel && rel.exact) return { lab: rel.title, sub: "サブタイプ（A / O・H / C）まで当てはまる組み合わせ", why: rel.why };
     if (rel) return {
       lab: rel.title + "に近い",
-      sub: "基本タイプの相性は当てはまりますが、自分への確信（A / O）か人への構え（H / C）が少しずれています",
+      sub: "基本タイプ同士は当てはまりますが、自分への確信（A / O）か人への構え（H / C）が少しずれています",
       why: rel.why
     };
     return {
-      lab: "並走する相手",
-      sub: "どの相性リストにも入らない、干渉の少ない組み合わせ",
-      why: "強く惹かれ合うわけでも、ぶつかるわけでもない関係です。放っておくと距離が縮まらないぶん、共通の目的や作業があるときにいちばん機能します。役割を分けて並んで走るのが、この2人の使い方です。"
+      lab: "リストには入らない組み合わせ",
+      sub: "16タイプの相性リストのどれにも載っていない相手",
+      why: "このリストは16の基本タイプ同士で作ったもので、載っていないことは相性が悪いという意味ではありません。実際の噛み合い方は、上の6軸のスコアと内訳のほうをご覧ください。"
     };
+  }
+
+  /* 用途ごとのスコア。数値だけを置かず、どの軸が効いたかを開いて読めるようにする */
+  function scoresHTML(a, b){
+    return R.purposeScores(a, b).map(function(P){
+      var bar = P.rows.map(function(r){
+        return '<span class="ps-seg' + (r.ok ? " on" : "") + '" style="flex:' + r.w + '"></span>';
+      }).join("");
+      var rows = P.rows.map(function(r){
+        return '<div class="ps-row' + (r.ok ? " on" : "") + '">' +
+          '<div class="ps-w">' + (r.ok ? "+" + r.w : "±0") + '</div>' +
+          '<div><div class="ps-ax">' + r.title +
+            '<span class="ps-state">' + (r.same ? "同じ" : "違う") + '</span></div>' +
+            '<div class="ps-t">' + r.text + '</div></div>' +
+        '</div>';
+      }).join("");
+      return '<details class="pscore">' +
+        '<summary>' +
+          '<span class="ps-head"><span class="ps-title">' + P.title + '</span>' +
+          '<span class="ps-num"><span class="ps-n mono">' + P.score + '</span><span class="ps-pct">%</span></span></span>' +
+          '<span class="ps-bar">' + bar + '</span>' +
+          '<span class="ps-band">' + P.band + '　<span class="ps-more">内訳を見る</span></span>' +
+        '</summary>' +
+        '<div class="ps-body">' + rows + '</div>' +
+      '</details>';
+    }).join("");
   }
 
   function render(a, b){
@@ -95,6 +123,8 @@
 
     var La = letters(a), Lb = letters(b);
     var same = AXES.filter(function(x){ return La[x.key] === Lb[x.key]; }).length;
+    $("pscores").innerHTML = scoresHTML(a, b);
+
     var v = verdictOf(a, b);
     var back = R.relation(b, a);
     var backLine = "";
@@ -104,7 +134,7 @@
 
     $("verdict").innerHTML =
       '<p class="pv-lab">' + v.lab + '</p>' +
-      '<p class="pv-sub">' + v.sub + '　／　6軸のうち <span class="mono">' + same + '</span> つが一致</p>' +
+      '<p class="pv-sub">' + v.sub + '</p>' +
       '<p class="pv-why">' + v.why + '</p>' + backLine;
 
     $("axisCmp").innerHTML = AXES.map(function(x){
@@ -120,7 +150,8 @@
     }).join("");
 
     $("pairResult").classList.remove("hidden");
-    track("pair_view", { pair_a: a, pair_b: b, axis_match: same });
+    var ps = {}; R.purposeScores(a, b).forEach(function(P){ ps["score_" + P.key] = P.score; });
+    track("pair_view", Object.assign({ pair_a: a, pair_b: b, axis_match: same }, ps));
   }
 
   function go(push){
@@ -171,14 +202,14 @@
 
   $("pairShareBtn").addEventListener("click", function(){
     var btn = this, orig = "結果を画像で保存";
-    var a = codeOf("a"), b = codeOf("b"), v = verdictOf(a, b);
-    var La = letters(a), Lb = letters(b);
+    var a = codeOf("a"), b = codeOf("b");
     btn.disabled = true; btn.textContent = "画像を作っています…";
     window.SHARE.savePair({
       a:a, b:b,
       aLabel: SUB[a].label, bLabel: SUB[b].label,
-      verdict: v.lab,
-      same: AXES.filter(function(x){ return La[x.key] === Lb[x.key]; }).length
+      scores: R.purposeScores(a, b).map(function(P){
+        return { title: P.key === "work" ? "仕事として" : P.title, score: P.score };
+      })
     }).then(function(how){
       track("share_pair_image", { pair_a:a, pair_b:b, method:how });
       btn.textContent = how === "downloaded" ? "保存しました" : orig;

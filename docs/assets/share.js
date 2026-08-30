@@ -257,15 +257,20 @@
 
         ctx.fillStyle = LINE; ctx.fillRect(PAD, 748, S - PAD * 2, 1);
 
-        /* 判定 */
+        /* 関係ごとのスコア */
         ctx.textAlign = "center";
         ctx.font = "400 24px " + FD; ctx.fillStyle = INK3;
-        ctx.fillText("2人の相性", S / 2, 812);
-        fitOneLine(ctx, opts.verdict, S - PAD * 2, 62, 40, "700");
-        ctx.fillStyle = grad(ctx, S * 0.2, S * 0.8);
-        ctx.fillText(opts.verdict, S / 2, 886);
-        ctx.font = "400 28px " + FD; ctx.fillStyle = INK2;
-        ctx.fillText("6軸のうち " + opts.same + " つが一致", S / 2, 938);
+        ctx.fillText("関係ごとの相性", S / 2, 788);
+        (opts.scores || []).slice(0, 3).forEach(function(sc, i){
+          var y = 850 + i * 56;
+          ctx.textAlign = "left";
+          ctx.font = "500 30px " + FD; ctx.fillStyle = INK;
+          ctx.fillText(sc.title, PAD + 40, y);
+          ctx.textAlign = "right";
+          ctx.font = "500 42px " + FM; ctx.fillStyle = grad(ctx, S * 0.5, S * 0.85);
+          ctx.fillText(sc.score + "%", S - PAD - 40, y + 4);
+        });
+        ctx.textAlign = "center";
 
         ctx.font = "400 24px " + FD; ctx.fillStyle = INK3;
         ctx.fillText("コードを2つ入れると、その場で相性が出ます", S / 2, S - 54);
@@ -281,7 +286,9 @@
       if (navigator.canShare && navigator.canShare({ files: [file] })){
         return navigator.share({
           files: [file],
-          text: opts.a + " × " + opts.b + "　" + opts.verdict + "　#64モンスターズ",
+          text: opts.a + " × " + opts.b + "　" +
+                (opts.scores || []).map(function(sc){ return sc.title + " " + sc.score + "%"; }).join(" / ") +
+                "　#64モンスターズ",
           url: location.href
         }).then(function(){ return "shared"; })
          .catch(function(e){ if (e && e.name === "AbortError") return "canceled"; return download(blob, name); });
