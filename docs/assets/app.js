@@ -7,6 +7,9 @@
   var R = window.RENDER;
   var KEY = "shindan64.v1";
   var MYKEY = KEY + ".mytype";
+  /* 設問データの版。questions.js の内容を入れ替えたら必ず上げること。
+     途中保存した回答は設問の並びに依存しているので、版が違えば捨てる。 */
+  var QV = 2;
   var $ = function(id){ return document.getElementById(id); };
 
   /* GTM（dataLayer）へのイベント送信。タグを外しても動くようにガードする */
@@ -91,11 +94,17 @@
 
   /* ---------- 保存・復元 ---------- */
   function save(){
-    try { localStorage.setItem(KEY, JSON.stringify({ a:answers, p:pos })); return true; }
+    try { localStorage.setItem(KEY, JSON.stringify({ v:QV, a:answers, p:pos })); return true; }
     catch(e){ return false; }
   }
   function load(){
-    try { var s = localStorage.getItem(KEY); return s ? JSON.parse(s) : null; } catch(e){ return null; }
+    try {
+      var s = localStorage.getItem(KEY); if (!s) return null;
+      var d = JSON.parse(s);
+      /* 設問が入れ替わったあとの古い回答は、番号がずれるので使わない */
+      if (!d || d.v !== QV || !Array.isArray(d.a) || d.a.length !== Q.length){ clearSave(); return null; }
+      return d;
+    } catch(e){ return null; }
   }
   function clearSave(){ try{ localStorage.removeItem(KEY); }catch(e){} }
 

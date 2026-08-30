@@ -88,8 +88,8 @@ python3 tools/make-thumbs.py
 | S / N | 情報の受け取り方 | 事実と手ざわり / 意味とつながり |
 | T / F | 判断の基準 | 筋道と一貫性 / 人と価値への影響 |
 | P / J | 外界への構え | 幅を残す / 決めて片づける |
-| A / O | 決断のリズム | 即断（Assertive）/ 熟慮（Oscillating）|
-| H / C | 対人の温度 | 温和（Humorous・Hopeful）/ 沈静（Calm）|
+| A / O | 自分への確信 | 確信（Assertive）/ 揺らぎ（Oscillating）|
+| H / C | 人への構え | 信頼（Hopeful）/ 慎重（Cautious）|
 
 タイプ表記は `INFJ-A-C` のように「基本4文字 - A/O - H/C」。
 

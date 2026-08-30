@@ -17,9 +17,9 @@
   /* 4つのサブタイプの位置関係（2×2） */
   function matrixHTML(base, code){
     var SUB = root.SUBTYPES, bt = code.split("-")[0];
-    var cells = '<div class="hd"></div><div class="hd">H・温和</div><div class="hd">C・沈静</div>';
+    var cells = '<div class="hd"></div><div class="hd">H・信頼</div><div class="hd">C・慎重</div>';
     ["A","O"].forEach(function(x){
-      cells += '<div class="hd side">' + x + (x === "A" ? "・即断" : "・熟慮") + '</div>';
+      cells += '<div class="hd side">' + x + (x === "A" ? "・確信" : "・揺らぎ") + '</div>';
       ["H","C"].forEach(function(y){
         var c = bt + "-" + x + "-" + y;
         cells += '<a class="cell' + (c === code ? " on" : "") + '" href="' + typeUrl(base, c) + '">' +
@@ -36,7 +36,7 @@
     var p = code.split("-"), bt = p[0], ao = p[1], hc = p[2], b = BASE[bt];
     return [
       { title:"かみ合う相手", list:b.match.best, ao:flip(ao), hc:hc,
-        why:"見ている世界が補い合う組み合わせ。対人の温度が同じなので距離が縮まりやすく、決断のリズムが違うぶん、速さと慎重さを互いに預けられます。" },
+        why:"見ている世界が補い合う組み合わせ。人への構えが同じなので距離の取り方で揉めにくく、自分への確信が違うぶん、迷いのなさと慎重さを互いに預けられます。" },
       { title:"安心できる相手", list:b.match.good, ao:ao, hc:hc,
         why:"テンポも間合いも近く、説明のいらない関係になりやすい相手。長く一緒にいても疲れにくい組み合わせです。" },
       { title:"刺激をくれる相手", list:b.match.learn, ao:ao, hc:flip(hc),
