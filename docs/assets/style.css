@@ -99,19 +99,20 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .note{ font-size:var(--fs-md); color:var(--ink-3); line-height:1.8; margin-top:44px; }
 
 /* ---------- 設問 ---------- */
-#quiz{ min-height:100dvh; display:flex; flex-direction:column; }
+/* 共通ヘッダーのぶんを引き、設問画面はスクロールなしで収める */
+#quiz{ min-height:calc(100dvh - var(--head-h) - 1px); display:flex; flex-direction:column; }
 .qbar{ position:sticky; top:0; background:var(--paper); z-index:5; padding-top:18px; }
 .qbar-inner{ display:flex; align-items:center; gap:16px; padding-bottom:12px; }
 .seg{ display:flex; gap:3px; flex:1; }
 .seg i{ flex:1; height:3px; background:var(--line); border-radius:2px; overflow:hidden; position:relative; }
 .seg i b{ position:absolute; inset:0 auto 0 0; width:0; background:var(--grad); transition:width .3s ease; }
 .qcount{ font-family:var(--f-mono); font-size:var(--fs-sm); color:var(--ink-3); letter-spacing:.06em; }
-.qmain{ flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;
-  text-align:center; padding:40px 0 30px; }
-.qaxis{ margin-bottom:22px; }
+.qmain{ flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center; align-items:center;
+  text-align:center; padding:clamp(16px,4vh,40px) 0 clamp(12px,3vh,30px); }
+.qaxis{ margin-bottom:clamp(10px,2.5vh,22px); }
 .qtext{ max-width:24em; }
 .qtext{ font-family:var(--f-disp); font-weight:700; font-size:clamp(1.375rem, 4.4vw, 1.875rem); line-height:1.7; letter-spacing:.01em; }
-.scale{ margin-top:44px; width:100%; max-width:560px; }
+.scale{ margin-top:clamp(20px,5vh,44px); width:100%; max-width:560px; }
 .scale-ends{ display:flex; justify-content:space-between; font-size:var(--fs-sm); color:var(--ink-3); margin-bottom:12px; }
 .opts{ display:flex; align-items:center; justify-content:space-between; gap:clamp(6px,2.5vw,18px); }
 .opt{
@@ -131,7 +132,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .opt.sel{ background:var(--c); border-color:var(--c); }
 .opt.sel .k{ opacity:0; }
 .opt-lab{ font-size:var(--fs-sm); color:var(--ink-3); text-align:center; margin-top:10px; height:1.4em; }
-.qfoot{ display:flex; justify-content:space-between; align-items:center; gap:16px; padding:20px 0 40px; border-top:1px solid var(--line-2); }
+.qfoot{ display:flex; justify-content:space-between; align-items:center; gap:16px;
+  padding:clamp(12px,2.5vh,20px) 0 clamp(14px,3vh,28px); border-top:1px solid var(--line-2); }
 .qfoot .qhint{ flex:1; text-align:center; }
 .qhint{ font-size:var(--fs-sm); color:var(--ink-3); }
 @media (max-width:560px){
@@ -375,6 +377,10 @@ a.cell:hover{ border-color:var(--shu); }
 
 /* ---------- SP：開始ボタン群とタイプ選択のレイアウト ---------- */
 @media (max-width:560px){
+  /* 相性のカードは1列・コンテンツ幅いっぱい */
+  .match-list{ flex-direction:column; }
+  .match-list .chip{ width:100%; }
+
   /* 診断をはじめる / 前回の結果を見る / 64タイプ一覧を見る は横幅いっぱい */
   .start-row, .res-foot{ flex-direction:column; align-items:stretch; gap:12px; }
   .start-row .btn, .res-foot .btn{ width:100%; flex:0 0 auto; }
@@ -484,4 +490,40 @@ body.modal-open{ overflow:hidden; }
 @media (max-width:560px){
   .set-row.col{ flex-direction:column; align-items:stretch; gap:12px; }
   .set-row.col .set-fs{ display:grid; grid-template-columns:repeat(3,1fr); }
+}
+
+/* ---------- 画面の高さが足りないときは設問まわりを詰める ---------- */
+@media (max-height:720px){
+  .qtext{ font-size:clamp(1.125rem, 3.6vw, 1.5rem); line-height:1.6; }
+  .qaxis{ margin-bottom:8px; }
+  .scale{ margin-top:16px; }
+  .opt{ --sz:44px !important; }
+  .opt[data-v="1"],.opt[data-v="-1"]{ --sz:38px !important; }
+  .opt[data-v="0"]{ --sz:30px !important; }
+  .qmain{ padding:12px 0 10px; }
+  .qfoot{ padding:10px 0 12px; }
+  .qbar{ padding-top:12px; }
+}
+
+@media (max-height:600px){
+  .qtext{ font-size:clamp(1rem, 3.2vw, 1.25rem); line-height:1.55; }
+  .scale-ends{ margin-bottom:8px; }
+  .opt{ --sz:40px !important; }
+  .opt[data-v="1"],.opt[data-v="-1"]{ --sz:34px !important; }
+  .opt[data-v="0"]{ --sz:28px !important; }
+}
+/* 横向きのスマートフォンなど、極端に低い画面 */
+@media (max-height:480px){
+  .qaxis{ display:none; }
+  .qhint{ display:none; }
+  .qtext{ font-size:1.0625rem; line-height:1.45; }
+  .scale{ margin-top:8px; }
+  .scale-ends{ margin-bottom:4px; }
+  .opt{ --sz:32px !important; }
+  .opt[data-v="1"],.opt[data-v="-1"]{ --sz:28px !important; }
+  .opt[data-v="0"]{ --sz:24px !important; }
+  .opt-lab{ display:none; }
+  .qmain{ padding:6px 0 4px; }
+  .qfoot{ padding:6px 0 8px; }
+  .qbar{ padding-top:8px; }
 }
