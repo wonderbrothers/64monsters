@@ -4,6 +4,13 @@
   var Q = window.QUESTIONS, AXES = window.AXES, BASE = window.BASE_TYPES, SUB = window.SUBTYPES;
   var KEY = "shindan64.v1";
   var $ = function(id){ return document.getElementById(id); };
+  /* GTM（dataLayer）へのイベント送信。タグを外しても動くようにガードする */
+  function track(name, props){
+    try {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({ event: name }, props || {}));
+    } catch(e){}
+  }
   var THUMB = function(code){ return "images/thumbs/" + code + ".webp"; };
   var MYKEY = KEY + ".mytype";
   function getMyType(){
@@ -187,6 +194,8 @@
   function renderResult(code, sc){
     var parts = code.split("-"), base = parts[0], ao = parts[1], hc = parts[2];
     var b = BASE[base], s = SUB[code];
+    /* sc がある＝90問に回答した結果。ない＝一覧やURLから直接開いた閲覧 */
+    track(sc ? "quiz_complete" : "type_view", { monster_type: code, base_type: base });
 
     $("rThumb").src = THUMB(code);
     $("rThumb").alt = b.name + "（" + s.label + "）のキャラクター";
@@ -273,6 +282,7 @@
   $("startBtn").addEventListener("click", function(){
     $("saveNote").classList.add("hidden");
     answers = new Array(Q.length).fill(null); pos = 0; clearSave();
+    track("quiz_start");
     show("quiz"); renderQuestion(); window.scrollTo(0,0);
   });
   $("resumeBtn").addEventListener("click", function(){
@@ -360,6 +370,7 @@
   function leaveQuiz(saved){
     var ok = save();
     var n = answeredCount();
+    if (saved && n > 0) track("quiz_pause", { question_no: pos + 1, answered: n });
     var note = $("saveNote");
     if (saved && n > 0 && ok){
       note.textContent = "ここまでの回答（" + n + "問）を保存しました。「途中から再開する」でこの続きから答えられます。";
