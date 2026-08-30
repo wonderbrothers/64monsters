@@ -299,9 +299,12 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .copy-link:hover{ color:var(--ink); }
 
 /* 設問画面のナビゲーション */
+/* button と a のどちらでも同じ見た目になるようにする */
 .qhome{
-  font-size:var(--fs-sm); color:var(--ink-3); letter-spacing:.04em; white-space:nowrap;
-  padding:4px 2px; transition:color .15s ease;
+  display:inline-flex; align-items:center;
+  font:inherit; font-size:var(--fs-sm); color:var(--ink-3); letter-spacing:.04em; white-space:nowrap;
+  padding:4px 2px; background:none; border:0; cursor:pointer;
+  text-decoration:none; transition:color .15s ease;
 }
 .qhome:hover{ color:var(--ink); }
 
