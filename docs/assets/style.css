@@ -574,7 +574,7 @@ body.modal-open{ overflow:hidden; }
 .pair-cta-txt{ font-size:var(--fs-md); color:var(--ink-2); margin:0; }
 
 /* ---------- 相性ページ ---------- */
-#pair{ padding:clamp(30px,6vh,64px) 0 90px; }
+#pair{ padding:clamp(30px,6vh,64px) 0 40px; }
 .pair-head{ border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:30px; }
 
 .pick2{ display:grid; gap:18px; grid-template-columns:1fr 1fr; align-items:start; }
