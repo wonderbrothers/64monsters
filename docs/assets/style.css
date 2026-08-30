@@ -287,7 +287,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 /* 2×2 マトリクスのセル：狭い画面では 画像 → コード → 呼び名 を縦に積む
    （横に置くと呼び名が数文字ずつ折り返すため）。PCでは末尾の @media で横並びに戻す。 */
 .cell{ display:grid; grid-template-columns:1fr; gap:12px; align-items:start; }
-.cell .thumb{ width:72px; height:72px; border-radius:6px; }
+/* 縦積みのときはカード幅いっぱい。横並び（PC）では列幅の72pxに収まる */
+.cell .thumb{ border-radius:6px; }
 .cell .c-txt{ min-width:0; }
 
 /* 一覧ページのタイプカード */
