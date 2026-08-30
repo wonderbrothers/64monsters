@@ -583,12 +583,29 @@ body.modal-open{ overflow:hidden; }
   padding:20px 18px; background:var(--surface);
 }
 .pick-card .sub-h{ margin-bottom:12px; }
+
+/* セレクトはトップページのタイプ選択と同じ見た目に揃える
+   （矢印は背景で描いているので、右の余白は padding と background-position で決まる） */
 .pick-card select{
-  width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r);
-  background:var(--surface); color:var(--ink); font:inherit; font-size:var(--fs-md);
+  width:100%; min-width:0; font:inherit; font-size:var(--fs-md); color:var(--ink);
+  -webkit-appearance:none; appearance:none;
+  border:1.5px solid var(--line); border-radius:var(--r-btn);
+  padding:11px 44px 11px 20px;
+  background-color:var(--surface);
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%, currentColor calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(-45deg, transparent 50%, currentColor 50%, currentColor calc(50% + 1.5px), transparent calc(50% + 1.5px));
+  background-position: right 24px center, right 18px center;
+  background-size: 7px 7px, 7px 7px;
+  background-repeat: no-repeat;
+  transition:border-color .12s ease;
 }
-.pick-toggles{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
-.pick-card .seg-toggle{ flex:1 1 auto; }
+.pick-card select:hover{ border-color:var(--ink-3); }
+
+/* A/O と H/C は必ず1行（4ボタン）に収める */
+.pick-toggles{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+.pick-card .seg-toggle{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.pick-card .seg-toggle button{ padding:11px 4px; font-size:var(--fs-sm); min-width:0; }
 .pick-now{
   margin-top:14px; display:flex; align-items:center; gap:12px;
   font-size:var(--fs-md); color:var(--ink-2);
@@ -665,4 +682,14 @@ body.modal-open{ overflow:hidden; }
   .res-foot2, .pair-foot{ flex-direction:column; align-items:stretch; gap:12px; }
   .res-foot2 .btn, .pair-foot .btn,
   .pair-cta .btn, .pair-ask .btn, .pair-go .btn{ width:100%; flex:0 0 auto; }
+}
+
+/* 狭い端末でも A/O・H/C の4ボタンを1行に保つ（基本ルールより後ろに置くこと） */
+@media (max-width:400px){
+  .pick-card{ padding:18px 14px; }
+  .pick-card .seg-toggle button{ padding:11px 3px; }
+}
+@media (max-width:340px){
+  .pick-card{ padding:18px 12px; }
+  .pick-card .seg-toggle button{ padding:11px 2px; font-size:var(--fs-xs); letter-spacing:0; }
 }
