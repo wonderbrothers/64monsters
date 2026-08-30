@@ -231,7 +231,10 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 
 /* ---------- 注意事項（折りたたみ） ---------- */
 .notice{ margin-top:30px; padding-top:22px; border-top:1px solid var(--line-2); }
+/* 直前がすでに線で終わっている要素のときは、注意書きの上線を出さない
+   （線が2本並んで見えるのを防ぐ） */
 .note + .notice,
+.pair-ask + .notice,
 .disclaimer + .notice{ margin-top:16px; padding-top:0; border-top:0; }
 .notice > summary{
   display:flex; align-items:center; gap:9px; cursor:pointer;
