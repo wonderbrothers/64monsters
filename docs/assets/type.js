@@ -77,7 +77,7 @@
     var btn = this, url = location.origin + location.pathname;
     navigator.clipboard.writeText(url).then(function(){
       btn.textContent = "コピーしました";
-      setTimeout(function(){ btn.textContent = "このページのURLをコピー"; }, 1800);
+      setTimeout(function(){ btn.textContent = "URLをコピー"; }, 1800);
     }).catch(function(){ btn.textContent = "コピーできませんでした"; });
   });
 

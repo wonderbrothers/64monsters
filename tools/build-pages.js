@@ -193,7 +193,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="res-foot">
     <button class="btn" id="shareBtn">結果を画像で保存</button>
     <button class="btn ghost" id="saveMyBtn" data-code="${code}">マイタイプに登録</button>
-    <button class="btn ghost" id="copyBtn">このページのURLをコピー</button>
+    <button class="btn ghost" id="copyBtn">URLをコピー</button>
   </div>
   <div class="res-foot2">
     <a class="btn ghost" href="${base}">90問の診断を受ける</a>
