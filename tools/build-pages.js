@@ -128,13 +128,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager -->
 
 <section id="result">
-  <div class="topbar">
-    <div class="wrap wrap-inner">
-      <a class="qhome" href="${base}">← HOME</a>
-      <span class="tb-title mono">${code}</span>
-    </div>
-  </div>
-
   <div class="wrap">
   <div class="res-head">
     <div class="hero"><span class="thumb"><img id="rThumb" src="${base}images/thumbs/${code}.webp" alt="${esc(b.name)}（${esc(s.label)}）のキャラクター" width="440" height="440"></span></div>

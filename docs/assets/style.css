@@ -390,15 +390,6 @@ a.cell:hover{ border-color:var(--shu); }
 .cell .c-txt{ display:block; }
 .cell .c-code, .cell .c-lab{ display:block; }
 
-/* ---------- ページ上部の固定ナビ（一覧ページ用） ---------- */
-.topbar{
-  position:sticky; top:0; z-index:10; background:var(--paper);
-  padding:14px 0; margin-bottom:8px;
-}
-.topbar .wrap-inner{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
-.topbar .tb-title{ letter-spacing:.06em; }
-.topbar .tb-title{ font-size:var(--fs-md); color:var(--ink-3); letter-spacing:.04em; }
-
 /* ---------- SP：開始ボタン群とタイプ選択のレイアウト ---------- */
 @media (max-width:560px){
   /* 相性のカードは1列・コンテンツ幅いっぱい */
@@ -482,9 +473,8 @@ html[data-theme="dark"]{
 html[data-theme="dark"] .sh-logo .logo-light{ display:none; }
 html[data-theme="dark"] .sh-logo .logo-dark{ display:block; }
 .sh-logo:hover{ opacity:.85; }
-/* 画面ごとの固定バーは共通ヘッダーの下にとどまる */
+/* 設問画面の固定バーは共通ヘッダーの下にとどまる */
 .qbar{ top:var(--head-h) !important; }
-.topbar{ top:var(--head-h); }
 
 /* ---------- モーダル ---------- */
 body.modal-open{ overflow:hidden; }
