@@ -284,7 +284,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 @media (max-width:640px){ .strip{ grid-template-columns:repeat(4,1fr); } }
 .strip-note{ font-size:var(--fs-sm); color:var(--ink-3); margin-top:10px; }
 
-/* 2×2 マトリクスのセル：画像 → コード → 呼び名 を縦に積む */
+/* 2×2 マトリクスのセル：狭い画面では 画像 → コード → 呼び名 を縦に積む
+   （横に置くと呼び名が数文字ずつ折り返すため）。PCでは末尾の @media で横並びに戻す。 */
 .cell{ display:grid; grid-template-columns:1fr; gap:12px; align-items:start; }
 .cell .thumb{ width:72px; height:72px; border-radius:6px; }
 .cell .c-txt{ min-width:0; }
@@ -885,4 +886,9 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
   .sec.split > .sec-note{ margin-top:0; }
   /* 中央寄せの箱は、グリッドの中では auto マージンで縮んでしまうので伸ばす */
   .sec.split > .pair-cta{ max-width:none; margin-inline:0; }
+}
+
+/* PCサイズでは、マトリクスのセルは左にサムネイル・右にコードと呼び名 */
+@media (min-width:721px){
+  .cell{ grid-template-columns:72px 1fr; align-items:center; }
 }
