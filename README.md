@@ -28,6 +28,18 @@ tools/make-thumbs.py      サムネイル生成スクリプト
 - `.gitignore` で `prompts/`・`prompts.html`・`images/` を除外しています。原寸PNGは合計134MBあり、GitHubは100MB超の単一ファイルを拒否するうえリポジトリが重くなるため、手元にだけ残す運用です。
 - ローカルで確認するときは `docs/index.html` をダブルクリックしてください。
 
+## 公開前に必ず実行するもの
+
+CSS や JS を変更したときは、コミットの前に次を実行してください。
+
+```bash
+node tools/stamp-assets.js
+```
+
+`docs/*.html`（と `assets/settings.js`）が読み込むアセットの URL に、**中身のハッシュを `?v=` として付け直します**。
+GitHub Pages は CSS/JS を長めにキャッシュするため、これをやらないと更新を push してもブラウザが古いファイルを使い続けます。
+中身が変わったファイルだけハッシュが変わるので、無駄な再ダウンロードも起きません。何度実行しても結果は同じです（冪等）。
+
 ## 画像について
 
 画面に表示しているのは `docs/images/thumbs/` の WebP です。原寸は `images/characters/` に置いたまま公開しません。
@@ -36,6 +48,8 @@ tools/make-thumbs.py      サムネイル生成スクリプト
 ```bash
 python3 tools/make-thumbs.py
 ```
+
+（サムネイルは HTML から直接参照しているためハッシュ付与の対象外です。差し替えたのに反映されないときは、スーパーリロードで確認してください）
 
 ファイル名はタイプコードそのまま（`INTJ-A-H.png` → `INTJ-A-H.webp`）。コードが一致していれば自動で表示されます。
 
