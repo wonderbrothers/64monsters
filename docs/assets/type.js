@@ -24,10 +24,27 @@
   var isMyResult = !!(last && last.code === CODE && last.sc);
   var sc = isMyResult ? last.sc : null;
 
-  /* 診断直後の1回だけ quiz_complete を送る（再訪では type_view） */
-  var fresh = false;
-  try { fresh = sessionStorage.getItem(KEY + ".fresh") === CODE; if (fresh) sessionStorage.removeItem(KEY + ".fresh"); } catch(e){}
-  track(fresh ? "quiz_complete" : "type_view", { monster_type: CODE, base_type: CODE.split("-")[0] });
+  /* 診断直後の1回だけ quiz_complete を送る（再訪では type_view）。
+     かかった秒数は設問ページから sessionStorage 経由で受け取る。 */
+  var fresh = false, sec = null;
+  try {
+    fresh = sessionStorage.getItem(KEY + ".fresh") === CODE;
+    if (fresh){
+      sec = parseInt(sessionStorage.getItem(KEY + ".sec"), 10);
+      sessionStorage.removeItem(KEY + ".fresh");
+      sessionStorage.removeItem(KEY + ".sec");
+    }
+  } catch(e){}
+  var ev = { monster_type: CODE, base_type: CODE.split("-")[0] };
+  if (fresh && !isNaN(sec)) ev.elapsed_sec = sec;
+  track(fresh ? "quiz_complete" : "type_view", ev);
+
+  /* 検索から来た人が診断へ進んだかを見るための計測 */
+  Array.prototype.forEach.call(document.querySelectorAll(".res-foot2 a, .pair-cta a"), function(a){
+    a.addEventListener("click", function(){
+      track("cta_click", { monster_type: CODE, label: a.textContent.trim(), from_result: !!sc });
+    });
+  });
 
   /* ---------- 6軸ゲージ ---------- */
   if (sc){

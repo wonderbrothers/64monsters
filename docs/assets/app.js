@@ -37,6 +37,23 @@
 
   var answers = new Array(Q.length).fill(null); // -2..2
   var pos = 0;   // ORDER のインデックス
+
+  /* ---------- 計測 ----------
+     90問のどこで離脱しているか、実際に何分かかっているかを知るための計測。
+     回答内容そのものは送らない。送るのは通過した問数と経過秒だけ。 */
+  var MILESTONES = [0.25, 0.5, 0.75].map(function(r){ return Math.round(Q.length * r); });
+  var doneMs = 0;      // 中断をまたいだ回答時間の累計
+  var segStart = null; // いま回答中の区間の開始時刻
+  var lastMile = 0;    // 送信済みの最大マイルストーン
+
+  function segGo(){ if (segStart === null) segStart = Date.now(); }
+  function segStop(){ if (segStart !== null){ doneMs += Date.now() - segStart; segStart = null; } }
+  function elapsedSec(){ return Math.round((doneMs + (segStart === null ? 0 : Date.now() - segStart)) / 1000); }
+  /* タブを離れているあいだは数えない（所要時間を実態に近づける） */
+  document.addEventListener("visibilitychange", function(){
+    if ($("quiz").classList.contains("hidden")) return;
+    if (document.hidden) segStop(); else segGo();
+  });
   var LABELS = { "-2":"そう思わない", "-1":"どちらかといえば、そう思わない", "0":"どちらでもない", "1":"どちらかといえば、そう思う", "2":"そう思う" };
   var VALS = [-2,-1,0,1,2];
 
@@ -94,7 +111,7 @@
 
   /* ---------- 保存・復元 ---------- */
   function save(){
-    try { localStorage.setItem(KEY, JSON.stringify({ v:QV, a:answers, p:pos })); return true; }
+    try { localStorage.setItem(KEY, JSON.stringify({ v:QV, a:answers, p:pos, t:doneMs + (segStart === null ? 0 : Date.now() - segStart), m:lastMile })); return true; }
     catch(e){ return false; }
   }
   function load(){
@@ -150,11 +167,31 @@
       b.classList.toggle("sel", parseInt(b.dataset.v,10) === v);
     });
     renderSeg(); save();
+    checkMilestone();
     advTimer = setTimeout(function(){
       advTimer = null;
       if (pos < ORDER.length - 1){ pos++; renderQuestion(); window.scrollTo(0,0); }
       else { finish(); }
     }, 190);
+  }
+
+  /* 25% / 50% / 75% を通過した瞬間に1回だけ送る。
+     quiz_start → 各通過 → quiz_complete をファネルとして見ると、
+     何問目で人が離れているかが分かる。 */
+  function checkMilestone(){
+    var n = answeredCount();
+    for (var i = 0; i < MILESTONES.length; i++){
+      var m = MILESTONES[i];
+      if (n >= m && lastMile < m){
+        lastMile = m;
+        track("quiz_progress", {
+          question_no: m,
+          progress_pct: Math.round(m / Q.length * 100),
+          elapsed_sec: elapsedSec()
+        });
+        save();
+      }
+    }
   }
 
   /* ---------- スコア計算 ---------- */
@@ -181,11 +218,15 @@
 
   /* ---------- 完了：結果ページへ ---------- */
   function finish(){
-    var sc = score(), code = codeFrom(sc);
+    segStop();
+    var sc = score(), code = codeFrom(sc), sec = elapsedSec();
     clearSave();
     try { localStorage.setItem(KEY + ".last", JSON.stringify({ code: code, sc: sc })); } catch(e){}
-    /* 遷移先で quiz_complete を1回だけ送るための目印 */
-    try { sessionStorage.setItem(KEY + ".fresh", code); } catch(e){}
+    /* 遷移先で quiz_complete を1回だけ送るための目印と、かかった秒数 */
+    try {
+      sessionStorage.setItem(KEY + ".fresh", code);
+      sessionStorage.setItem(KEY + ".sec", String(sec));
+    } catch(e){}
     setMyType(code);
     location.href = TURL(code);
   }
@@ -199,7 +240,8 @@
   $("startBtn").addEventListener("click", function(){
     $("saveNote").classList.add("hidden");
     answers = new Array(Q.length).fill(null); pos = 0; clearSave();
-    track("quiz_start");
+    doneMs = 0; segStart = null; lastMile = 0; segGo();
+    track("quiz_start", { total_questions: Q.length });
     show("quiz"); renderQuestion(); window.scrollTo(0,0);
   });
   $("resumeBtn").addEventListener("click", function(){
@@ -210,7 +252,10 @@
       return;
     }
     var d = load(); if (!d) return;
-    answers = d.a; pos = d.p; show("quiz"); renderQuestion(); window.scrollTo(0,0);
+    answers = d.a; pos = d.p;
+    doneMs = d.t || 0; segStart = null; lastMile = d.m || 0; segGo();
+    track("quiz_resume", { question_no: pos + 1, elapsed_sec: elapsedSec() });
+    show("quiz"); renderQuestion(); window.scrollTo(0,0);
   });
   $("backBtn").addEventListener("click", function(){
     if (pos > 0){ pos--; renderQuestion(); window.scrollTo(0,0); }
@@ -259,9 +304,14 @@
 
   /* 設問画面から抜けてイントロへ戻る。saved=true なら保存した旨を伝える */
   function leaveQuiz(saved){
+    segStop();
     var ok = save();
     var n = answeredCount();
-    if (saved && n > 0) track("quiz_pause", { question_no: pos + 1, answered: n });
+    if (n > 0) track(saved ? "quiz_pause" : "quiz_exit", {
+      question_no: pos + 1, answered: n,
+      progress_pct: Math.round(n / Q.length * 100),
+      elapsed_sec: elapsedSec()
+    });
     var note = $("saveNote");
     if (saved && n > 0 && ok){
       note.textContent = "ここまでの回答（" + n + "問）を保存しました。「途中から再開する」でこの続きから答えられます。";

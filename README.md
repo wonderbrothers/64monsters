@@ -80,6 +80,34 @@ python3 tools/make-thumbs.py
 ファイル名はタイプコードそのまま（`INTJ-A-H.png` → `INTJ-A-H.webp`）。コードが一致していれば自動で表示されます。
 
 
+## 計測しているもの
+
+GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです。**回答内容そのものは送っていません。** 送っているのは、何問目まで進んだか・何秒かかったか・どのタイプが表示されたか、だけです。
+
+| イベント | いつ | 一緒に送る値 |
+|---|---|---|
+| `quiz_start` | 「診断をはじめる」を押した | `total_questions` |
+| `quiz_progress` | 25% / 50% / 75%（23・45・68問目）を通過した | `question_no` `progress_pct` `elapsed_sec` |
+| `quiz_pause` | 「保存して中断」を押した | `question_no` `answered` `progress_pct` `elapsed_sec` |
+| `quiz_exit` | 設問画面から HOME で抜けた | 同上 |
+| `quiz_resume` | 「途中から再開する」を押した | `question_no` `elapsed_sec` |
+| `quiz_complete` | 90問終えて結果ページに着いた | `monster_type` `base_type` `elapsed_sec` |
+| `type_view` | 結果ページを見た（診断直後をのぞく） | `monster_type` `base_type` |
+| `cta_click` | 結果ページ下部の導線を押した | `monster_type` `label` `from_result` |
+| `share_image` | 結果の一枚絵を保存・共有した | `monster_type` `method` |
+| `pair_view` | 相性を表示した | `pair_a` `pair_b` `axis_match` |
+| `share_pair_image` | 相性の一枚絵を保存・共有した | `pair_a` `pair_b` `method` |
+| `invite_copy` | 「診断リンクをコピー」を押した | `from` |
+
+> **GTM側の設定が要ります。** ここで送っているのは dataLayer までです。GA4 に届けるには、GTM で各イベント名のトリガーと GA4 イベントタグを作る必要があります（既存の設定にないイベントは、そのままでは GA4 に現れません）。
+
+### 見方
+
+- **90問のどこで離脱しているか** … `quiz_start` → `quiz_progress`(25/50/75) → `quiz_complete` をファネルとして並べる。人数が落ちる位置が、そのまま「長すぎる場所」です。
+- **本当に何分かかるか** … `elapsed_sec` は**タブを離れているあいだを数えていません**（`visibilitychange` で計測を止めています）。中断・再開をまたいでも合計されます。`quiz_complete` の中央値が実際の所要時間で、トップの「約10分」が妥当かはこれで判定できます。
+- **A/O・H/C が独立して効いているか** … `quiz_complete` の `monster_type` を集計し、`I`かつ`H` と `E`かつ`C` の割合を見る。極端に少なければ、E/I と H/C がまだ相関しています。
+- **検索から来た人が診断に進むか** … `type_view` に対する `cta_click`（`from_result: false`）の比率。
+
 ## 6つの軸
 
 | 記号 | 軸 | 内容 |
