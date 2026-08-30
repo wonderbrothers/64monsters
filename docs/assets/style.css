@@ -99,13 +99,11 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .meta div{ font-size:var(--fs-md); color:var(--ink-2); }
 .meta div span{ display:block; font-family:var(--f-mono); font-size:var(--fs-2xl); color:var(--ink); }
 /* ファーストビューのメインCTA */
-.fv-cta{ margin-top:26px; }
+/* FVのボタン（診断をはじめる／途中から再開する） */
+.fv-cta{ margin-top:26px; display:flex; flex-direction:column; gap:12px; }
 .fv-cta .btn{ width:100%; }
+.savenote{ margin-top:14px; }
 /* 6軸の説明の下に置くモンスター一覧への導線 */
-.axis-cta{ margin-top:28px; }
-.axis-cta .btn{ width:100%; }
-.start-row{ display:flex; flex-wrap:wrap; gap:14px; align-items:stretch; }
-.start-row .btn{ flex:1 1 0; min-width:0; }
 .note{ font-size:var(--fs-md); color:var(--ink-3); line-height:1.8; margin-top:44px; }
 
 /* ---------- 設問 ---------- */
@@ -331,24 +329,6 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
   .qfoot .qhint{ display:none; }
 }
 
-/* ---------- マイタイプのカード ---------- */
-.mytype{
-  display:grid; grid-template-columns:72px 1fr auto; gap:18px; align-items:center;
-  margin:34px 0 4px; padding:16px 18px;
-  background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
-}
-.mytype .thumb{ width:72px; height:72px; border-radius:8px; }
-.my-txt{ min-width:0; line-height: 1.3;}
-.my-code{ font-size:var(--fs-xl); letter-spacing:.06em; margin-top:4px; }
-.my-name{ font-size:var(--fs-md); color:var(--ink-2); margin-top:2px; }
-.my-act{ display:flex; gap:10px; flex-wrap:wrap; }
-.my-act .btn{ padding:10px 18px; font-size:var(--fs-md); }
-@media (max-width:620px){
-  .mytype{ grid-template-columns:60px 1fr; }
-  .mytype .thumb{ width:60px; height:60px; }
-  .my-act{ grid-column:1 / -1; }
-}
-
 /* ---------- タイプを選ぶ ---------- */
 .picker{ margin-top:40px; padding-top:26px; border-top:1px solid var(--line-2); }
 /* 上段：モンスターのプルダウン（全幅）／下段：A・O ＋ H・C ＋ このタイプを見る */
@@ -415,9 +395,9 @@ a.cell:hover{ border-color:var(--shu); }
   .match-list{ flex-direction:column; }
   .match-list .chip{ width:100%; }
 
-  /* 診断をはじめる / 前回の結果を見る / 64タイプ一覧を見る は横幅いっぱい */
-  .start-row, .res-foot{ flex-direction:column; align-items:stretch; gap:12px; }
-  .start-row .btn, .res-foot .btn{ width:100%; flex:0 0 auto; }
+  /* 64タイプ一覧を見る などのボタン列は横幅いっぱい */
+  .res-foot{ flex-direction:column; align-items:stretch; gap:12px; }
+  .res-foot .btn{ width:100%; flex:0 0 auto; }
 
   /* 上段：モンスタープルダウン ／ 中段：A or O + H or C ／ 下段：このタイプを見る */
   .picker-row{
@@ -472,6 +452,20 @@ html[data-theme="dark"]{
 .sh-link:hover{ color:var(--ink); background:var(--surface-2); }
 .sh-link[aria-current="page"]{ color:var(--ink); font-weight:500; }
 .sh-cta{ padding:4px 16px; font-size:var(--fs-md); margin-left:6px; }
+
+/* ヘッダーのマイタイプ（登録があるときだけ出る） */
+.sh-my{
+  display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+  padding:4px 10px 4px 4px; margin-right:4px;
+  border:1px solid var(--line); border-radius:999px; color:var(--ink-2);
+}
+.sh-my:hover{ color:var(--ink); border-color:var(--ink-3); background:var(--surface-2); }
+.sh-my .thumb{
+  width:26px; height:26px; border-radius:999px; overflow:hidden;
+  background:var(--thumb); flex:none;
+}
+.sh-my .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.sh-my .sm-code{ font-size:var(--fs-sm); letter-spacing:.04em; white-space:nowrap; }
 .sh-logo .logo{ display:block; height:26px; width:auto; }
 /* ロゴはライト／ダークで差し替える */
 .sh-logo .logo-dark{ display:none; }
@@ -826,7 +820,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 /* 見出しと左端を揃えたいもの（左ぞろえのまま幅だけ止める） */
 .gauges, #tableWrap, .scoretable,
 .res-foot, .res-foot2,
-.picker, .mytype, .start-row, .fv-cta, .axis-cta{ max-width:var(--panel); }
+.picker, .fv-cta, .savenote{ max-width:var(--panel); }
 
 /* もともと中央に置いている箱（枠の中央にとどめる） */
 .pair-cta, .pair-ask, .pair-verdict,
@@ -846,4 +840,14 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 @media (max-width:400px){
   .picker-row{ grid-template-columns:1fr; }
   .picker-row > *{ min-width:0; }
+}
+
+/* 「すでに自分のタイプがわかっている方」は、横幅に余裕があるときだけ1行に。
+   プルダウンだけを伸縮させ、A/O・H/C と ボタンは折り返さない。 */
+@media (min-width:900px){
+  .picker{ max-width:var(--panel-w); }
+  .picker-row{ display:flex; flex-wrap:nowrap; }
+  .picker-row select{ grid-column:auto; flex:1 1 auto; width:auto; min-width:0; }
+  .picker-row .seg-toggle{ flex:none; }
+  .picker-row .btn{ flex:none; white-space:nowrap; }
 }

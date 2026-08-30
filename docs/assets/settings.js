@@ -2,7 +2,7 @@
    全ページの末尾で読み込む。ヘッダーとメニューをJSで差し込み、
    ダークモードと文字サイズの切り替えを受け持つ。
 
-   PC : ロゴ ／ モンスターギャラリー ／ 設定 ／ 診断（グラデーション）
+   PC : ロゴ ／ マイタイプ ／ モンスターギャラリー ／ 各種設定 ／ 診断（グラデーション）
    SP : メニュー ／ ロゴ ／ 診断。ギャラリー・マイタイプ・設定はドロアーの中。
 
    表示設定のUIは1つだけ作り、開くときに
@@ -61,6 +61,8 @@
       '<button type="button" class="sh-menu" id="shMenu" aria-label="メニューを開く" aria-expanded="false" aria-controls="siteDrawer">' + SVG_MENU + '</button>' +
       '<a class="sh-logo" href="' + HOME + '" aria-label="64モンスターズ ホーム">' + LOGO + '</a>' +
       '<nav class="sh-nav" aria-label="サイト内">' +
+        '<a class="sh-my hidden" id="shMy" href="#"><span class="thumb"><img src="" alt=""></span>' +
+          '<span class="sm-code mono"></span></a>' +
         '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
         '<button type="button" class="sh-link" id="shSet">各種設定</button>' +
       '</nav>' +
@@ -143,6 +145,28 @@
       '</a>' +
       '<a class="drawer-sub" href="' + B + 'pair/?a=' + code + '">この人との相性を調べる</a>';
   }
+
+  /* ヘッダーのマイタイプ（PCのみ表示。登録がなければ出さない） */
+  function renderHeadMy(){
+    var chip = document.getElementById("shMy");
+    if (!chip) return;
+    var code = null;
+    try { code = localStorage.getItem(MYKEY); } catch(e){}
+    var SUB = window.SUBTYPES;
+    if (!code || !SUB || !SUB[code]){ chip.classList.add("hidden"); return; }
+    var name = SUB[code].label;
+    chip.href = B + "t/" + code + "/";
+    chip.title = code + "（" + name + "）";
+    chip.setAttribute("aria-label", "マイタイプ " + code + "（" + name + "）");
+    chip.querySelector("img").src = B + "images/thumbs/" + code + ".webp";
+    chip.querySelector(".sm-code").textContent = code;
+    chip.classList.remove("hidden");
+  }
+  renderHeadMy();
+
+  /* 結果ページで登録／解除したとき、ヘッダーを描き直せるように公開する */
+  window.SiteHeader = window.SiteHeader || {};
+  window.SiteHeader.refreshMyType = function(){ renderHeadMy(); renderMy(); };
 
   /* ---------- 設定の同期 ---------- */
   var sw = panel.querySelector("#setTheme");

@@ -61,7 +61,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=a3693aaf">
+<link rel="stylesheet" href="assets/style.css?v=ff6efd27">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -91,37 +91,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div class="fv-cta">
       <button class="btn" id="startBtn">診断をはじめる</button>
+      <button class="btn ghost hidden" id="resumeBtn">途中から再開する</button>
     </div>
+    <p class="savenote hidden" id="saveNote"></p>
   </div>
 
   <div class="strip" id="strip"></div>
   <p class="strip-note">16体のキャラクターが、それぞれ4つのサブタイプで登場します（全64体）。</p>
 
   <div class="axis-list" id="axisList"></div>
-
-  <div class="axis-cta">
-    <a class="btn ghost" href="types.html">モンスターギャラリー</a>
-  </div>
-
-  <div class="mytype hidden" id="myType">
-    <a class="thumb" id="myThumb" href="#"><img src="" alt=""></a>
-    <div class="my-txt">
-      <p class="eyebrow">my type</p>
-      <p class="my-code mono" id="myCode"></p>
-      <p class="my-name" id="myName"></p>
-    </div>
-    <div class="my-act">
-      <a class="btn ghost" id="myView" href="#">結果を見る</a>
-      <a class="btn ghost" id="myPair" href="pair/">相性を調べる</a>
-      <button class="btn ghost" id="myClear">登録を解除</button>
-    </div>
-  </div>
-
-  <p class="savenote hidden" id="saveNote"></p>
-
-  <div class="start-row">
-    <button class="btn ghost hidden" id="resumeBtn">途中から再開する</button>
-  </div>
 
   <div class="picker">
     <p class="sub-h">すでに自分のタイプがわかっている方</p>
@@ -187,7 +165,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="assets/questions.js?v=9bb8366a"></script>
 <script src="assets/types.js?v=77a4961c"></script>
 <script src="assets/render.js?v=04ce500a"></script>
-<script src="assets/app.js?v=a73d8736"></script>
-<script src="assets/settings.js?v=8333fb88"></script>
+<script src="assets/app.js?v=7ab74b3a"></script>
+<script src="assets/settings.js?v=3f7c7e99"></script>
 </body>
 </html>

@@ -26,7 +26,6 @@
     try { var c = localStorage.getItem(MYKEY); return (c && SUB[c]) ? c : null; } catch(e){ return null; }
   }
   function setMyType(code){ try { localStorage.setItem(MYKEY, code); } catch(e){} }
-  function clearMyType(){ try { localStorage.removeItem(MYKEY); } catch(e){} }
 
   /* --- 出題順：6軸をラウンドロビンで交互に出す（連続する類似設問を避ける） --- */
   var byAxis = {};
@@ -267,23 +266,9 @@
     else if (e.key === "ArrowLeft" && pos > 0){ pos--; renderQuestion(); }
   });
 
-  /* ---------- マイタイプの表示 ---------- */
-  function renderMyType(){
-    var code = getMyType(), box = $("myType");
-    if (!code){ box.classList.add("hidden"); return; }
-    var b = BASE[code.split("-")[0]], s = SUB[code];
-    $("myThumb").href = TURL(code);
-    $("myThumb").querySelector("img").src = THUMB(code);
-    $("myThumb").querySelector("img").alt = b.name + "（" + s.label + "）";
-    $("myCode").textContent = code;
-    $("myName").textContent = s.label;
-    $("myView").href = TURL(code);
-    $("myPair").href = R.pairUrl("", code);
-    box.classList.remove("hidden");
-  }
-
+  /* ---------- 再開ボタン ----------
+     マイタイプはヘッダー（settings.js）が受け持つ。 */
   function refreshIntroButtons(){
-    renderMyType();
     var btn = $("resumeBtn");
     btn.classList.add("hidden");
     var d = load();
@@ -327,7 +312,6 @@
     window.scrollTo(0, 0);
   }
 
-  $("myClear").addEventListener("click", function(){ clearMyType(); renderMyType(); });
   $("homeBtn").addEventListener("click", function(){ leaveQuiz(false); });
   $("pauseBtn").addEventListener("click", function(){ leaveQuiz(true); });
 

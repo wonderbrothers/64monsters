@@ -87,6 +87,8 @@
   myBtn.addEventListener("click", function(){
     if (ls(MYKEY) === CODE) lsDel(MYKEY); else lsSet(MYKEY, CODE);
     paintMy();
+    /* ヘッダーのマイタイプにも反映する */
+    if (window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();
   });
 
   /* ---------- URLコピー ---------- */
