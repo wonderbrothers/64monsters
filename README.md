@@ -7,20 +7,38 @@
 
 ```
 docs/                     ← GitHub に公開するのはこのフォルダだけ
-  index.html              診断本体（イントロ / 設問 / 結果）
+  index.html              診断本体（イントロ / 設問）
   types.html              64タイプの一覧ページ（キャラクター画像つき）
+  t/<CODE>/index.html     タイプごとの結果・解説ページ（64枚・自動生成）
+  pair/index.html         2人の相性ページ（?a=CODE&b=CODE）
   assets/style.css        デザイン（白ベース・文字サイズは base 16px の倍数）
   assets/questions.js     設問データ（90問）
   assets/types.js         軸の定義 / 基本16タイプ / 64サブタイプ
-  assets/app.js           出題・採点・結果描画のロジック
+  assets/render.js        相性・マトリクスの組み立て（ブラウザとビルドで共用）
+  assets/app.js           出題・採点（終わると /t/<CODE>/ へ遷移する）
+  assets/type.js          個別ページ側（6軸ゲージ・マイタイプ・画像保存）
+  assets/pair.js          相性ページ側
+  assets/share.js         結果の一枚絵（1080×1080）をcanvasで作る
   images/thumbs/          表示用サムネイル（440px・WebP・64枚／約1.4MB）
+  images/ogp/             タイプ別のOGP画像（1200×630・JPEG・64枚／約4MB・自動生成）
 
 ── 以下は制作用。.gitignore で公開対象から外しています ──
 images/characters/        生成した原寸画像（1024px・PNG・64枚／約134MB）
 prompts/                  イラスト生成プロンプト一式（prompts/README.md 参照）
 prompts.html              プロンプトの一覧・コピー用ページ
 tools/make-thumbs.py      サムネイル生成スクリプト
+tools/make-ogp.py         タイプ別OGP画像の生成スクリプト
+tools/build-pages.js      個別ページ64枚と sitemap.xml の生成スクリプト
+tools/stamp-assets.js     キャッシュ対策のハッシュ付与
 ```
+
+## ページの構成
+
+- **`/`** … イントロと90問。答え終わると `/t/<CODE>/` へ移動します。
+- **`/t/<CODE>/`** … 結果ページ兼、そのタイプの解説ページ。本文はビルド時に静的に書き出してあるので、
+  検索エンジンにも読まれます。自分で診断した直後だけ、6軸のスコアが上に足されます（判定は端末内に保存された回答から出しており、サーバーには送っていません）。
+- **`/pair/?a=CODE&b=CODE`** … 2人の相性。6軸のどこが同じでどこが違うかを出します。
+- 旧URL（`index.html#ENTP-A-H`）で来た人は、対応する個別ページへ自動で転送されます。
 
 ## 公開について
 
@@ -30,13 +48,21 @@ tools/make-thumbs.py      サムネイル生成スクリプト
 
 ## 公開前に必ず実行するもの
 
-CSS や JS を変更したときは、コミットの前に次を実行してください。
+**タイプの解説（`assets/types.js`）を変えたとき**は、個別ページを作り直します。
+
+```bash
+node tools/build-pages.js      # docs/t/<CODE>/index.html を64枚 + sitemap.xml
+python3 tools/make-ogp.py      # docs/images/ogp/<CODE>.jpg を64枚（原寸画像が必要）
+```
+
+そのうえで、**CSS や JS を変更したとき**は、コミットの前に次を実行してください。
 
 ```bash
 node tools/stamp-assets.js
 ```
 
-`docs/*.html`（と `assets/settings.js`）が読み込むアセットの URL に、**中身のハッシュを `?v=` として付け直します**。
+`docs/` 以下のすべての HTML（`/t/<CODE>/` と `/pair/` を含む）と `assets/settings.js` が読み込むアセットの URL に、**中身のハッシュを `?v=` として付け直します**。
+`build-pages.js` が書き出した直後のページにはハッシュが付いていないので、**必ず build のあとに実行**してください。
 GitHub Pages は CSS/JS を長めにキャッシュするため、これをやらないと更新を push してもブラウザが古いファイルを使い続けます。
 中身が変わったファイルだけハッシュが変わるので、無駄な再ダウンロードも起きません。何度実行しても結果は同じです（冪等）。
 
@@ -78,7 +104,9 @@ python3 tools/make-thumbs.py
 - **設問を変える** … `docs/assets/questions.js`。軸ごとの問数を揃え、`dir` の正負のバランスを保ってください。
 - **タイプ解説を変える** … `docs/assets/types.js`。`BASE_TYPES`（16タイプの本文・強み・仕事・相性）と `SUBTYPES`（64通りの呼称と説明）。
 - **配色・書体・文字サイズを変える** … `docs/assets/style.css` 冒頭の `html{font-size}` と `:root` 変数。文字サイズはすべて base（16px）の倍数（rem）で定義しています。
-- **相性のロジック** … `docs/assets/app.js` の `matchHTML()`。基本タイプの相性リスト（`types.js` の `match`）に、A/O・H/C の組み合わせルールを掛け合わせて64タイプ表記に変換しています。
+- **相性のロジック** … `docs/assets/render.js` の `matchGroups()` / `relation()`。基本タイプの相性リスト（`types.js` の `match`）に、A/O・H/C の組み合わせルールを掛け合わせて64タイプ表記に変換しています。画面表示と個別ページのビルドが同じ関数を使うので、直すのはここ1か所だけです。
+- **相性ページの文面** … `docs/assets/pair.js` の `NOTE`（軸ごとに「同じとき／違うとき」の一言）と `verdictOf()`。
+- **一枚絵のデザイン** … `docs/assets/share.js`。1080×1080 のcanvasに描いています。
 
 ## 公開するときの注意
 

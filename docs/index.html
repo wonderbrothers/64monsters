@@ -61,7 +61,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=12054452">
+<link rel="stylesheet" href="assets/style.css?v=9eaa1ed6">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -112,6 +112,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div class="my-act">
       <a class="btn ghost" id="myView" href="#">結果を見る</a>
+      <a class="btn ghost" id="myPair" href="pair/">相性を調べる</a>
       <button class="btn ghost" id="myClear">登録を解除</button>
     </div>
   </div>
@@ -183,94 +184,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
-<!-- ============ 結果 ============ -->
-<section id="result" class="hidden">
-  <div class="topbar">
-    <div class="wrap wrap-inner">
-      <button class="qhome" id="resHomeBtn">← HOME</button>
-      <span class="tb-title mono" id="tbCode"></span>
-    </div>
-  </div>
-
-  <div class="wrap">
-  <div class="res-head">
-    <div class="hero"><span class="thumb"><img id="rThumb" src="" alt=""></span></div>
-    <p class="eyebrow">your type</p>
-    <p class="code" id="rCode"></p>
-    <h1 class="res-label" id="rLabel"></h1>
-    <p class="res-tag" id="rTag"></p>
-  </div>
-
-  <div class="sec" id="secGauge">
-    <h2>6軸のスコア</h2>
-    <div class="gauges" id="gauges"></div>
-    <button class="tablebtn" id="tableBtn">数値の一覧を表示</button>
-    <div id="tableWrap" class="hidden"></div>
-  </div>
-
-  <div class="sec">
-    <h2>あなたという人</h2>
-    <p class="body-text" id="rSummary"></p>
-    <p class="body-text" id="rSubDesc"></p>
-  </div>
-
-  <div class="sec">
-    <h2>4つのサブタイプの中での位置</h2>
-    <div class="matrix" id="matrix"></div>
-    <p class="g-note" style="margin-top:14px">同じ基本タイプでも、決断のリズム（A / O）と対人の温度（H / C）で現れ方が変わります。</p>
-  </div>
-
-  <div class="sec">
-    <h2>強みと、気をつけたいところ</h2>
-    <div class="cols">
-      <div><p class="sub-h">強み</p><ul class="list plus" id="rStrengths"></ul></div>
-      <div><p class="sub-h">気をつけたいところ</p><ul class="list minus" id="rWatch"></ul></div>
-    </div>
-  </div>
-
-  <div class="sec">
-    <h2>仕事での適性</h2>
-    <div class="cols">
-      <div><p class="sub-h">力を発揮する環境</p><p class="body-text" id="rEnv"></p></div>
-      <div><p class="sub-h">向いている役割</p><p class="body-text" id="rRole"></p></div>
-    </div>
-    <p class="body-text" id="rSubWork" style="margin-top:22px"></p>
-    <div class="jobs" id="rJobs"></div>
-  </div>
-
-  <div class="sec">
-    <h2>相性</h2>
-    <div id="matches"></div>
-  </div>
-
-  <div class="res-foot">
-    <button class="btn" id="againBtn">もう一度診断する</button>
-    <button class="btn ghost" id="saveMyBtn">マイタイプに登録</button>
-    <button class="btn ghost" id="copyBtn">画面URLをコピー</button>
-  </div>
-
-  <p class="disclaimer">
-    この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
-  </p>
-
-  <details class="notice">
-    <summary>この診断についての注意</summary>
-    <ul>
-      <li>回答内容と診断結果はサーバーに送信されません。お使いのブラウザ内にのみ保存されるため、ブラウザのデータを消すと失われます。「保存して中断」した回答、マイタイプの登録、表示設定も同じ扱いです。</li>
-      <li>外部への通信は、Webフォント（Google Fonts）の読み込みと、アクセス解析（Google アナリティクス）のためのタグの2つです。回答内容そのものは送信していませんが、診断の開始・完了と、表示されたタイプの統計を匿名で記録しています。広告のタグは入れていません。</li>
-      <li>キャラクター画像と解説文は生成AIを用いて制作しています。実在の人物・団体とは関係がなく、描写に不自然な点が含まれる場合があります。</li>
-      <li>本診断はユング心理学の類型論を参考にした独自のもので、心理検査ではありません。特定の心理検査や既存の性格診断サービスとは関係ありません。</li>
-      <li>結果は回答時点の自己認識を整理したものです。人の性格は状況や時期によって変わるため、自分を知る手がかりとして扱い、可能性を狭める枠としては使わないでください。</li>
-    </ul>
-  </details>
-
-  <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
-  </div>
-</section>
-
 <script src="assets/questions.js?v=09cf6728"></script>
 <script src="assets/types.js?v=836700b8"></script>
-<script src="assets/app.js?v=db91a940"></script>
-<script src="assets/settings.js?v=f23ed23c"></script>
+<script src="assets/render.js?v=117a7bc5"></script>
+<script src="assets/app.js?v=d9e674ae"></script>
+<script src="assets/settings.js?v=485a8b93"></script>
 </body>
 </html>

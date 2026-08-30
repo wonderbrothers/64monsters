@@ -28,15 +28,18 @@
 
   /* ---------- UI を差し込む ---------- */
   /* ---------- 共通ヘッダー（左：予備／中央：ロゴ／右：設定） ---------- */
+  /* ページの階層に応じた docs/ 直下までの相対プレフィックス。
+     ルート直下は ""、/t/<CODE>/ は "../../"（各ページの head で設定している） */
+  var B = window.SITE_BASE || "";
   var LOGO =
-    '<img class="logo logo-light" src="assets/logo.svg?v=5f144fbe" alt="" width="1238" height="280">' +
-    '<img class="logo logo-dark" src="assets/logo-dark.svg?v=4ac2348c" alt="" width="1238" height="280">';
+    '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=5f144fbe" alt="" width="1238" height="280">' +
+    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=4ac2348c" alt="" width="1238" height="280">';
   var head = document.createElement("header");
   head.className = "site-head";
   head.innerHTML =
     '<div class="' + (document.querySelector(".wrap.wide") ? "wrap wide" : "wrap") + ' sh-inner">' +
       '<span class="sh-side"></span>' +
-      '<a class="sh-logo" href="index.html" aria-label="64モンスターズ ホーム">' + LOGO + '</a>' +
+      '<a class="sh-logo" href="' + (B || "index.html") + '" aria-label="64モンスターズ ホーム">' + LOGO + '</a>' +
       '<span class="sh-side sh-right"></span>' +
     '</div>';
   document.body.insertBefore(head, document.body.firstChild);

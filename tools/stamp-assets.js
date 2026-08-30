@@ -36,13 +36,27 @@ function stamp(fileRel){
   return changed;
 }
 
-let total = 0;
+/* docs/ 以下の HTML をすべて集める（/t/<CODE>/index.html・/pair/index.html を含む） */
+function htmlFiles(dir = ""){
+  const out = [];
+  for (const e of fs.readdirSync(path.join(DOCS, dir), { withFileTypes: true })){
+    const rel = dir ? dir + "/" + e.name : e.name;
+    if (e.isDirectory()){
+      if (e.name === "images" || e.name === "assets") continue;
+      out.push(...htmlFiles(rel));
+    } else if (e.name.endsWith(".html")) out.push(rel);
+  }
+  return out;
+}
+
+let total = 0, files = 0;
 /* settings.js 自身が logo*.svg を参照しているので先に処理し、
    そのあとハッシュを取り直してから HTML を処理する（順序が重要） */
-["assets/settings.js", "index.html", "types.html"].forEach((f, i) => {
-  if (i === 1) hashCache.clear();
+total += stamp("assets/settings.js");
+hashCache.clear();
+for (const f of htmlFiles()){
   const n = stamp(f);
-  total += n;
-  console.log(`${f}: ${n} 件更新`);
-});
+  total += n; files++;
+}
+console.log(`HTML ${files} ファイルを走査し、${total} 件のURLを更新しました。`);
 console.log(total ? "完了。docs/ をコミットして push してください。" : "変更なし（すべて最新）。");

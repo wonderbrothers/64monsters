@@ -1,9 +1,14 @@
-/* ===== 64モンスターズ — アプリケーション ===== */
+/* ===== 64モンスターズ — 診断本体（イントロ＋設問）=====
+   結果はタイプ個別ページ（/t/<CODE>/）に遷移して表示する。
+   このファイルは「出題と採点」まで、結果の描画は type.js が担当する。 */
 (function(){
   "use strict";
   var Q = window.QUESTIONS, AXES = window.AXES, BASE = window.BASE_TYPES, SUB = window.SUBTYPES;
+  var R = window.RENDER;
   var KEY = "shindan64.v1";
+  var MYKEY = KEY + ".mytype";
   var $ = function(id){ return document.getElementById(id); };
+
   /* GTM（dataLayer）へのイベント送信。タグを外しても動くようにガードする */
   function track(name, props){
     try {
@@ -11,8 +16,9 @@
       window.dataLayer.push(Object.assign({ event: name }, props || {}));
     } catch(e){}
   }
-  var THUMB = function(code){ return "images/thumbs/" + code + ".webp"; };
-  var MYKEY = KEY + ".mytype";
+  var THUMB = function(code){ return R.thumb("", code); };
+  var TURL  = function(code){ return R.typeUrl("", code); };
+
   function getMyType(){
     try { var c = localStorage.getItem(MYKEY); return (c && SUB[c]) ? c : null; } catch(e){ return null; }
   }
@@ -45,7 +51,7 @@
   (function renderStrip(){
     var picks = ["INTJ-A-H","ENFP-A-H","ISFJ-O-H","ESTP-A-C","INFJ-O-C","ESFP-A-H","ISTP-A-C","ENFJ-O-H"];
     $("strip").innerHTML = picks.map(function(c){
-      return '<a class="thumb" href="#' + c + '" title="' + c + '"><img src="' + THUMB(c) + '" alt="' + c + '" loading="lazy"></a>';
+      return '<a class="thumb" href="' + TURL(c) + '" title="' + c + '"><img src="' + THUMB(c) + '" alt="' + c + '" loading="lazy"></a>';
     }).join("");
   })();
 
@@ -78,8 +84,7 @@
     $("pkGo").addEventListener("click", function(){
       var code = this.dataset.code;
       setMyType(code);
-      location.hash = code;
-      renderResult(code, null);
+      location.href = TURL(code);
     });
     paint();
   })();
@@ -165,117 +170,20 @@
     return sc.EI.letter + sc.SN.letter + sc.TF.letter + sc.JP.letter + "-" + sc.AO.letter + "-" + sc.HC.letter;
   }
 
-  /* ---------- 相性の組み立て ---------- */
-  function flip(l){ return { A:"O", O:"A", H:"C", C:"H" }[l]; }
-  function partnerCode(base, ao, hc){ return base + "-" + ao + "-" + hc; }
-  function matchHTML(base, ao, hc){
-    var b = BASE[base];
-    var groups = [
-      { title:"かみ合う相手", list:b.match.best, ao:flip(ao), hc:hc,
-        why:"見ている世界が補い合う組み合わせ。対人の温度が同じなので距離が縮まりやすく、決断のリズムが違うぶん、速さと慎重さを互いに預けられます。" },
-      { title:"安心できる相手", list:b.match.good, ao:ao, hc:hc,
-        why:"テンポも間合いも近く、説明のいらない関係になりやすい相手。長く一緒にいても疲れにくい組み合わせです。" },
-      { title:"刺激をくれる相手", list:b.match.learn, ao:ao, hc:flip(hc),
-        why:"価値観の置き所が違うため摩擦は起きますが、自分に足りない視点を最も速く手渡してくれる相手です。" }
-    ];
-    return groups.map(function(g){
-      var chips = g.list.map(function(t){
-        var code = partnerCode(t, g.ao, g.hc);
-        return '<a class="chip" href="#' + code + '"><span class="thumb"><img src="' + THUMB(code) + '" alt="" loading="lazy"></span>' +
-               '<span class="c-txt"><span class="c1">' + code + '</span><span class="c2">' + SUB[code].label + '</span></span></a>';
-      }).join("");
-      return '<div class="match-group"><p class="sub-h">' + g.title + '</p>' +
-             '<div class="match-list">' + chips + '</div>' +
-             '<p class="match-why">' + g.why + '</p></div>';
-    }).join("");
-  }
-
-  /* ---------- 結果の描画 ---------- */
-  function renderResult(code, sc){
-    var parts = code.split("-"), base = parts[0], ao = parts[1], hc = parts[2];
-    var b = BASE[base], s = SUB[code];
-    /* sc がある＝90問に回答した結果。ない＝一覧やURLから直接開いた閲覧 */
-    track(sc ? "quiz_complete" : "type_view", { monster_type: code, base_type: base });
-
-    $("rThumb").src = THUMB(code);
-    $("rThumb").alt = b.name + "（" + s.label + "）のキャラクター";
-    $("rCode").innerHTML = '<span class="base">' + base + '</span><span class="dash">-</span><span class="sub">' + ao +
-                           '</span><span class="dash">-</span><span class="sub">' + hc + '</span>';
-    $("rTag").textContent = b.tagline;
-    $("rLabel").textContent = s.label;
-    $("rSummary").textContent = b.summary;
-    $("rSubDesc").textContent = s.desc;
-
-    /* 6軸ゲージ（発散型・中央が均衡点） */
-    if (sc){
-      $("secGauge").classList.remove("hidden");
-      $("gauges").innerHTML = AXES.map(function(a){
-        var d = sc[a.key], right = d.pctPos > 50, pct = right ? d.pctPos : 100 - d.pctPos;
-        var w = Math.abs(d.pctPos - 50), left = right ? 50 : d.pctPos;
-        return '<div class="gauge">' +
-          '<div class="g-top"><span class="g-title">' + a.title + '</span>' +
-          '<span class="g-pct">' + pct + '%' + (d.tie ? '（ほぼ拮抗）' : '') + '</span></div>' +
-          '<div class="g-track"><div class="g-fill ' + (right ? "right" : "left") + '" style="left:' + left + '%;width:' + w + '%"></div></div>' +
-          '<div class="g-poles">' +
-            '<span class="g-pole left' + (right ? "" : " on") + '"><span class="l">' + a.neg.l + '</span>' + a.neg.name + '</span>' +
-            '<span class="g-pole right' + (right ? " on" : "") + '">' + a.pos.name + '<span class="l">' + a.pos.l + '</span></span>' +
-          '</div></div>';
-      }).join("");
-      $("tableWrap").innerHTML = '<table class="scoretable"><thead><tr><th>軸</th><th>判定</th><th style="text-align:right">スコア</th><th style="text-align:right">傾向の強さ</th></tr></thead><tbody>' +
-        AXES.map(function(a){
-          var d = sc[a.key], p = d.pctPos > 50 ? d.pctPos : 100 - d.pctPos;
-          return '<tr><td>' + a.title + '（' + a.neg.l + '/' + a.pos.l + '）</td><td class="mono">' + d.letter +
-                 '</td><td class="n">' + (d.sum > 0 ? "+" : "") + d.sum + ' / ±30</td><td class="n">' + p + '%</td></tr>';
-        }).join("") + '</tbody></table>';
-    } else {
-      $("secGauge").classList.add("hidden");
-    }
-
-    /* 2×2 マトリクス */
-    var cells = "";
-    cells += '<div class="hd"></div><div class="hd">H・温和</div><div class="hd">C・沈静</div>';
-    ["A","O"].forEach(function(x){
-      cells += '<div class="hd side">' + x + (x === "A" ? "・即断" : "・熟慮") + '</div>';
-      ["H","C"].forEach(function(y){
-        var c = base + "-" + x + "-" + y;
-        cells += '<a class="cell' + (c === code ? " on" : "") + '" href="#' + c + '">' +
-          '<span class="thumb"><img src="' + THUMB(c) + '" alt="" loading="lazy"></span>' +
-          '<span class="c-txt"><span class="c-code">' + c + '</span><span class="c-lab">' + SUB[c].label + '</span></span></a>';
-      });
-    });
-    $("matrix").innerHTML = cells;
-
-    $("rStrengths").innerHTML = b.strengths.map(function(t){ return "<li>" + t + "</li>"; }).join("");
-    $("rWatch").innerHTML = b.watch.map(function(t){ return "<li>" + t + "</li>"; }).join("");
-    $("rEnv").textContent = b.work.env;
-    $("rRole").textContent = b.work.role;
-    $("rSubWork").textContent = s.work;
-    $("rJobs").innerHTML = b.work.jobs.map(function(t){ return "<span>" + t + "</span>"; }).join("");
-    $("matches").innerHTML = matchHTML(base, ao, hc);
-
-    $("tbCode").textContent = code;
-
-    var my = $("saveMyBtn"), isMine = getMyType() === code;
-    my.textContent = isMine ? "マイタイプに登録済み" : "マイタイプに登録";
-    my.classList.toggle("done", isMine);
-    my.dataset.code = code;
-
-    show("result");
-    window.scrollTo(0, 0);
-    window.__result = { code: code, base: b, sub: s, sc: sc };
-  }
-
+  /* ---------- 完了：結果ページへ ---------- */
   function finish(){
     var sc = score(), code = codeFrom(sc);
     clearSave();
     try { localStorage.setItem(KEY + ".last", JSON.stringify({ code: code, sc: sc })); } catch(e){}
+    /* 遷移先で quiz_complete を1回だけ送るための目印 */
+    try { sessionStorage.setItem(KEY + ".fresh", code); } catch(e){}
     setMyType(code);
-    renderResult(code, sc);
+    location.href = TURL(code);
   }
 
   /* ---------- 画面切り替え ---------- */
   function show(which){
-    ["intro","quiz","result"].forEach(function(id){ $(id).classList.toggle("hidden", id !== which); });
+    ["intro","quiz"].forEach(function(id){ $(id).classList.toggle("hidden", id !== which); });
   }
 
   /* ---------- イベント ---------- */
@@ -289,7 +197,7 @@
     if ($("resumeBtn").dataset.mode === "last"){
       var L = null;
       try { L = JSON.parse(localStorage.getItem(KEY + ".last")); } catch(e){}
-      if (L && SUB[L.code]) renderResult(L.code, L.sc);
+      if (L && SUB[L.code]) location.href = TURL(L.code);
       return;
     }
     var d = load(); if (!d) return;
@@ -298,25 +206,6 @@
   $("backBtn").addEventListener("click", function(){
     if (pos > 0){ pos--; renderQuestion(); window.scrollTo(0,0); }
   });
-  $("againBtn").addEventListener("click", function(){
-    location.hash = ""; answers = new Array(Q.length).fill(null); pos = 0; clearSave();
-    $("saveNote").classList.add("hidden");
-    refreshIntroButtons();
-    show("intro"); window.scrollTo(0,0);
-  });
-  $("tableBtn").addEventListener("click", function(){
-    var w = $("tableWrap"), hid = w.classList.toggle("hidden");
-    this.textContent = hid ? "数値の一覧を表示" : "数値の一覧を閉じる";
-  });
-  $("copyBtn").addEventListener("click", function(){
-    var r = window.__result; if (!r) return;
-    /* このタイプを直接開けるURL（例：…/index.html#ENTP-A-H） */
-    var url = location.origin + location.pathname + "#" + r.code;
-    var btn = this;
-    navigator.clipboard.writeText(url).then(function(){
-      btn.textContent = "コピーしました"; setTimeout(function(){ btn.textContent = "画面URLをコピー"; }, 1800);
-    }).catch(function(){ btn.textContent = "コピーできませんでした"; });
-  });
   document.addEventListener("keydown", function(e){
     if ($("quiz").classList.contains("hidden")) return;
     var i = ["1","2","3","4","5"].indexOf(e.key);
@@ -324,25 +213,18 @@
     else if (e.key === "ArrowLeft" && pos > 0){ pos--; renderQuestion(); }
   });
 
-  /* ---------- 起動 ---------- */
-  function hashCode(){
-    return decodeURIComponent(location.hash.replace("#","")).toUpperCase();
-  }
-  window.addEventListener("hashchange", function(){
-    var h = hashCode();
-    if (SUB[h]) renderResult(h, null);
-    else if (h === "" && $("quiz").classList.contains("hidden")) show("intro");
-  });
+  /* ---------- マイタイプの表示 ---------- */
   function renderMyType(){
     var code = getMyType(), box = $("myType");
     if (!code){ box.classList.add("hidden"); return; }
     var b = BASE[code.split("-")[0]], s = SUB[code];
-    $("myThumb").href = "#" + code;
+    $("myThumb").href = TURL(code);
     $("myThumb").querySelector("img").src = THUMB(code);
     $("myThumb").querySelector("img").alt = b.name + "（" + s.label + "）";
     $("myCode").textContent = code;
     $("myName").textContent = s.label;
-    $("myView").href = "#" + code;
+    $("myView").href = TURL(code);
+    $("myPair").href = R.pairUrl("", code);
     box.classList.remove("hidden");
   }
 
@@ -386,31 +268,14 @@
     window.scrollTo(0, 0);
   }
 
-  $("saveMyBtn").addEventListener("click", function(){
-    var code = this.dataset.code; if (!code) return;
-    if (getMyType() === code){
-      clearMyType(); this.textContent = "マイタイプに登録"; this.classList.remove("done");
-    } else {
-      setMyType(code); this.textContent = "マイタイプに登録済み"; this.classList.add("done");
-    }
-    renderMyType();
-  });
   $("myClear").addEventListener("click", function(){ clearMyType(); renderMyType(); });
-
-  function backToIntro(){
-    if (location.hash) location.hash = "";
-    refreshIntroButtons();
-    show("intro");
-    window.scrollTo(0, 0);
-  }
-  $("resHomeBtn").addEventListener("click", backToIntro);
-
   $("homeBtn").addEventListener("click", function(){ leaveQuiz(false); });
   $("pauseBtn").addEventListener("click", function(){ leaveQuiz(true); });
 
   (function init(){
-    var h = hashCode();
-    if (SUB[h]){ renderResult(h, null); return; }
+    /* 旧URL（index.html#ENTP-A-H）で来た人を個別ページへ送る */
+    var h = decodeURIComponent(location.hash.replace("#","")).toUpperCase();
+    if (SUB[h]){ location.replace(TURL(h)); return; }
     refreshIntroButtons();
   })();
 })();
