@@ -61,7 +61,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=1dea3e11">
+<link rel="stylesheet" href="assets/style.css?v=d092bc84">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -94,6 +94,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <button class="btn ghost hidden" id="resumeBtn">途中から再開する</button>
     </div>
     <p class="savenote hidden" id="saveNote"></p>
+    <p class="note">
+      直感で、いまの自分に近いほうを選んでください。深く考え込むより、最初に浮かんだ答えのほうが結果は正確になります。
+    </p>
   </div>
 
   <div class="strip" id="strip"></div>
@@ -115,10 +118,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <p class="picker-note" id="pkNote"></p>
   </div>
-
-  <p class="note">
-    直感で、いまの自分に近いほうを選んでください。深く考え込むより、最初に浮かんだ答えのほうが結果は正確になります。
-  </p>
 
   <details class="notice">
     <summary>この診断についての注意</summary>

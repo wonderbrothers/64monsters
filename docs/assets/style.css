@@ -106,7 +106,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .fv-cta .btn{ padding:12px 26px; font-size:var(--fs-md); }
 .savenote{ margin-top:16px; }
 /* 6軸の説明の下に置くモンスター一覧への導線 */
-.note{ font-size:var(--fs-md); color:var(--ink-3); line-height:1.8; margin-top:44px; }
+/* FVのCTA直下、答え方のヒント */
+.note{ font-size:var(--fs-md); color:var(--ink-3); line-height:1.8; margin-top:18px; }
 
 /* ---------- 設問 ---------- */
 /* 共通ヘッダーのぶんを引き、設問画面はスクロールなしで収める */
