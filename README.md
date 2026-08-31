@@ -150,6 +150,8 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 | `history_export` | 記録をJSONで書き出した | `records` |
 | `history_import` | 記録をJSONから読み込んだ | `added` `total` |
 | `history_clear` | 記録をすべて削除した | — |
+| `code_copy` | 鑑定コードをコピーした | — |
+| `code_import` | 鑑定コードから記録を加えた | `monster_type` |
 
 > **GTM側の設定が要ります。** ここで送っているのは dataLayer までです。GA4 に届けるには、GTM で各イベント名のトリガーと GA4 イベントタグを作る必要があります（既存の設定にないイベントは、そのままでは GA4 に現れません）。
 

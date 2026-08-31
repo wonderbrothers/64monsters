@@ -160,6 +160,86 @@
   }
   function clearSave(){ lsDel(KEY); }
 
+  /* ---------- 鑑定コード（1回ぶんの結果を短い記号にする） ----------
+     形式: 64M + 版1 + 日時4 + スコア6 + 検査2 ＝ 16文字
+       版    … 1文字。設問の構成が変わったら上げる（v1 = 各軸15問・満点±30）
+       日時  … 2026-01-01 からの分。62進4桁で約28年ぶん
+       スコア… 各軸の生スコア（-30〜+30）を +30 して62進1桁
+       検査  … 位置で重み付けした和。取りこぼしや打ち間違いを検出する
+
+     コード（ENTP-A-H）は6つのスコアの符号から導けるので持たない。
+     持たないことが、そのまま整合性の検査になる。
+
+     ★ できること   … 破損・打ち間違い・気軽な書き換えの検出
+     ★ できないこと … 本気の改ざんの防止。このサイトは完全にブラウザ側で動くので、
+                      符号化の手順もJSに含まれる。読める人は正しいコードを作れる。 */
+  var ALPHA = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"; /* 62文字 */
+  var EPOCH = Date.UTC(2026, 0, 1);
+  var CODE_VER = "1";
+  var CODE_PREFIX = "64M";
+
+  function b62(n, len){
+    var out = "";
+    for (var i = 0; i < len; i++){ out = ALPHA[n % 62] + out; n = Math.floor(n / 62); }
+    return out;
+  }
+  function unb62(str){
+    var n = 0;
+    for (var i = 0; i < str.length; i++){
+      var d = ALPHA.indexOf(str[i]);
+      if (d < 0) return -1;
+      n = n * 62 + d;
+    }
+    return n;
+  }
+  /* 2つの和を持つ方式（Fletcher）。a は中身、b は位置も効くので、
+     1文字の書き換えだけでなく、隣どうしの入れ替えも検出できる。
+     ※ 単純な h = h*31 + c 方式は使わないこと。62の2乗を法にすると
+        31が法を割り切ってしまい、桁が潰れて別の中身でも同じ検査符号になる。 */
+  function checkdigits(body){
+    var a = 0, b = 0;
+    for (var i = 0; i < body.length; i++){
+      a = (a + ALPHA.indexOf(body[i]) + 1) % 62;
+      b = (b + a) % 62;
+    }
+    return ALPHA[b] + ALPHA[a];
+  }
+  function group(str){ return str.replace(/(.{4})(?=.)/g, "$1-"); }
+
+  function encodeRecord(r){
+    if (!r || !r.sum) return null;
+    var mins = Math.max(0, Math.round((r.t - EPOCH) / 60000));
+    var body = CODE_VER + b62(mins, 4);
+    for (var i = 0; i < AXES.length; i++){
+      var v = r.sum[AXES[i].key];
+      if (typeof v !== "number" || v < -30 || v > 30) return null;
+      body += ALPHA[v + 30];
+    }
+    return CODE_PREFIX + "-" + group(body + checkdigits(body));
+  }
+
+  /* 戻り値: { ok:true, record:{...}, code:"ENTP-A-H" } / { ok:false, reason:"..." } */
+  function decodeToken(token){
+    var t = String(token || "").trim().replace(/[\s\-–—]/g, "");
+    if (t.slice(0, 3).toUpperCase() !== CODE_PREFIX) return { ok:false, reason:"64モンスターズの鑑定コードではありません" };
+    var body = t.slice(3);
+    if (body.length !== 13) return { ok:false, reason:"文字数が合いません（途中で切れている可能性があります）" };
+    var payload = body.slice(0, 11), digits = body.slice(11);
+    for (var i = 0; i < body.length; i++){ if (ALPHA.indexOf(body[i]) < 0) return { ok:false, reason:"使えない文字が含まれています" }; }
+    if (checkdigits(payload) !== digits) return { ok:false, reason:"検査符号が合いません（書き換わっているか、写し間違いです）" };
+    if (payload[0] !== CODE_VER) return { ok:false, reason:"この版の鑑定コードには対応していません" };
+    var mins = unb62(payload.slice(1, 5));
+    var sum = {}, max = {};
+    for (var j = 0; j < AXES.length; j++){
+      sum[AXES[j].key] = ALPHA.indexOf(payload[5 + j]) - 30;
+      max[AXES[j].key] = 30;
+    }
+    var rec = { t: EPOCH + mins * 60000, code: null, sec: null, sum: sum, max: max };
+    rec.code = codeFrom(scFromRecord(rec));
+    if (!SUB[rec.code]) return { ok:false, reason:"タイプを組み立てられませんでした" };
+    return { ok:true, record: rec, code: rec.code };
+  }
+
   /* ---------- 採点 ---------- */
   function score(answers){
     var sums = {}, max = {};
@@ -189,6 +269,7 @@
     score:score, codeFrom:codeFrom,
     getHistory:getHistory, setHistory:setHistory, pushHistory:pushHistory,
     clearHistory:clearHistory, pct:pct,
-    scFromRecord:scFromRecord, syncFromHistory:syncFromHistory
+    scFromRecord:scFromRecord, syncFromHistory:syncFromHistory,
+    encodeRecord:encodeRecord, decodeToken:decodeToken
   };
 })(window);

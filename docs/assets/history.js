@@ -162,7 +162,7 @@
     E.setHistory(cur);
     /* いちばん新しい記録を「前回の結果」とマイタイプに反映する。
        別の端末で読み込んだとき、記録だけが移って表示が古いままにならないように。 */
-    var code = added ? E.syncFromHistory() : null;
+    var code = E.syncFromHistory();   /* 追加0件でも最新に合わせ直す */
     if (code && window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();
     E.track("history_import", { added: added, total: cur.length });
     say(btn, added ? added + "件を追加しました" : "新しい記録はありませんでした");
@@ -176,12 +176,26 @@
     setTimeout(function(){ btn.textContent = orig; }, 2200);
   }
 
+  /* ---------- 鑑定コード ---------- */
+  function renderToken(h){
+    var t = h.length ? E.encodeRecord(h[h.length - 1]) : null;
+    $("tokenOut").textContent = t || "—";
+    $("tokenCopy").disabled = !t;
+  }
+  function tokenMsg(text, bad){
+    var el = $("tokenMsg");
+    el.textContent = text;
+    el.classList.toggle("bad", !!bad);
+    el.classList.remove("hidden");
+  }
+
   /* ---------- 描画 ---------- */
   function paint(){
     var h = E.getHistory();
     var has = h.length > 0;
     $("empty").classList.toggle("hidden", has);
     $("body").classList.toggle("hidden", !has);
+    renderToken(h);            /* 記録が0件でも、貼り付けて読み込めるようにしておく */
     if (!has) return;
     renderTiles(h);
     renderStrips(h);
@@ -206,6 +220,38 @@
   $("importBtn").addEventListener("click", function(){ pickFile(this); });
   $("importBtn2").addEventListener("click", function(){ pickFile(this); });
   $("exportBtn").addEventListener("click", download);
+
+  $("tokenCopy").addEventListener("click", function(){
+    var btn = this, t = $("tokenOut").textContent;
+    if (!t || t === "—") return;
+    navigator.clipboard.writeText(t).then(function(){
+      say(btn, "コピーしました");
+      E.track("code_copy", {});
+    }).catch(function(){ say(btn, "コピーできませんでした"); });
+  });
+
+  $("tokenAdd").addEventListener("click", function(){
+    var v = $("tokenIn").value;
+    if (!v.trim()) return tokenMsg("鑑定コードを貼り付けてください", true);
+    var r = E.decodeToken(v);
+    if (!r.ok) return tokenMsg(r.reason, true);
+    var cur = E.getHistory();
+    for (var i = 0; i < cur.length; i++){
+      if (cur[i].t === r.record.t) return tokenMsg("この記録はすでに入っています（" + r.code + "）", false);
+    }
+    cur.push(r.record);
+    cur.sort(function(x, y){ return x.t - y.t; });
+    E.setHistory(cur);
+    E.syncFromHistory();
+    if (window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();
+    E.track("code_import", { monster_type: r.code });
+    tokenMsg(fmtDate(r.record.t) + " の記録（" + r.code + "）を加えました", false);
+    $("tokenIn").value = "";
+    setTimeout(paint, 300);
+  });
+  $("tokenIn").addEventListener("keydown", function(e){
+    if (e.key === "Enter"){ e.preventDefault(); $("tokenAdd").click(); }
+  });
 
   /* 削除は取り返しがつかないので、2段階にする */
   $("clearBtn").addEventListener("click", function(){
