@@ -58,11 +58,13 @@
   var HOME = B || "index.html";
   var QUIZ = B + "quiz/";
   var HIST = B + "history/";
+  var FRIENDS = B + "friends/";
   var ABOUT = B + "about/";
   /* いま開いているのがギャラリーなら、リンクに現在地を示す */
   var onGallery = /types\.html$/.test(location.pathname);
   var onQuiz = /\/quiz\/?$/.test(location.pathname);
   var onHist = /\/history\/?$/.test(location.pathname);
+  var onFriends = /\/friends\/?$/.test(location.pathname);
   var onAbout = /\/about\/?$/.test(location.pathname);
 
   /* ---------- ヘッダー ---------- */
@@ -78,6 +80,7 @@
           '<span class="sm-code mono"></span></a>' +
         '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
         '<a class="sh-link" href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>履歴</a>' +
+        '<a class="sh-link" href="' + FRIENDS + '"' + (onFriends ? ' aria-current="page"' : '') + '>仲間</a>' +
         '<button type="button" class="sh-link" id="shSet">各種設定</button>' +
       '</nav>' +
       '<a class="btn sh-cta" href="' + QUIZ + '" id="shCta">診断</a>' +
@@ -140,6 +143,8 @@
           '<span>モンスターギャラリー</span>' + SVG_CHEV + '</a>' +
         '<a href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>' +
           '<span>鑑定履歴</span>' + SVG_CHEV + '</a>' +
+        '<a href="' + FRIENDS + '"' + (onFriends ? ' aria-current="page"' : '') + '>' +
+          '<span>仲間</span>' + SVG_CHEV + '</a>' +
         '<a href="' + ABOUT + '"' + (onAbout ? ' aria-current="page"' : '') + '>' +
           '<span>この診断について</span>' + SVG_CHEV + '</a>' +
       '</nav>' +

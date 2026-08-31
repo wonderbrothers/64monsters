@@ -1113,8 +1113,57 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .token-msg{ margin-top:10px; font-size:var(--fs-md); color:var(--ink-2); }
 .token-msg.bad{ color:var(--shu); }
 @media (max-width:560px){
+  /* 縦積みにすると flex-basis が「高さ」として効くので、必ず auto に戻すこと。
+     22em のまま縦にすると入力欄が22emの高さになり、角丸で楕円に潰れる。 */
   .token-row{ flex-direction:column; }
+  .token-row .token, .token-row input{ flex:0 0 auto; width:100%; }
   .token-row .btn{ width:100%; }
+}
+
+/* ===== 仲間（/friends/） =====
+   .token-row と同じ作りだが、名前と鑑定コードの2つを並べるので専用にする。
+   行そのものはタイプ紹介へのリンク、右側に相性と削除を置く。 */
+.fr-form{ display:flex; flex-wrap:wrap; gap:10px; align-items:stretch; margin-top:12px; }
+.fr-form input{
+  flex:1 1 20em; min-width:0; font:inherit; color:var(--ink);
+  font-family:var(--f-mono); font-size:var(--fs-md); letter-spacing:.06em;
+  padding:11px 18px; border:1.5px solid var(--line); border-radius:var(--r-btn);
+  background:var(--surface); transition:border-color .12s ease;
+}
+.fr-form input:focus{ outline:none; border-color:var(--ink-3); }
+/* 名前は日本語を入れるので、等幅ではなく本文の書体にする */
+.fr-form .fr-name-in{ flex:0 1 15em; font-family:inherit; letter-spacing:0; }
+.fr-form .btn{ flex:0 0 auto; padding:11px 22px; font-size:var(--fs-md); }
+
+.fr-list{ list-style:none; margin:14px 0 0; padding:0; display:grid; gap:10px; }
+.friend{
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  border:1px solid var(--line); border-radius:calc(var(--r) * 2);
+  background:var(--surface); padding:14px 16px;
+}
+.fr-main{ display:flex; align-items:center; gap:14px; text-decoration:none; color:inherit; flex:1 1 16em; min-width:0; }
+.fr-main .thumb{ width:56px; height:56px; flex:none; border-radius:6px; overflow:hidden; background:var(--thumb); }
+.fr-main .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.fr-txt{ min-width:0; }
+.fr-name{ display:block; font-size:var(--fs-lg); font-weight:500; line-height:1.3; word-break:break-word; }
+.fr-code{ display:inline-block; font-size:var(--fs-sm); letter-spacing:.05em; color:var(--ink-2); margin-top:2px; }
+.fr-lab{ display:block; font-size:var(--fs-sm); color:var(--ink-2); }
+.fr-when{ display:block; font-size:var(--fs-xs); color:var(--ink-3); margin-top:2px; font-family:var(--f-mono); }
+.fr-main:hover .fr-name{ color:var(--shu); }
+.fr-acts{ display:flex; align-items:center; gap:14px; flex:0 0 auto; margin-left:auto; }
+.fr-btn{ padding:8px 16px; font-size:var(--fs-sm); }
+.fr-del{
+  font-size:var(--fs-sm); color:var(--ink-3); background:none; border:0; padding:4px 0;
+  text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+}
+.fr-del:hover{ color:var(--ink-2); }
+.fr-del.armed{ color:var(--shu); font-weight:500; }
+@media (max-width:560px){
+  /* 縦積みでは flex-basis が高さになるので auto に戻す（.token-row と同じ理由） */
+  .fr-form{ flex-direction:column; }
+  .fr-form input, .fr-form .fr-name-in{ flex:0 0 auto; width:100%; }
+  .fr-form .btn{ width:100%; }
+  .fr-acts{ width:100%; margin-left:0; justify-content:space-between; }
 }
 
 /* 削除 */

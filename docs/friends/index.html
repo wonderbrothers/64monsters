@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PDKDBFBW');</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>仲間｜64モンスターズ</title>
+<meta name="description" content="受け取った鑑定コードに名前をつけて残しておくページ。相性もそのまま見られます。">
+<link rel="canonical" href="https://64monsters.wonder-bros.com/friends/">
+<!-- 中身は各自のブラウザの中にしかないので、検索結果に出す意味がない -->
+<meta name="robots" content="noindex, follow">
+<meta name="author" content="株式会社ワンダーブラザース">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181B" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+
+<link rel="icon" href="../favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-dark-32.png" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/style.css?v=6ee17997">
+<script>
+/* 表示設定を描画前に反映（ちらつき防止） */
+(function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
+</script>
+<script>window.SITE_BASE = "../";</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDKDBFBW"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<section id="friends" class="wrap">
+  <div class="hist-head">
+    <p class="eyebrow">friends</p>
+    <h1 class="subtitle">仲間</h1>
+    <p class="lede">
+      人から受け取った鑑定コードに、自分がわかる名前をつけて残しておくページです。
+      登録しておくと、その人との相性をいつでも見られます。
+    </p>
+  </div>
+
+  <div class="sec split">
+    <h2>仲間を登録</h2>
+    <div>
+      <p class="g-note">
+        相手に <a href="../history/">鑑定履歴</a> の「鑑定コード」をコピーして送ってもらってください。
+        名前はこの端末の中だけに残ります（鑑定コードそのものに名前は入っていません）。
+      </p>
+      <div class="fr-form">
+        <input type="text" id="frName" class="fr-name-in" placeholder="名前（例：たなかさん）" autocomplete="off" maxlength="24" aria-label="名前">
+        <input type="text" id="frCode" placeholder="64M-1234-5678-9ABC-D" autocomplete="off" spellcheck="false" aria-label="鑑定コード">
+        <button class="btn ghost" id="frAdd">登録する</button>
+      </div>
+      <p class="token-msg hidden" id="frMsg"></p>
+    </div>
+  </div>
+
+  <!-- 仲間がいないとき -->
+  <div id="frEmpty" class="hist-empty hidden">
+    <p class="body-text">まだ誰も登録されていません。</p>
+    <p class="g-note">自分の鑑定コードを相手に渡したいときは、<a href="../history/">鑑定履歴</a>でコピーできます。</p>
+  </div>
+
+  <!-- 仲間がいるとき -->
+  <div id="frBody" class="hidden">
+    <div class="sec split">
+      <h2>登録した人</h2>
+      <div>
+        <p class="g-note" id="frMineNote"></p>
+        <ul class="fr-list" id="frList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="frFoot" class="hist-actions hidden">
+    <div class="hist-foot">
+      <a class="btn ghost" href="../history/">自分の鑑定コードをコピーする</a>
+      <a class="btn ghost" href="../pair/">相性をくわしく見る</a>
+    </div>
+    <p class="hist-danger"><button type="button" class="hist-clear" id="frClear">登録した人をすべて削除する</button></p>
+  </div>
+
+  <div class="hist-note">
+    <p class="g-note">
+      登録した名前と鑑定コードは、お使いのブラウザの中にのみ保存しています。サーバーには送っていません。
+      相手にも、こちらにも、誰が誰を登録したかは伝わりません。
+    </p>
+    <p class="g-note">
+      <b>他の人の情報を預かることになります。</b>名前は本名である必要はありません。
+      共有の端末では登録を控えるか、使い終わったら削除してください。
+    </p>
+    <p class="g-note">
+      <b>Safari（iPhone・iPad・Mac）では、7日間このサイトを開かないと登録が消えます。</b>
+      ブラウザ側の仕様で、こちらで防ぐ方法はありません。
+    </p>
+    <p class="g-note">
+      鑑定コードの写し間違い・途中で切れたものは検査符号で見つけられますが、
+      <b>本気の改ざんは防げません。</b>相手が本当にその結果だったかまでは保証できません。
+    </p>
+  </div>
+  <p class="notice-link"><a href="../about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
+
+  <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
+</section>
+
+<script src="../assets/questions.js?v=0b31d093"></script>
+<script src="../assets/types.js?v=2c6264bd"></script>
+<script src="../assets/render.js?v=f156683c"></script>
+<script src="../assets/engine.js?v=b215e383"></script>
+<script src="../assets/friends.js?v=70228eea"></script>
+<script src="../assets/settings.js?v=1f8eb7d0"></script>
+</body>
+</html>

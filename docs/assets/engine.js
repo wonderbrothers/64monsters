@@ -68,6 +68,40 @@
   }
   function clearHistory(){ lsDel(HISTKEY); }
 
+  /* ---------- 仲間（受け取った鑑定コードに名前をつけて残す） ----------
+     他人の記録なので .history とは必ず分ける。混ぜると
+     「自分の変化を時間で追う」という履歴の意味が壊れるし、
+     マイタイプまで他人のものに書き換わる。
+     名前はこの端末のブラウザにだけ残る（鑑定コード自体に名前は入っていない）。 */
+  var FRKEY = KEY + ".friends";
+  var FR_MAX = 200;
+
+  function getFriends(){
+    try {
+      var a = JSON.parse(ls(FRKEY));
+      if (!Array.isArray(a)) return [];
+      return a.filter(function(f){ return f && f.name && f.code && SUB[f.code] && f.sum; })
+              .sort(function(x, y){ return (y.added || 0) - (x.added || 0); });
+    } catch(e){ return []; }
+  }
+  function setFriends(list){ return lsSet(FRKEY, JSON.stringify(list.slice(0, FR_MAX))); }
+  /* 同じ鑑定コード（＝同じ人の同じ回）は1件だけ。名前は上書きする */
+  function addFriend(name, rec){
+    var f = getFriends();
+    for (var i = 0; i < f.length; i++){
+      if (f[i].t === rec.t && f[i].code === rec.code){ f[i].name = name; setFriends(f); return { added:false, item:f[i] }; }
+    }
+    var item = { id: String(rec.t) + "-" + rec.code, name: name, code: rec.code,
+                 t: rec.t, sum: rec.sum, max: rec.max, added: Date.now() };
+    f.unshift(item);
+    setFriends(f);
+    return { added:true, item:item };
+  }
+  function removeFriend(id){
+    setFriends(getFriends().filter(function(f){ return f.id !== id; }));
+  }
+  function clearFriends(){ lsDel(FRKEY); }
+
   /* 履歴の1件から、結果ページが使う形（score() と同じ）に戻す。
      pctPos・letter・tie は sum と max から導けるので保存していない。 */
   function scFromRecord(r){
@@ -286,6 +320,8 @@
     getLast:getLast, setLast:setLast, reconcile:reconcile,
     score:score, codeFrom:codeFrom,
     getHistory:getHistory, setHistory:setHistory, pushHistory:pushHistory,
+    getFriends:getFriends, setFriends:setFriends, addFriend:addFriend,
+    removeFriend:removeFriend, clearFriends:clearFriends,
     clearHistory:clearHistory, pct:pct,
     scFromRecord:scFromRecord, syncFromHistory:syncFromHistory,
     encodeRecord:encodeRecord, decodeToken:decodeToken
