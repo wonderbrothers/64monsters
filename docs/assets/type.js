@@ -51,6 +51,18 @@
     });
   });
 
+  /* ---------- 全軸が拮抗したときの断り ----------
+     全問おなじ答えだと、逆転項目が打ち消し合って6軸とも均衡する。
+     ランダム回答でここまで揃う確率は0.2%ほどなので、ほぼ「答えが偏っていた」
+     と見てよい。結果は隠さず出したうえで、読み方だけ添える。 */
+  if (sc){
+    var flat = AXES.every(function(a){ return sc[a.key] && sc[a.key].tie; });
+    if (flat){
+      $("flatNote").classList.remove("hidden");
+      if (fresh) track("quiz_flat", { monster_type: CODE });
+    }
+  }
+
   /* ---------- 6軸ゲージ ---------- */
   if (sc){
     $("rEyebrow").textContent = "your type";

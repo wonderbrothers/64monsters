@@ -807,6 +807,16 @@ body.modal-open{ overflow:hidden; }
   .pick-card .seg-toggle button{ padding:11px 2px; font-size:var(--fs-xs); letter-spacing:0; }
 }
 
+/* 全軸が拮抗したときの断り（結果ページ上部） */
+.flatnote{
+  margin:26px 0 0; padding:20px 22px;
+  border:1px solid var(--line); border-left:3px solid var(--shu);
+  border-radius:var(--r); background:var(--surface-2);
+  max-width:var(--panel-w);
+}
+.fn-h{ font-size:var(--fs-base); font-weight:700; }
+.fn-t{ font-size:var(--fs-md); color:var(--ink-2); line-height:1.9; margin-top:8px; }
+
 /* ---------- サブタイプ固有の枠（結果ページ） ---------- */
 .sec-note{
   font-size:var(--fs-sm); color:var(--ink-3); margin:-6px 0 20px;

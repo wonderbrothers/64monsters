@@ -139,6 +139,7 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 | `quiz_exit` | `/quiz/` から HOME で抜けた、またはタブを閉じた・戻った | 同上 |
 | `quiz_resume` | 途中保存のある状態で `/quiz/` を開いた | `question_no` `elapsed_sec` |
 | `quiz_complete` | 90問終えて結果ページに着いた | `monster_type` `base_type` `elapsed_sec` |
+| `quiz_flat` | 6軸すべてが拮抗した結果に着いた（回答が偏っていた疑い） | `monster_type` |
 | `type_view` | 結果ページを見た（診断直後をのぞく） | `monster_type` `base_type` |
 | `cta_click` | 結果ページ下部の導線を押した | `monster_type` `label` `from_result` |
 | `share_image` | 結果の一枚絵を保存・共有した | `monster_type` `method` |

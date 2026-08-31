@@ -125,6 +125,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="res-tag">${esc(b.tagline)}</p>
   </div>
 
+  <div class="flatnote hidden" id="flatNote">
+    <p class="fn-h">6つの軸すべてが、ほぼ均衡しました。</p>
+    <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
+  </div>
+
   <div class="sec split hidden" id="secGauge">
     <h2>6軸のスコア</h2>
     <div class="gauges" id="gauges"></div>
