@@ -80,19 +80,59 @@
     try {
       var a = JSON.parse(ls(FRKEY));
       if (!Array.isArray(a)) return [];
-      return a.filter(function(f){ return f && f.name && f.code && SUB[f.code] && f.sum; })
+      /* sum は必須にしない。タイプコードだけで登録した相手は数値を持たない */
+      return a.filter(function(f){ return f && f.name && f.code && SUB[f.code]; })
               .sort(function(x, y){ return (y.added || 0) - (x.added || 0); });
     } catch(e){ return []; }
   }
   function setFriends(list){ return lsSet(FRKEY, JSON.stringify(list.slice(0, FR_MAX))); }
-  /* 同じ鑑定コード（＝同じ人の同じ回）は1件だけ。名前は上書きする */
+
+  /* 入力を1件ぶんの記録として読む。受けつけるのは2通り。
+       鑑定コード     64M-11Oa-4iKM-OgL8-2 … 受けた日と6軸の数値まで入る
+       タイプコード   ENTP-A-H / ENTPAH   … タイプだけ。相性を見るにはこれで足りる
+     鑑定コードは大小文字に意味がある（62進）ので、先に判定してから
+     タイプコードとして大文字化する。順番を逆にすると鑑定コードが壊れる。
+     戻り値: { ok:true, record:{t,code,sum,max}, code, kind:"token"|"type" } */
+  var LETTERS = [["E","I"], ["S","N"], ["T","F"], ["J","P"], ["A","O"], ["H","C"]];
+  function readCode(text){
+    var raw = String(text || "").trim();
+    if (!raw) return { ok:false, reason:"コードを貼り付けてください" };
+    if (raw.slice(0, 3).toUpperCase() === CODE_PREFIX){
+      var r = decodeToken(raw);
+      if (!r.ok) return r;
+      r.kind = "token";
+      return r;
+    }
+    var t = raw.toUpperCase().replace(/[^A-Z]/g, "");
+    if (t.length !== 6){
+      return { ok:false, reason:"鑑定コード（64M〜）か、タイプコード（例：ENTP-A-H）を入れてください" };
+    }
+    var code = t.slice(0, 4) + "-" + t[4] + "-" + t[5];
+    for (var i = 0; i < 6; i++){
+      if (LETTERS[i].indexOf(t[i]) < 0){
+        return { ok:false, reason:code + " は64モンスターズのタイプではありません" };
+      }
+    }
+    if (!SUB[code]) return { ok:false, reason:code + " は64モンスターズのタイプではありません" };
+    return { ok:true, kind:"type", code:code,
+             record:{ t:null, code:code, sec:null, sum:null, max:null } };
+  }
+
+  /* 1人1件。同じ名前で登録し直したら、その人の内容を新しいほうに入れ替える。
+     （同じタイプの友人が2人いることはあるので、コードでは束ねない） */
   function addFriend(name, rec){
     var f = getFriends();
+    var item = { id: "f" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+                 name: name, code: rec.code, t: rec.t || null,
+                 sum: rec.sum || null, max: rec.max || null, added: Date.now() };
     for (var i = 0; i < f.length; i++){
-      if (f[i].t === rec.t && f[i].code === rec.code){ f[i].name = name; setFriends(f); return { added:false, item:f[i] }; }
+      if (f[i].name === name){
+        item.id = f[i].id;
+        f[i] = item;
+        setFriends(f);
+        return { added:false, item:item };
+      }
     }
-    var item = { id: String(rec.t) + "-" + rec.code, name: name, code: rec.code,
-                 t: rec.t, sum: rec.sum, max: rec.max, added: Date.now() };
     f.unshift(item);
     setFriends(f);
     return { added:true, item:item };
@@ -320,7 +360,7 @@
     getLast:getLast, setLast:setLast, reconcile:reconcile,
     score:score, codeFrom:codeFrom,
     getHistory:getHistory, setHistory:setHistory, pushHistory:pushHistory,
-    getFriends:getFriends, setFriends:setFriends, addFriend:addFriend,
+    getFriends:getFriends, setFriends:setFriends, addFriend:addFriend, readCode:readCode,
     removeFriend:removeFriend, clearFriends:clearFriends,
     clearHistory:clearHistory, pct:pct,
     scFromRecord:scFromRecord, syncFromHistory:syncFromHistory,

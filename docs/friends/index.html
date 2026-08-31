@@ -48,7 +48,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="eyebrow">friends</p>
     <h1 class="subtitle">Myフレンド</h1>
     <p class="lede">
-      人から受け取った鑑定コードに、自分がわかる名前をつけて残しておくページです。
+      人から受け取ったコードに、自分がわかる名前をつけて残しておくページです。
       登録しておくと、その人との相性をいつでも見られます。
     </p>
   </div>
@@ -58,11 +58,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div>
       <p class="g-note">
         相手に <a href="../history/">ヒストリー</a> の「鑑定コード」をコピーして送ってもらってください。
+        <b>タイプコード（例：<span class="mono">ENTP-A-H</span>）だけでも登録できます。</b>
+        相性を見るのはどちらでも同じです。鑑定コードなら、その人が受けた日も一緒に残ります。
+      </p>
+      <p class="g-note">
         名前はこの端末の中だけに残ります（鑑定コードそのものに名前は入っていません）。
+        同じ名前で登録し直すと、その人の内容が新しいほうに入れ替わります。
       </p>
       <div class="fr-form">
         <input type="text" id="frName" class="fr-name-in" placeholder="名前（例：たなかさん）" autocomplete="off" maxlength="24" aria-label="名前">
-        <input type="text" id="frCode" placeholder="64M-1234-5678-9ABC-D" autocomplete="off" spellcheck="false" aria-label="鑑定コード">
+        <input type="text" id="frCode" placeholder="64M-1234-5678-9ABC-D／ENTP-A-H" autocomplete="off" spellcheck="false" aria-label="鑑定コードまたはタイプコード">
         <button class="btn ghost" id="frAdd">登録する</button>
       </div>
       <p class="token-msg hidden" id="frMsg"></p>
@@ -72,7 +77,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- フレンドがいないとき -->
   <div id="frEmpty" class="hist-empty hidden">
     <p class="body-text">まだ誰も登録されていません。</p>
-    <p class="g-note">自分の鑑定コードを相手に渡したいときは、<a href="../history/">ヒストリー</a>でコピーできます。</p>
+    <p class="g-note">名前と、鑑定コードまたはタイプコード（例：<span class="mono">ENTP-A-H</span>）を入れると登録できます。自分の鑑定コードを相手に渡したいときは、<a href="../history/">ヒストリー</a>でコピーできます。</p>
   </div>
 
   <!-- フレンドがいるとき -->
@@ -110,6 +115,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="g-note">
       鑑定コードの写し間違い・途中で切れたものは検査符号で見つけられますが、
       <b>本気の改ざんは防げません。</b>相手が本当にその結果だったかまでは保証できません。
+      タイプコードだけの登録には、そもそも検査するものがありません。
     </p>
   </div>
   <p class="notice-link"><a href="../about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
@@ -120,8 +126,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="../assets/questions.js?v=0b31d093"></script>
 <script src="../assets/types.js?v=2c6264bd"></script>
 <script src="../assets/render.js?v=f156683c"></script>
-<script src="../assets/engine.js?v=39210d38"></script>
-<script src="../assets/friends.js?v=0892c09c"></script>
+<script src="../assets/engine.js?v=ca39a14d"></script>
+<script src="../assets/friends.js?v=c67d7f17"></script>
 <script src="../assets/settings.js?v=e5ad046f"></script>
 </body>
 </html>

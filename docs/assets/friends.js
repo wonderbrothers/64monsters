@@ -44,7 +44,7 @@
           '<span class="fr-name">' + esc(f.name) + '</span>' +
           '<span class="fr-code mono">' + f.code + '</span>' +
           '<span class="fr-lab">' + esc(lab) + '</span>' +
-          '<span class="fr-when">' + fmtDay(f.t) + ' に受けた結果</span>' +
+          '<span class="fr-when">' + (f.t ? fmtDay(f.t) + " に受けた結果" : "タイプのみ登録") + '</span>' +
         '</span>' +
       '</a>' +
       '<span class="fr-acts">' + pair +
@@ -73,15 +73,15 @@
     var name = $("frName").value.trim();
     var code = $("frCode").value;
     if (!name) return msg("名前を入れてください", true);
-    if (!code.trim()) return msg("鑑定コードを貼り付けてください", true);
-    var r = E.decodeToken(code);
+    if (!code.trim()) return msg("鑑定コードかタイプコードを入れてください", true);
+    var r = E.readCode(code);
     if (!r.ok) return msg(r.reason, true);
     var res = E.addFriend(name, r.record);
-    E.track(res.added ? "friend_add" : "friend_update", { monster_type: r.code });
+    E.track(res.added ? "friend_add" : "friend_update", { monster_type: r.code, code_kind: r.kind });
     /* msg() は textContent に入れるので、ここでのエスケープは不要（二重になる） */
     msg(res.added
       ? name + "（" + r.code + "）を登録しました"
-      : "すでに登録されていたので、名前を「" + name + "」に更新しました", false);
+      : name + "（" + r.code + "）に更新しました", false);
     $("frName").value = ""; $("frCode").value = "";
     paint();
   });
