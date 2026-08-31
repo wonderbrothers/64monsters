@@ -75,8 +75,10 @@
   /* ---------- 結果 ---------- */
   function duoHTML(code){
     return '<a class="thumb" href="' + R.typeUrl(B, code) + '"><img src="' + R.thumb(B, code) + '" alt="' + SUB[code].label + '" loading="lazy"></a>' +
-           '<span class="dc">' + code + '</span>' +
-           '<span class="dn">' + SUB[code].label + '</span>';
+           '<span class="duo-txt">' +
+             '<span class="dc">' + code + '</span>' +
+             '<span class="dn">' + SUB[code].label + '</span>' +
+           '</span>';
   }
 
   /* 16の基本タイプ同士の、手書きの相性リストによる判定。
