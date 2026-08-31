@@ -751,8 +751,8 @@ body.modal-open{ overflow:hidden; }
 
 /* SP ではボタンはコンテンツ幅いっぱいに揃える（既存の .res-foot と同じ扱い） */
 @media (max-width:560px){
-  .res-foot2, .pair-foot{ flex-direction:column; align-items:stretch; gap:12px; }
-  .res-foot2 .btn, .pair-foot .btn,
+  .res-foot2, .pair-foot, .hist-foot{ flex-direction:column; align-items:stretch; gap:12px; }
+  .res-foot2 .btn, .pair-foot .btn, .hist-foot .btn,
   .pair-cta .btn, .pair-ask .btn, .pair-go .btn{ width:100%; flex:0 0 auto; }
 }
 
@@ -962,7 +962,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .hist-head{ border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:30px; }
 .hist-empty{ padding:8px 0 30px; }
 .hist-empty .g-note{ margin-top:14px; }
-.hist-foot{ display:flex; flex-wrap:wrap; gap:12px; margin-top:26px; }
+.hist-foot{ display:flex; flex-wrap:wrap; gap:12px; margin-top:26px; justify-content:center; }
 
 /* サマリー */
 .hist-tiles{ display:grid; grid-template-columns:repeat(3, 1fr) 1.6fr; gap:12px; margin-bottom:8px; }
@@ -1038,7 +1038,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .histtable .hcode:hover{ color:var(--shu); text-decoration:underline; text-underline-offset:3px; }
 
 /* 削除 */
-.hist-danger{ margin-top:22px; }
+.hist-danger{ margin-top:22px; text-align:center; }
 .hist-clear{
   font-size:var(--fs-sm); color:var(--ink-3); background:none; border:0; padding:4px 0;
   text-decoration:underline; text-underline-offset:3px; cursor:pointer;
