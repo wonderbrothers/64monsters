@@ -67,7 +67,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="author" content="WONDER BROTHERS INC.">
+<meta name="author" content="株式会社ワンダーブラザース">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#15181B" media="(prefers-color-scheme: dark)">
 <meta name="format-detection" content="telephone=no">

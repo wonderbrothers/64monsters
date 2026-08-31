@@ -56,10 +56,12 @@
   var HOME = B || "index.html";
   var QUIZ = B + "quiz/";
   var HIST = B + "history/";
+  var ABOUT = B + "about/";
   /* いま開いているのがギャラリーなら、リンクに現在地を示す */
   var onGallery = /types\.html$/.test(location.pathname);
   var onQuiz = /\/quiz\/?$/.test(location.pathname);
   var onHist = /\/history\/?$/.test(location.pathname);
+  var onAbout = /\/about\/?$/.test(location.pathname);
 
   /* ---------- ヘッダー ---------- */
   var wrapCls = document.querySelector(".wrap.wide") ? "wrap wide" : "wrap";
@@ -113,6 +115,8 @@
         '<button type="button" class="modal-x" data-close aria-label="閉じる">×</button>' +
       '</div>' +
       '<div class="modal-body" id="modalBody"></div>' +
+      '<p class="modal-foot"><a href="' + ABOUT + '"' + (onAbout ? ' aria-current="page"' : '') + '>' +
+        'この診断についての注意（回答の扱い・外部への通信・権利）</a></p>' +
     '</div>';
   document.body.appendChild(modal);
 
@@ -134,6 +138,8 @@
           '<span>モンスターギャラリー</span>' + SVG_CHEV + '</a>' +
         '<a href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>' +
           '<span>鑑定履歴</span>' + SVG_CHEV + '</a>' +
+        '<a href="' + ABOUT + '"' + (onAbout ? ' aria-current="page"' : '') + '>' +
+          '<span>この診断について</span>' + SVG_CHEV + '</a>' +
       '</nav>' +
       '<div class="drawer-sec"><p class="drawer-h">My Type</p><div id="drawerMy"></div></div>' +
       '<div class="drawer-sec"><p class="drawer-h">表示設定</p><div id="drawerBody"></div></div>' +
