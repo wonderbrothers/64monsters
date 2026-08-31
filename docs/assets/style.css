@@ -258,7 +258,39 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .res-foot .btn{ flex:1 1 0; min-width:0; }
 .disclaimer{ font-size:var(--fs-sm); color:var(--ink-3); line-height:1.9; margin-top:36px; padding-top:22px; border-top:1px solid var(--line-2); }
 
-/* ---------- 注意事項（折りたたみ） ---------- */
+/* ---------- 注意書きへのリンク（本体は /about/） ---------- */
+.notice-link{
+  margin-top:30px; padding-top:22px; border-top:1px solid var(--line-2);
+  font-size:var(--fs-sm);
+}
+.notice-link a{
+  color:var(--ink-3); text-decoration:underline; text-underline-offset:3px;
+}
+.notice-link a:hover{ color:var(--ink); }
+/* 直前がすでに線で終わっている要素のときは、上線を出さない */
+.note + .notice-link,
+.pair-ask + .notice-link,
+.hist-note + .notice-link,
+.disclaimer + .notice-link{ margin-top:16px; padding-top:0; border-top:0; }
+
+/* /about/ */
+#about{ padding:clamp(30px,6vh,64px) 0 40px; }
+.about-head{ border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:8px; }
+#about .sec .list{ margin-top:14px; }
+#about .sec .list li{ font-size:var(--fs-base); color:var(--ink-2); }
+#about .body-text + .body-text{ margin-top:16px; }
+#about .list + .body-text{ margin-top:16px; }
+.about-foot{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:34px; }
+@media (max-width:560px){
+  .about-foot{ flex-direction:column; align-items:stretch; }
+  .about-foot .btn{ width:100%; }
+}
+
+/* 履歴ページの、記録そのものについての注記 */
+.hist-note{ margin-top:34px; padding-top:22px; border-top:1px solid var(--line-2); }
+.hist-note .g-note + .g-note{ margin-top:12px; }
+
+/* ---------- 注意事項（折りたたみ。いまは使っていない） ---------- */
 .notice{ margin-top:30px; padding-top:22px; border-top:1px solid var(--line-2); }
 /* 直前がすでに線で終わっている要素のときは、注意書きの上線を出さない
    （線が2本並んで見えるのを防ぐ） */

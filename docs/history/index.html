@@ -30,7 +30,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=5441982d">
+<link rel="stylesheet" href="../assets/style.css?v=058fdd9f">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -100,15 +100,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <input type="file" id="importFile" accept="application/json,.json" class="sr-only">
 
-  <details class="notice">
-    <summary>この記録について</summary>
-    <ul>
-      <li>記録はお使いのブラウザの中（localStorage）にのみ保存しています。サーバーには送っていません。ブラウザのデータを消すと失われます。</li>
-      <li>別の端末・別のブラウザで受けた記録は入りません。「JSONで書き出す」で保存し、別の端末で「JSONを読み込む」と合流できます。</li>
-      <li>同じ設問を短い間隔で繰り返すと、設問を覚えてしまうため回答が安定します。変化を見たい場合は、数週間以上の間隔をあけてください。</li>
-      <li>上限は300件です。超えると古いものから捨てられます。</li>
-    </ul>
-  </details>
+  <div class="hist-note">
+    <p class="g-note">
+      記録はお使いのブラウザの中にのみ保存しています。サーバーには送っていません。
+      別の端末・別のブラウザで受けた記録は入りません。上限は300件で、超えると古いものから捨てられます。
+    </p>
+    <p class="g-note">
+      <b>Safari（iPhone・iPad・Mac）では、7日間このサイトを開かないと記録が消えます。</b>
+      ブラウザ側の仕様で、こちらで防ぐ方法はありません。
+      長く残したい場合は「JSONで書き出す」で手元に保存してください。読み込めば元どおりになります。
+    </p>
+    <p class="g-note">
+      同じ設問を短い間隔で繰り返すと、設問を覚えてしまうため回答が安定します。
+      変化を見たい場合は数週間以上あけてください。
+    </p>
+  </div>
+  <p class="notice-link"><a href="../about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
 
   <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
 </section>

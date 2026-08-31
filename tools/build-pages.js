@@ -24,18 +24,6 @@ const CODES = Object.keys(SUB);
 const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const clip = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
 
-/* 全ページ共通の注意書き。index.html と同じ文面を使う */
-const NOTICE = `  <details class="notice">
-    <summary>この診断についての注意</summary>
-    <ul>
-      <li>90問の回答はサーバーに送信されません。採点もお使いのブラウザの中だけで行い、結果はブラウザ内にのみ保存されるため、ブラウザのデータを消すと失われます。「保存して中断」した回答、マイタイプの登録、表示設定も同じ扱いです。</li>
-      <li>外部への通信は、Webフォント（Google Fonts）の読み込みと、アクセス解析（Google アナリティクス）のためのタグの2つです。個々の回答は送信していませんが、結果ページのURLにはタイプが含まれる（例：<span class="mono">/t/ENTP-A-H/</span>）ため、閲覧されたページとして、診断の開始・完了とあわせて匿名で記録されます。広告のタグは入れていません。</li>
-      <li>キャラクター画像と解説文は生成AIを用いて制作しています。実在の人物・団体とは関係がなく、描写に不自然な点が含まれる場合があります。</li>
-      <li>本診断はユング心理学の類型論を参考にした独自のもので、心理検査ではありません。特定の心理検査や既存の性格診断サービスとは関係ありません。</li>
-      <li>結果は回答時点の自己認識を整理したものです。人の性格は状況や時期によって変わるため、自分を知る手がかりとして扱い、可能性を狭める枠としては使わないでください。</li>
-    </ul>
-  </details>`;
-
 function page(code){
   const [bt, ao, hc] = code.split("-");
   const b = BASE[bt], s = SUB[code], base = "../../";
@@ -205,7 +193,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
   </p>
 
-${NOTICE}
+  <p class="notice-link"><a href="${base}about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
 
   <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
   </div>
@@ -239,6 +227,7 @@ const urls = [
   { loc: ORIGIN + "/", pri: "1.0" },
   { loc: ORIGIN + "/types.html", pri: "0.8" },
   { loc: ORIGIN + "/pair/", pri: "0.6" },
+  { loc: ORIGIN + "/about/", pri: "0.4" },
   ...CODES.map(c => ({ loc: `${ORIGIN}/t/${c}/`, pri: "0.7" }))
 ];
 fs.writeFileSync(path.join(DOCS, "sitemap.xml"),
