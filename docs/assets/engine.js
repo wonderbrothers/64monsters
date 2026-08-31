@@ -40,7 +40,7 @@
   }
   function setLast(code, sc){ lsSet(LASTKEY, JSON.stringify({ code: code, sc: sc })); }
 
-  /* ---------- 鑑定履歴 ----------
+  /* ---------- ヒストリー（受けるたびの記録） ----------
      受けるたびに1件積む。生スコア（sum）と満点（max）を残すのが肝で、
      設問数が変わっても過去の記録を正しく読めるようにしている。
      pctPos は sum と max から導けるので保存しない。 */

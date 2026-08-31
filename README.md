@@ -14,7 +14,8 @@
 docs/                     ← GitHub に公開するのはこのフォルダだけ
   index.html              トップ（診断の入口・6軸の説明・タイプ選択）
   quiz/index.html         設問90問（noindex。終わると /t/<CODE>/ へ）
-  history/index.html      鑑定履歴（noindex。ブラウザ内の記録を時系列で見る）
+  history/index.html      ヒストリー（noindex。ブラウザ内の記録を時系列で見る）
+  friends/index.html      Myフレンド（noindex。受け取った鑑定コードに名前をつけて残す）
   about/index.html        この診断について（回答の扱い・外部への通信・権利）
   types.html              64タイプの一覧ページ（キャラクター画像つき）
   t/<CODE>/index.html     タイプごとの結果・解説ページ（64枚・自動生成）
@@ -28,7 +29,8 @@ docs/                     ← GitHub に公開するのはこのフォルダだ�
   assets/quiz.js          設問の出題（終わると /t/<CODE>/ へ遷移する）
   assets/type.js          個別ページ側（6軸ゲージ・マイタイプ・画像保存）
   assets/pair.js          相性ページ側
-  assets/history.js       鑑定履歴ページ側（書き出し・読み込み）
+  assets/history.js       ヒストリーページ側（書き出し・読み込み）
+  assets/friends.js       Myフレンドページ側（登録・削除・相性への導線）
   assets/share.js         結果の一枚絵（1080×1080）をcanvasで作る
   images/thumbs/          表示用サムネイル（440px・WebP・64枚／約1.4MB）
   images/ogp/             タイプ別のOGP画像（1200×630・JPEG・64枚／約4MB・自動生成）
@@ -141,17 +143,22 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 | `quiz_complete` | 90問終えて結果ページに着いた | `monster_type` `base_type` `elapsed_sec` |
 | `quiz_flat` | 6軸すべてが拮抗した結果に着いた（回答が偏っていた疑い） | `monster_type` |
 | `type_view` | 結果ページを見た（診断直後をのぞく） | `monster_type` `base_type` |
-| `cta_click` | 結果ページ下部の導線を押した | `monster_type` `label` `from_result` |
+| `cta_click` | 相性セクションから /pair/ へ進んだ | `monster_type` `label` `from_result` |
 | `share_image` | 結果の一枚絵を保存・共有した | `monster_type` `method` |
 | `pair_view` | 相性を表示した | `pair_a` `pair_b` `axis_match` |
 | `share_pair_image` | 相性の一枚絵を保存・共有した | `pair_a` `pair_b` `method` |
 | `invite_copy` | 「診断リンクをコピー」を押した | `from` |
-| `history_view` | 鑑定履歴を開いた | `records` |
+| `history_view` | ヒストリーを開いた | `records` |
 | `history_export` | 記録をJSONで書き出した | `records` |
 | `history_import` | 記録をJSONから読み込んだ | `added` `total` |
 | `history_clear` | 記録をすべて削除した | — |
 | `code_copy` | 鑑定コードをコピーした | — |
 | `code_import` | 鑑定コードから記録を加えた | `monster_type` |
+| `friends_view` | Myフレンドを開いた | `friends` |
+| `friend_add` | フレンドを登録した | `monster_type` |
+| `friend_update` | 登録済みのフレンドの名前を更新した | `monster_type` |
+| `friend_remove` | フレンドを1件削除した | — |
+| `friends_clear` | フレンドをすべて削除した | — |
 
 > **GTM側の設定が要ります。** ここで送っているのは dataLayer までです。GA4 に届けるには、GTM で各イベント名のトリガーと GA4 イベントタグを作る必要があります（既存の設定にないイベントは、そのままでは GA4 に現れません）。
 

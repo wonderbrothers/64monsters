@@ -43,7 +43,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=588bfeaf">
+<link rel="stylesheet" href="../assets/style.css?v=25a4b7a7">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -69,7 +69,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="sec split" id="data">
     <h2>回答とデータの扱い</h2>
     <div>
-      <p class="body-text"><b>90問の回答はサーバーに送信していません。</b>採点もお使いのブラウザの中だけで行っています。「保存して中断」した回答、マイタイプの登録、鑑定履歴、<a href="../friends/">Myフレンド</a>に登録した名前とコード、表示設定も同じで、すべてブラウザ内（localStorage）にのみ保存しています。</p>
+      <p class="body-text"><b>90問の回答はサーバーに送信していません。</b>採点もお使いのブラウザの中だけで行っています。「保存して中断」した回答、マイタイプの登録、ヒストリー、<a href="../friends/">Myフレンド</a>に登録した名前とコード、表示設定も同じで、すべてブラウザ内（localStorage）にのみ保存しています。</p>
       <p class="body-text"><b>フレンドの名前は、あなたがご自分で付けたものです。</b>鑑定コードそのものに名前は入っていません。他の方の情報をお預かりすることになるため、本名である必要はありませんし、共有の端末では登録を控えることをおすすめします。こちらから相手に知らせることはありませんし、こちらにも届きません。</p>
       <p class="body-text">そのため、保存したものは次の場合に失われます。</p>
       <ul class="list">
@@ -79,7 +79,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <li><b>Safari（iPhone・iPad・Mac）で、7日間このサイトを開かなかったとき</b></li>
       </ul>
       <p class="body-text">最後のものは補足が必要です。Safari には、<b>ブラウザを使った日数で7日のあいだ、そのサイトに対する操作（タップ・クリック・入力）が一度もないと、サイトが保存したデータをすべて削除する</b>という仕様があります。こちらで防ぐ方法はありません。Chrome や Firefox にこの動作はありません。</p>
-      <p class="body-text">記録を長く残したい場合は、<a href="../history/">鑑定履歴</a>のページから <b>JSONで書き出して手元に保存</b>してください。消えてしまっても、そのファイルを読み込めば元どおりになります。端末を移すときも同じ手順で引き継げます。</p>
+      <p class="body-text">記録を長く残したい場合は、<a href="../history/">ヒストリー</a>のページから <b>JSONで書き出して手元に保存</b>してください。消えてしまっても、そのファイルを読み込めば元どおりになります。端末を移すときも同じ手順で引き継げます。</p>
     </div>
   </div>
 
@@ -92,7 +92,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <li><b>アクセス解析</b>（Google アナリティクス）のタグ</li>
       </ul>
       <p class="body-text">アクセス解析に送っているのは、<b>どのページが見られたか、診断を始めて終えたか、何問目まで進んだか、何秒かかったか</b>です。個々の設問への回答は送っていません。</p>
-      <p class="body-text">ただし、<b>結果ページのURLにはタイプが含まれます</b>（例：<span class="mono">/t/ENTP-A-H/</span>）。閲覧されたページとして記録されるため、結果として「どのタイプが出たか」は匿名の集計に含まれます。設問ページ（<span class="mono">/quiz/</span>）と鑑定履歴（<span class="mono">/history/</span>）は検索エンジンには載せていません。</p>
+      <p class="body-text">ただし、<b>結果ページのURLにはタイプが含まれます</b>（例：<span class="mono">/t/ENTP-A-H/</span>）。閲覧されたページとして記録されるため、結果として「どのタイプが出たか」は匿名の集計に含まれます。設問ページ（<span class="mono">/quiz/</span>）とヒストリー（<span class="mono">/history/</span>）は検索エンジンには載せていません。</p>
     </div>
   </div>
 
@@ -109,7 +109,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2>結果の受け取り方</h2>
     <div>
       <p class="body-text"><b>結果は、回答した時点の自己認識を整理したものです。</b>人の性格は状況や時期によって変わります。自分を知る手がかりとして扱い、可能性を狭める枠としては使わないでください。</p>
-      <p class="body-text">同じ人が受け直すと数値は動きます。それは誤りではなく、その軸が状況に左右されやすいということです。<a href="../history/">鑑定履歴</a>で振れ幅を見ると、どこが自分の芯で、どこが揺れる部分なのかが分かります。</p>
+      <p class="body-text">同じ人が受け直すと数値は動きます。それは誤りではなく、その軸が状況に左右されやすいということです。<a href="../history/">ヒストリー</a>で振れ幅を見ると、どこが自分の芯で、どこが揺れる部分なのかが分かります。</p>
       <p class="body-text"><b>相性ページのスコアについて。</b>6軸のうち、その関係で追い風になる軸の重みが全体の何割かを表しています。この重みは測定値ではなく、こちらで設計したものです。低い数値は「相性が悪い」ではなく「放っておくとずれる部分が多い」という意味で読んでください。</p>
       <p class="body-text"><b>採用選考など、人の評価や選抜には使わないでください。</b>そのための妥当性の検証をしていません。</p>
     </div>
