@@ -124,6 +124,10 @@
       var d = JSON.parse(s);
       /* 設問が入れ替わったあとの古い回答は、番号がずれるので使わない */
       if (!d || d.v !== QV || !Array.isArray(d.a) || d.a.length !== Q.length){ clearSave(); return null; }
+      /* 全問埋まっている保存は終わった回。途中保存として復元してはいけない */
+      var done = true;
+      for (var i = 0; i < d.a.length; i++){ if (d.a[i] === null){ done = false; break; } }
+      if (done){ clearSave(); return null; }
       /* 並びを保存する前の途中保存も、以前と同じ並びで復元できる */
       if (!validOrder(d.o)) d.o = makeOrder(false);
       return d;

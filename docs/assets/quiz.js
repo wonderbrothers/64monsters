@@ -33,8 +33,11 @@
   function segGo(){ if (segStart === null) segStart = Date.now(); }
   function segStop(){ if (segStart !== null){ doneMs += Date.now() - segStart; segStart = null; } }
   function elapsedSec(){ return Math.round((doneMs + (segStart === null ? 0 : Date.now() - segStart)) / 1000); }
-  /* タブを離れているあいだは数えない（所要時間を実態に近づける） */
+  /* タブを離れているあいだは数えない（所要時間を実態に近づける）。
+     結果ページへ移るときにもページは隠れるので、遷移を始めたあとは保存しない。
+     ここを抜くと、finish() が消した途中保存を書き戻してしまう。 */
   document.addEventListener("visibilitychange", function(){
+    if (leaving) return;
     if (document.hidden){ segStop(); persist(); } else { segGo(); }
   });
 
