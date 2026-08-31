@@ -119,6 +119,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="wrap">
   <div class="res-head">
     <div class="hero"><span class="thumb"><img id="rThumb" src="${base}images/thumbs/${code}.webp" alt="${esc(b.name)}（${esc(s.label)}）のキャラクター" width="440" height="440"></span></div>
+    <div class="hero-acts">
+      <button class="btn ghost sm" id="shareBtn">結果を画像で保存</button>
+      <button class="btn ghost sm" id="saveMyBtn" data-code="${code}">マイタイプに登録</button>
+    </div>
     <p class="eyebrow" id="rEyebrow">monster type</p>
     <p class="code" id="rCode"><span class="base">${bt}</span><span class="dash">-</span><span class="sub">${ao}</span><span class="dash">-</span><span class="sub">${hc}</span></p>
     <h1 class="res-label">${esc(s.label)}</h1>
@@ -182,16 +186,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p class="pair-cta-txt">相手のコードがわかれば、2人の相性をこの場で見られます。</p>
       <a class="btn" href="${base}pair/?a=${code}">この人との相性を調べる</a>
     </div>
-  </div>
-
-  <div class="res-foot">
-    <button class="btn" id="shareBtn">結果を画像で保存</button>
-    <button class="btn ghost" id="saveMyBtn" data-code="${code}">マイタイプに登録</button>
-    <button class="btn ghost" id="copyBtn">URLをコピー</button>
-  </div>
-  <div class="res-foot2">
-    <a class="btn ghost" href="${base}quiz/">90問の診断を受ける</a>
-    <a class="btn ghost" href="${base}types.html">モンスターギャラリー</a>
   </div>
 
   <p class="disclaimer">

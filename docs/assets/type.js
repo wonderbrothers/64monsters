@@ -44,8 +44,9 @@
   if (fresh && !isNaN(sec)) ev.elapsed_sec = sec;
   track(fresh ? "quiz_complete" : "type_view", ev);
 
-  /* 検索から来た人が診断へ進んだかを見るための計測 */
-  Array.prototype.forEach.call(document.querySelectorAll(".res-foot2 a, .pair-cta a"), function(a){
+  /* 検索から来た人が診断へ進んだかを見るための計測
+     （下部の導線は廃止したので、残っているのは相性セクションからの誘導だけ） */
+  Array.prototype.forEach.call(document.querySelectorAll(".pair-cta a"), function(a){
     a.addEventListener("click", function(){
       track("cta_click", { monster_type: CODE, label: a.textContent.trim(), from_result: !!sc });
     });
@@ -110,15 +111,6 @@
     paintMy();
     /* ヘッダーのマイタイプにも反映する */
     if (window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();
-  });
-
-  /* ---------- URLコピー ---------- */
-  $("copyBtn").addEventListener("click", function(){
-    var btn = this, url = location.origin + location.pathname;
-    navigator.clipboard.writeText(url).then(function(){
-      btn.textContent = "コピーしました";
-      setTimeout(function(){ btn.textContent = "URLをコピー"; }, 1800);
-    }).catch(function(){ btn.textContent = "コピーできませんでした"; });
   });
 
   /* ---------- 一枚絵 ---------- */

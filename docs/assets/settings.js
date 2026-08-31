@@ -75,13 +75,14 @@
     '<div class="' + wrapCls + ' sh-inner">' +
       '<button type="button" class="sh-menu" id="shMenu" aria-label="メニューを開く" aria-expanded="false" aria-controls="siteDrawer">' + SVG_MENU + '</button>' +
       '<a class="sh-logo" href="' + HOME + '" aria-label="64モンスターズ ホーム">' + LOGO + '</a>' +
+      /* 並びは モンスターギャラリー → ヒストリー → 設定 → Myフレンド → マイタイプ → 診断 */
       '<nav class="sh-nav" aria-label="サイト内">' +
+        '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
+        '<a class="sh-link" href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>ヒストリー</a>' +
+        '<button type="button" class="sh-link" id="shSet">設定</button>' +
+        '<a class="sh-link" href="' + FRIENDS + '"' + (onFriends ? ' aria-current="page"' : '') + '>Myフレンド</a>' +
         '<a class="sh-my hidden" id="shMy" href="#"><span class="thumb"><img src="" alt=""></span>' +
           '<span class="sm-code mono"></span></a>' +
-        '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
-        '<a class="sh-link" href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>履歴</a>' +
-        '<a class="sh-link" href="' + FRIENDS + '"' + (onFriends ? ' aria-current="page"' : '') + '>仲間</a>' +
-        '<button type="button" class="sh-link" id="shSet">各種設定</button>' +
       '</nav>' +
       '<a class="btn sh-cta" href="' + QUIZ + '" id="shCta">診断</a>' +
     '</div>';
@@ -142,9 +143,9 @@
         '<a href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>' +
           '<span>モンスターギャラリー</span>' + SVG_CHEV + '</a>' +
         '<a href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>' +
-          '<span>鑑定履歴</span>' + SVG_CHEV + '</a>' +
+          '<span>ヒストリー</span>' + SVG_CHEV + '</a>' +
         '<a href="' + FRIENDS + '"' + (onFriends ? ' aria-current="page"' : '') + '>' +
-          '<span>仲間</span>' + SVG_CHEV + '</a>' +
+          '<span>Myフレンド</span>' + SVG_CHEV + '</a>' +
         '<a href="' + ABOUT + '"' + (onAbout ? ' aria-current="page"' : '') + '>' +
           '<span>この診断について</span>' + SVG_CHEV + '</a>' +
       '</nav>' +

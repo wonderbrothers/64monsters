@@ -76,6 +76,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .btn:hover{ transform:translateY(-1px); opacity:.9; }
 .btn.ghost{ background:transparent; color:var(--ink-2); border:1px solid var(--line); }
 .btn.ghost:hover{ color:var(--ink); border-color:var(--ink-3); }
+.btn.sm{ padding:9px 18px; font-size:var(--fs-sm); letter-spacing:.03em; }
 .rule{ height:1px; background:var(--line); border:0; margin:0; }
 
 /* ---------- イントロ ---------- */
@@ -253,8 +254,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .chip .c2{ display:block; font-size:var(--fs-sm); color:var(--ink-3); margin-top:2px; line-height:1.5; }
 .match-why{ font-size:var(--fs-md); color:var(--ink-2); margin-top:8px; }
 
-.res-foot{ padding-top:40px; display:flex; flex-wrap:nowrap; gap:14px; align-items:stretch; justify-content:center; }
-.res-foot .btn{ flex:1 1 0; min-width:0; }
+/* FVのサムネイル直下。結果そのものへの操作（保存・登録）だけを置く */
+.hero-acts{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:-8px 0 22px; }
 .disclaimer{ font-size:var(--fs-sm); color:var(--ink-3); line-height:1.9; margin-top:36px; padding-top:22px; border-top:1px solid var(--line-2); }
 
 /* ---------- 注意書きへのリンク（本体は /about/） ---------- */
@@ -442,9 +443,11 @@ a.cell:hover{ border-color:var(--shu); }
   .match-list{ flex-direction:column; }
   .match-list .chip{ width:100%; }
 
-  /* FV・結果下部のボタン列は縦積みで横幅いっぱい */
-  .fv-cta, .res-foot{ flex-direction:column; align-items:stretch; gap:12px; }
-  .fv-cta .btn, .res-foot .btn{ width:100%; flex:0 0 auto; }
+  /* FVのボタン列は縦積みで横幅いっぱい */
+  .fv-cta{ flex-direction:column; align-items:stretch; gap:12px; }
+  .fv-cta .btn{ width:100%; flex:0 0 auto; }
+  .hero-acts{ flex-direction:column; align-items:stretch; gap:10px; }
+  .hero-acts .btn{ width:100%; }
 
   /* 上段：モンスタープルダウン ／ 中段：A or O + H or C ／ 下段：このタイプを見る */
   .picker-row{
@@ -503,7 +506,7 @@ html[data-theme="dark"]{
 /* ヘッダーのマイタイプ（登録があるときだけ出る） */
 .sh-my{
   display:inline-flex; align-items:center; gap:8px; text-decoration:none;
-  padding:4px 10px 4px 4px; margin-right:4px;
+  padding:4px 10px 4px 4px; margin-left:6px;   /* 診断ボタンの手前に置く */
   border:1px solid var(--line); border-radius:999px; color:var(--ink-2);
 }
 .sh-my:hover{ color:var(--ink); border-color:var(--ink-3); background:var(--surface-2); }
@@ -619,12 +622,6 @@ body.modal-open{ overflow:hidden; }
 .sr-only{
   position:absolute; width:1px; height:1px; padding:0; margin:-1px;
   overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
-}
-
-/* 結果ページ下部の追加導線 */
-.res-foot2{
-  display:flex; flex-wrap:wrap; gap:12px; justify-content:center;
-  margin-top:14px;
 }
 
 /* 相性セクションから /pair/ への誘導 */
@@ -788,10 +785,10 @@ body.modal-open{ overflow:hidden; }
 .pair-ask .sub-h{ margin-bottom:10px; }
 .pair-ask p{ font-size:var(--fs-md); color:var(--ink-2); margin-bottom:16px; }
 
-/* SP ではボタンはコンテンツ幅いっぱいに揃える（既存の .res-foot と同じ扱い） */
+/* SP ではボタンはコンテンツ幅いっぱいに揃える */
 @media (max-width:560px){
-  .res-foot2, .pair-foot, .hist-foot{ flex-direction:column; align-items:stretch; gap:12px; }
-  .res-foot2 .btn, .pair-foot .btn, .hist-foot .btn,
+  .pair-foot, .hist-foot{ flex-direction:column; align-items:stretch; gap:12px; }
+  .pair-foot .btn, .hist-foot .btn,
   .pair-cta .btn, .pair-ask .btn, .pair-go .btn{ width:100%; flex:0 0 auto; }
 }
 
@@ -933,9 +930,6 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 /* 見出しと左端を揃えたいもの（左ぞろえのまま幅だけ止める） */
 .gauges, #tableWrap, .scoretable{ max-width:var(--panel); }
 
-/* ページ下部のボタン群は枠の中央に置く */
-.res-foot, .res-foot2{ max-width:var(--panel); margin-inline:auto; }
-
 /* もともと中央に置いている箱（枠の中央にとどめる） */
 .pair-cta, .pair-ask, .pair-verdict,
 .pair-foot, .pair-go{ max-width:var(--panel); margin-inline:auto; }
@@ -1007,7 +1001,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
    点の並び（ドットストリップ）で「どちらの極に寄っているか」と
    「どれだけ揺れるか」を同時に出す。回数が少なくても読めるのが折れ線との違い。
    ============================================================ */
-#history{ padding:clamp(30px,6vh,64px) 0 40px; }
+#history, #friends{ padding:clamp(30px,6vh,64px) 0 40px; }
 .hist-head{ border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:30px; }
 .hist-empty{ padding:8px 0 30px; }
 .hist-empty .g-note{ margin-top:14px; }
@@ -1120,7 +1114,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
   .token-row .btn{ width:100%; }
 }
 
-/* ===== 仲間（/friends/） =====
+/* ===== Myフレンド（/friends/） =====
    .token-row と同じ作りだが、名前と鑑定コードの2つを並べるので専用にする。
    行そのものはタイプ紹介へのリンク、右側に相性と削除を置く。 */
 .fr-form{ display:flex; flex-wrap:wrap; gap:10px; align-items:stretch; margin-top:12px; }
