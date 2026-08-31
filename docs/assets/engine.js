@@ -1,3 +1,8 @@
+/* 64モンスターズ / 64monsters
+   Copyright (c) 2026 WONDER BROTHERS INC. All rights reserved.
+   オープンソースではありません。転載・再配布・改変しての公開、
+   本診断を用いたサービスの提供、学習データとしての利用を禁じます。
+   Not open source. See /LICENSE — https://64monsters.wonder-bros.com/ */
 /* ===== 64モンスターズ — 診断の共有部分 =====
    トップ（/）と設問ページ（/quiz/）の両方が読む。
    出題順・保存・採点はここ1か所だけに置き、画面の描画は home.js / quiz.js が持つ。 */

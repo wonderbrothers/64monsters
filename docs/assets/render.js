@@ -1,3 +1,8 @@
+/* 64モンスターズ / 64monsters
+   Copyright (c) 2026 WONDER BROTHERS INC. All rights reserved.
+   オープンソースではありません。転載・再配布・改変しての公開、
+   本診断を用いたサービスの提供、学習データとしての利用を禁じます。
+   Not open source. See /LICENSE — https://64monsters.wonder-bros.com/ */
 /* ===== 共有レンダラ =====
    ブラウザと Node（tools/build-pages.js）の両方から読み込んで使う。
    1つのロジックで、個別ページの静的HTMLと画面上の描画の両方を作るための土台。

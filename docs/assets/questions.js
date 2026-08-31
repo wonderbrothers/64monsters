@@ -1,3 +1,8 @@
+/* 64モンスターズ / 64monsters
+   Copyright (c) 2026 WONDER BROTHERS INC. All rights reserved.
+   オープンソースではありません。転載・再配布・改変しての公開、
+   本診断を用いたサービスの提供、学習データとしての利用を禁じます。
+   Not open source. See /LICENSE — https://64monsters.wonder-bros.com/ */
 /* 64モンスターズ — 設問データ
    axis: EI / SN / TF / JP / AO / HC
    dir : +1 = 後者の極 (I, N, F, J, O, H) 方向に加点 / -1 = 逆

@@ -1,0 +1,54 @@
+Copyright (c) 2026 WONDER BROTHERS INC. All rights reserved.
+
+日本語（原文） / Japanese (authoritative)
+------------------------------------------------------------
+本リポジトリおよび https://64monsters.wonder-bros.com/ で公開している
+「64モンスターズ / 64monsters」は、オープンソースソフトウェアではありません。
+閲覧できる状態で配信していますが、著作権は放棄していません。
+
+許可していないこと（商用・非商用を問いません）:
+
+  1. 設問文、タイプ名、解説文、相性の文面、キャラクター画像の
+     転載・再配布・改変しての公開
+  2. 本診断またはその一部（設問セット、採点ロジック、軸の構成、
+     相性スコアの重みづけを含む）を用いたサービス・アプリ・
+     コンテンツの提供
+  3. 機械学習モデルの学習データ、ファインチューニング用データ、
+     または検索拡張生成（RAG）の参照元としての利用
+  4. 上記を目的とした自動収集（スクレイピング）
+
+許可していること:
+
+  - 個人が診断を受け、その結果を SNS 等で共有すること
+  - 紹介・批評・研究のための、出典を明示した引用
+
+これらを超えて利用したい場合は、事前にご連絡ください。
+連絡先: https://wonder-bros.com
+
+English (reference translation)
+------------------------------------------------------------
+This repository and the site published at https://64monsters.wonder-bros.com/
+are NOT open source. The source is served in a readable form for the site to
+function; no copyright is waived.
+
+Not permitted (whether commercial or non-commercial):
+
+  1. Reproducing, redistributing, or publishing modified versions of the
+     questions, type names, descriptions, compatibility copy, or character
+     images.
+  2. Offering any service, application, or content that uses this assessment
+     or any part of it, including the question set, scoring logic, axis
+     design, and compatibility score weights.
+  3. Using this work as training data, fine-tuning data, or as a retrieval
+     source for machine learning models.
+  4. Automated collection (scraping) for any of the above.
+
+Permitted:
+
+  - Taking the assessment and sharing your own result.
+  - Quotation with attribution for review, commentary, or research.
+
+For anything beyond this, please contact us in advance:
+https://wonder-bros.com
+
+In case of any discrepancy, the Japanese text above governs.

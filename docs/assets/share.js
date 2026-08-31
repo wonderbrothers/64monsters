@@ -1,3 +1,8 @@
+/* 64モンスターズ / 64monsters
+   Copyright (c) 2026 WONDER BROTHERS INC. All rights reserved.
+   オープンソースではありません。転載・再配布・改変しての公開、
+   本診断を用いたサービスの提供、学習データとしての利用を禁じます。
+   Not open source. See /LICENSE — https://64monsters.wonder-bros.com/ */
 /* ===== 結果の一枚絵（1080×1080）=====
    キャンバスに描いて PNG にし、共有シート（対応端末）か
    ダウンロードで持ち帰れるようにする。外部ライブラリは使わない。 */

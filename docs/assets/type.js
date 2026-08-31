@@ -1,3 +1,8 @@
+/* 64モンスターズ / 64monsters
+   Copyright (c) 2026 WONDER BROTHERS INC. All rights reserved.
+   オープンソースではありません。転載・再配布・改変しての公開、
+   本診断を用いたサービスの提供、学習データとしての利用を禁じます。
+   Not open source. See /LICENSE — https://64monsters.wonder-bros.com/ */
 /* ===== タイプ個別ページ（/t/<CODE>/）=====
    本文は静的に書き出してあるので、ここでやるのは
    「その人自身の結果として開かれたときだけの上乗せ」だけ。 */

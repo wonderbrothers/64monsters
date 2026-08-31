@@ -15,3 +15,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# 設計メモ（なぜそうしたかの記録。公開しない）
+/DESIGN.md
