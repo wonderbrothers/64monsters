@@ -135,7 +135,6 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
   padding:clamp(16px,4vh,40px) 0 clamp(12px,3vh,30px);
 }
 .qhead{ align-self:end; max-width:100%; padding-bottom:clamp(20px,5vh,44px); }
-.qaxis{ margin-bottom:clamp(10px,2.5vh,22px); }
 .qtext{ max-width:24em; }
 .qtext{ font-family:var(--f-disp); font-weight:700; font-size:clamp(1.375rem, 4.4vw, 1.875rem); line-height:1.7; letter-spacing:.01em; }
 .scale{ width:100%; max-width:560px; }
@@ -578,7 +577,6 @@ body.modal-open{ overflow:hidden; }
 /* ---------- 画面の高さが足りないときは設問まわりを詰める ---------- */
 @media (max-height:720px){
   .qtext{ font-size:clamp(1.125rem, 3.6vw, 1.5rem); line-height:1.6; }
-  .qaxis{ margin-bottom:8px; }
   .qhead{ padding-bottom:16px; }
   .opt{ --sz:44px !important; }
   .opt[data-v="1"],.opt[data-v="-1"]{ --sz:38px !important; }
@@ -592,7 +590,6 @@ body.modal-open{ overflow:hidden; }
   .qtext{ font-size:clamp(1rem, 3.2vw, 1.25rem); line-height:1.55; }
   /* 上の行があふれると選択肢が押し下がるので、ここでさらに詰める */
   .qhead{ padding-bottom:10px; }
-  .qaxis{ margin-bottom:6px; }
   .scale-ends{ margin-bottom:8px; }
   .opt{ --sz:40px !important; }
   .opt[data-v="1"],.opt[data-v="-1"]{ --sz:34px !important; }
@@ -600,7 +597,6 @@ body.modal-open{ overflow:hidden; }
 }
 /* 横向きのスマートフォンなど、極端に低い画面 */
 @media (max-height:480px){
-  .qaxis{ display:none; }
   .qhint{ display:none; }
   .qtext{ font-size:1.0625rem; line-height:1.45; }
   .qhead{ padding-bottom:8px; }

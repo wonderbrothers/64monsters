@@ -8,7 +8,7 @@
    ?restart=1 で来たときは、途中保存を捨てて最初から始める。 */
 (function(){
   "use strict";
-  var Q = window.QUESTIONS, AXES = window.AXES;
+  var Q = window.QUESTIONS;
   var R = window.RENDER, E = window.ENGINE;
   var B = window.SITE_BASE || "";
   var HOME = B || "./";
@@ -54,10 +54,11 @@
     el.firstChild.style.width = pct + "%";
     el.setAttribute("aria-valuenow", Math.round(pct));
   }
+  /* 軸の名前は出さない。何を測っているかが見えると、実際どうかより
+     「そうありたい自分」に寄せた答えになりやすく、逆転項目の狙いも弱まる。
+     軸名は結果ページと /about/ で示している。 */
   function renderQuestion(){
     var qi = ORDER[pos], q = Q[qi];
-    var ax = AXES.filter(function(a){ return a.key === q.axis; })[0];
-    $("qAxis").textContent = ax.title;
     $("qText").textContent = q.text;
     $("qNow").textContent = pos + 1;
     $("optLab").textContent = answers[qi] === null ? "" : LABELS[String(answers[qi])];
