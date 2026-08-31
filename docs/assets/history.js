@@ -160,6 +160,10 @@
     });
     cur.sort(function(x, y){ return x.t - y.t; });
     E.setHistory(cur);
+    /* いちばん新しい記録を「前回の結果」とマイタイプに反映する。
+       別の端末で読み込んだとき、記録だけが移って表示が古いままにならないように。 */
+    var code = added ? E.syncFromHistory() : null;
+    if (code && window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();
     E.track("history_import", { added: added, total: cur.length });
     say(btn, added ? added + "件を追加しました" : "新しい記録はありませんでした");
     setTimeout(paint, 900);

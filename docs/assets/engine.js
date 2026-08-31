@@ -63,6 +63,31 @@
     return setHistory(h);
   }
   function clearHistory(){ lsDel(HISTKEY); }
+
+  /* 履歴の1件から、結果ページが使う形（score() と同じ）に戻す。
+     pctPos・letter・tie は sum と max から導けるので保存していない。 */
+  function scFromRecord(r){
+    var out = {};
+    AXES.forEach(function(a){
+      var sum = r.sum[a.key], m = (r.max && r.max[a.key]) || 30;
+      var p = pct(sum, m);
+      out[a.key] = { sum:sum, pctPos:p, letter: sum > 0 ? a.pos.l : a.neg.l, tie: Math.abs(p - 50) < 4 };
+    });
+    return out;
+  }
+
+  /* 履歴のいちばん新しい記録を「前回の結果」とマイタイプに反映する。
+     書き出したJSONを別の端末で読み込んだとき、記録だけが移って
+     マイタイプと6軸ゲージが古いままになるのを防ぐ。 */
+  function syncFromHistory(){
+    var h = getHistory();
+    if (!h.length) return null;
+    var r = h[h.length - 1];
+    if (!SUB[r.code] || !r.sum) return null;
+    setLast(r.code, scFromRecord(r));
+    setMyType(r.code);
+    return r.code;
+  }
   /* 生スコア → pos極の割合（0〜100） */
   function pct(sum, max){ return Math.round(((sum + max) / (2 * max)) * 100); }
 
@@ -163,6 +188,7 @@
     getMyType:getMyType, setMyType:setMyType, getLast:getLast, setLast:setLast,
     score:score, codeFrom:codeFrom,
     getHistory:getHistory, setHistory:setHistory, pushHistory:pushHistory,
-    clearHistory:clearHistory, pct:pct
+    clearHistory:clearHistory, pct:pct,
+    scFromRecord:scFromRecord, syncFromHistory:syncFromHistory
   };
 })(window);
