@@ -94,6 +94,7 @@
 
   /* ---------- マイタイプ ---------- */
   var MYKEY = KEY + ".mytype";
+  var MYOFF = KEY + ".myoff";   /* 解除は「自分で外した」として残す（履歴から戻さないため） */
   var myBtn = $("saveMyBtn");
   function paintMy(){
     var mine = ls(MYKEY) === CODE;
@@ -101,8 +102,11 @@
     myBtn.classList.toggle("done", mine);
   }
   paintMy();
+  /* 履歴からマイタイプが埋め直されたとき（settings.js）にも合わせる */
+  document.addEventListener("mytype:change", paintMy);
   myBtn.addEventListener("click", function(){
-    if (ls(MYKEY) === CODE) lsDel(MYKEY); else lsSet(MYKEY, CODE);
+    if (ls(MYKEY) === CODE){ lsDel(MYKEY); lsSet(MYOFF, "1"); }
+    else { lsSet(MYKEY, CODE); lsDel(MYOFF); }
     paintMy();
     /* ヘッダーのマイタイプにも反映する */
     if (window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();

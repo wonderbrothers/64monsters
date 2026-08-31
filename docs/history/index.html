@@ -30,7 +30,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=9519cd03">
+<link rel="stylesheet" href="../assets/style.css?v=5a4919c5">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -90,6 +90,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </p>
     </div>
 
+  </div>
+
+  <div class="sec split">
+    <h2>鑑定コード</h2>
+    <div>
+      <p class="g-note">いちばん新しい記録を16文字に符号化したものです。四柱推命との突き合わせなど、記録を外に持ち出すときに使います。</p>
+      <div class="token-row">
+        <code class="token" id="tokenOut">—</code>
+        <button class="btn ghost" id="tokenCopy">コピー</button>
+      </div>
+
+      <p class="g-note tk-lead">受け取った鑑定コードを、記録に加えることもできます。</p>
+      <div class="token-row">
+        <input type="text" id="tokenIn" placeholder="64M-1234-5678-9ABC-D" autocomplete="off" spellcheck="false" aria-label="鑑定コード">
+        <button class="btn ghost" id="tokenAdd">読み込む</button>
+      </div>
+      <p class="token-msg hidden" id="tokenMsg"></p>
+    </div>
+  </div>
+
+  <!-- 罫線 → ボタン群 → 罫線 → 注意文言 -->
+  <div id="foot" class="hist-actions hidden">
     <div class="hist-foot">
       <button class="btn ghost" id="exportBtn">JSONで書き出す</button>
       <button class="btn ghost" id="importBtn2">JSONを読み込む</button>
@@ -98,30 +120,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="hist-danger"><button type="button" class="hist-clear" id="clearBtn">すべての記録を削除する</button></p>
   </div>
 
-  <div class="sec split">
-      <h2>鑑定コード</h2>
-    <div>
-        <p class="g-note">いちばん新しい記録を16文字に符号化したものです。四柱推命との突き合わせなど、記録を外に持ち出すときに使います。</p>
-      <div class="token-row">
-          <code class="token" id="tokenOut">—</code>
-          <button class="btn ghost" id="tokenCopy">コピー</button>
-        </div>
-
-        <p class="g-note tk-lead">受け取った鑑定コードを、記録に加えることもできます。</p>
-      <div class="token-row">
-          <input type="text" id="tokenIn" placeholder="64M-1234-5678-9ABC-D" autocomplete="off" spellcheck="false" aria-label="鑑定コード">
-          <button class="btn ghost" id="tokenAdd">読み込む</button>
-        </div>
-        <p class="token-msg hidden" id="tokenMsg"></p>
-
-        <p class="g-note">写し間違い・途中で切れたもの・書き換えは、検査符号で見つけられます。ただし<b>本気の改ざんは防げません。</b>符号化の手順はブラウザに配信しているコードに含まれているので、読める人は正しい鑑定コードを作れます。信頼の担保ではなく、事故を防ぐためのものと考えてください。</p>
-      </div>
-  </div>
-
-
   <input type="file" id="importFile" accept="application/json,.json" class="sr-only">
 
   <div class="hist-note">
+    <p class="g-note">
+      鑑定コードの写し間違い・途中で切れたもの・書き換えは、検査符号で見つけられます。
+      ただし<b>本気の改ざんは防げません。</b>符号化の手順はブラウザに配信しているコードに
+      含まれているので、読める人は正しい鑑定コードを作れます。信頼の担保ではなく、
+      事故を防ぐためのものと考えてください。
+    </p>
     <p class="g-note">
       記録はお使いのブラウザの中にのみ保存しています。サーバーには送っていません。
       別の端末・別のブラウザで受けた記録は入りません。上限は300件で、超えると古いものから捨てられます。
@@ -145,8 +152,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="../assets/questions.js?v=0b31d093"></script>
 <script src="../assets/types.js?v=2c6264bd"></script>
 <script src="../assets/render.js?v=f156683c"></script>
-<script src="../assets/engine.js?v=576913cb"></script>
-<script src="../assets/history.js?v=8ad48fab"></script>
-<script src="../assets/settings.js?v=6ba9727b"></script>
+<script src="../assets/engine.js?v=e7bdde72"></script>
+<script src="../assets/history.js?v=fb72dd61"></script>
+<script src="../assets/settings.js?v=d48a6322"></script>
 </body>
 </html>

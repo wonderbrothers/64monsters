@@ -176,12 +176,21 @@
   var my = null;
   try { my = localStorage.getItem("shindan64.v1.mytype"); } catch(e){}
 
-  if (valid(qa)) setSide("a", qa);
-  else if (valid(my)) setSide("a", my);
+  var aSet = false;   /* 「あなた」側を指定できたか。既定のINTJ-A-Hと区別する */
+  if (valid(qa)){ setSide("a", qa); aSet = true; }
+  else if (valid(my)){ setSide("a", my); aSet = true; }
   if (valid(qb)) setSide("b", qb);
 
   paint("a"); paint("b");
   if (valid(qa) && valid(qb)) render(qa, qb);
+
+  /* 履歴からマイタイプが埋め直されたとき（settings.js）、まだ選ばれていなければ入れる */
+  document.addEventListener("mytype:change", function(e){
+    var c = e.detail && e.detail.code;
+    if (!valid(c) || aSet) return;
+    aSet = true;
+    setSide("a", c); paint("a");
+  });
 
   $("pairGo").addEventListener("click", function(){ go(true); });
 

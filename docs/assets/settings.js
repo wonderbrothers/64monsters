@@ -18,6 +18,8 @@
   var KEY_THEME = KEY + ".theme";  /* "system"（既定・端末設定に追従） | "light" | "dark" */
   var KEY_FS    = KEY + ".fs";     /* "s" | "m" | "l" */
   var MYKEY = KEY + ".mytype";
+  var MYOFF = KEY + ".myoff";      /* 自分で解除した印 */
+  var HISTKEY = KEY + ".history";
   var root = document.documentElement;
   var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
   var B = window.SITE_BASE || "";   /* docs/ 直下までの相対プレフィックス */
@@ -165,6 +167,29 @@
       '</a>' +
       '<a class="drawer-sub" href="' + B + 'pair/?a=' + code + '">この人との相性を調べる</a>';
   }
+
+  /* 記録はあるのにマイタイプだけ消えている状態を、開いた時点で埋め直す。
+     診断ページ以外（タイプ紹介・相性・このサイトについて）は engine.js を読まないので、
+     ここでも同じことをしておく。自分で解除したとき（.myoff）は戻さない。 */
+  function reconcileMyType(){
+    var SUB = window.SUBTYPES;
+    if (!SUB) return;
+    var cur = get(MYKEY, "");
+    if (cur && SUB[cur]) return;
+    if (get(MYOFF, "") === "1") return;
+    var h;
+    try { h = JSON.parse(localStorage.getItem(HISTKEY)); } catch(e){ return; }
+    if (!Array.isArray(h) || !h.length) return;
+    h.sort(function(x, y){ return (x && x.t) - (y && y.t); });
+    var r = h[h.length - 1];
+    if (!r || !r.code || !SUB[r.code]) return;
+    set(MYKEY, r.code);
+    /* settings.js は各ページの末尾で読むので、先に走った type.js / pair.js は
+       復元前の値を見ている。埋め直したときだけ知らせて、描き直してもらう。 */
+    try { document.dispatchEvent(new CustomEvent("mytype:change", { detail:{ code:r.code } })); }
+    catch(e){}
+  }
+  reconcileMyType();
 
   /* ヘッダーのマイタイプ（PCのみ表示。登録がなければ出さない） */
   function renderHeadMy(){

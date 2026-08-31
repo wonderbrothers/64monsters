@@ -11,6 +11,7 @@
   var Q = root.QUESTIONS, AXES = root.AXES, SUB = root.SUBTYPES;
   var KEY = "shindan64.v1";
   var MYKEY  = KEY + ".mytype";
+  var MYOFF  = KEY + ".myoff";   /* 自分で「解除」した印。履歴から勝手に戻さないための目印 */
   var LASTKEY = KEY + ".last";
   /* 設問データの版。questions.js の並びを入れ替えたら必ず上げること。
      途中保存した回答は並びに依存しているので、版が違えば捨てる。 */
@@ -29,7 +30,10 @@
   function lsDel(k){ try { localStorage.removeItem(k); } catch(e){} }
 
   function getMyType(){ var c = ls(MYKEY); return (c && SUB[c]) ? c : null; }
-  function setMyType(code){ lsSet(MYKEY, code); }
+  function setMyType(code){ lsSet(MYKEY, code); lsDel(MYOFF); }
+  /* 解除は「登録がない」ではなく「自分で外した」として残す。
+     そうしないと、次にページを開いたとき履歴から復元されて解除が効かない。 */
+  function clearMyType(){ lsDel(MYKEY); lsSet(MYOFF, "1"); }
 
   function getLast(){
     try { var d = JSON.parse(ls(LASTKEY)); return (d && SUB[d.code]) ? d : null; } catch(e){ return null; }
@@ -262,10 +266,24 @@
     return sc.EI.letter + sc.SN.letter + sc.TF.letter + sc.JP.letter + "-" + sc.AO.letter + "-" + sc.HC.letter;
   }
 
+  /* 記録はあるのに「前回の結果」やマイタイプだけ無い状態を、開いた時点で埋め直す。
+     別の端末でJSONを読み込んだとき、ブラウザに保存を消されたときなどに起きる。
+     自分で解除した場合（.myoff）はマイタイプを戻さない。 */
+  function reconcile(){
+    var h = getHistory();
+    if (!h.length) return;
+    var r = h[h.length - 1];
+    if (!SUB[r.code] || !r.sum) return;
+    if (!getLast()) setLast(r.code, scFromRecord(r));
+    if (!getMyType() && ls(MYOFF) !== "1") setMyType(r.code);
+  }
+  reconcile();
+
   root.ENGINE = {
     KEY:KEY, QV:QV, TOTAL:Q.length, makeOrder:makeOrder,
     track:track, save:save, load:load, clearSave:clearSave,
-    getMyType:getMyType, setMyType:setMyType, getLast:getLast, setLast:setLast,
+    getMyType:getMyType, setMyType:setMyType, clearMyType:clearMyType,
+    getLast:getLast, setLast:setLast, reconcile:reconcile,
     score:score, codeFrom:codeFrom,
     getHistory:getHistory, setHistory:setHistory, pushHistory:pushHistory,
     clearHistory:clearHistory, pct:pct,

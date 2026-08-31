@@ -286,8 +286,10 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 }
 
 /* 履歴ページの、記録そのものについての注記 */
-.hist-note{ margin-top:34px; padding-top:22px; border-top:1px solid var(--line-2); }
+.hist-note{ margin-top:26px; }
 .hist-note .g-note + .g-note{ margin-top:12px; }
+/* 注意書きはコンテンツ幅いっぱいに（読ませる本文ではないので行長を抑えない） */
+.hist-note .g-note{ max-width:none; }
 
 /* ---------- 注意事項（折りたたみ。いまは使っていない） ---------- */
 .notice{ margin-top:30px; padding-top:22px; border-top:1px solid var(--line-2); }
@@ -1010,6 +1012,11 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .hist-empty{ padding:8px 0 30px; }
 .hist-empty .g-note{ margin-top:14px; }
 .hist-foot{ display:flex; flex-wrap:wrap; gap:12px; margin-top:26px; justify-content:center; }
+/* 鑑定コード → 罫線 → ボタン群 → 罫線 → 注意文言 の並び。
+   罫線は「上の要素の下線」で引く。上線で引くと、ボタン群を隠したときに
+   .sec の下線と2本並んでしまう（隣接セレクタは非表示の要素をまたげない）。 */
+.hist-actions{ padding:26px 0; border-bottom:1px solid var(--line-2); }
+.hist-actions .hist-foot{ margin-top:0; }
 
 /* サマリー */
 .hist-tiles{ display:grid; grid-template-columns:repeat(3, 1fr) 1.6fr; gap:12px; margin-bottom:8px; }

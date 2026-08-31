@@ -195,6 +195,7 @@
     var has = h.length > 0;
     $("empty").classList.toggle("hidden", has);
     $("body").classList.toggle("hidden", !has);
+    $("foot").classList.toggle("hidden", !has);
     renderToken(h);            /* 記録が0件でも、貼り付けて読み込めるようにしておく */
     if (!has) return;
     renderTiles(h);
