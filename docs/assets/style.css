@@ -257,6 +257,9 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 /* FVのサムネイル直下。結果そのものへの操作（保存・登録）だけを置く */
 .hero-acts{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:-8px 0 22px; }
 .disclaimer{ font-size:var(--fs-sm); color:var(--ink-3); line-height:1.9; margin-top:36px; padding-top:22px; border-top:1px solid var(--line-2); }
+/* 直前が .sec のときは、その下罫線と2本並ぶので自前の上罫線は引かない
+   （結果ページ下部のボタン群を外して、.sec と隣り合うようになった） */
+.sec + .disclaimer{ padding-top:0; border-top:0; }
 
 /* ---------- 注意書きへのリンク（本体は /about/） ---------- */
 .notice-link{
