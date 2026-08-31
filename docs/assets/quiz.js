@@ -13,7 +13,7 @@
   var B = window.SITE_BASE || "";
   var HOME = B || "./";
   var $ = function(id){ return document.getElementById(id); };
-  var ORDER = E.ORDER;
+  var ORDER = E.makeOrder(true);   /* 開始時に決め、途中保存にも一緒に残す */
 
   var LABELS = { "-2":"そう思わない", "-1":"どちらかといえば、そう思わない", "0":"どちらでもない", "1":"どちらかといえば、そう思う", "2":"そう思う" };
   var VALS = [-2,-1,0,1,2];
@@ -38,7 +38,7 @@
     if (document.hidden){ segStop(); persist(); } else { segGo(); }
   });
 
-  function persist(){ return E.save({ answers:answers, pos:pos, ms:elapsedSec()*1000, mile:lastMile }); }
+  function persist(){ return E.save({ answers:answers, pos:pos, ms:elapsedSec()*1000, mile:lastMile, order:ORDER }); }
   function answeredCount(){
     var n = 0;
     for (var i = 0; i < ORDER.length; i++){ if (answers[ORDER[i]] !== null) n++; else break; }
@@ -174,6 +174,7 @@
     if (restart) E.clearSave();
     if (d && d.p > 0){
       answers = d.a; pos = d.p; doneMs = d.t || 0; lastMile = d.m || 0;
+      ORDER = d.o;                                 /* 中断したときの並びで続ける */
       E.track("quiz_resume", { question_no: pos + 1, elapsed_sec: Math.round(doneMs / 1000) });
     } else {
       E.track("quiz_start", { total_questions: Q.length });

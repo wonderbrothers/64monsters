@@ -66,16 +66,57 @@
   /* 生スコア → pos極の割合（0〜100） */
   function pct(sum, max){ return Math.round(((sum + max) / (2 * max)) * 100); }
 
-  /* --- 出題順：6軸をラウンドロビンで交互に出す（連続する類似設問を避ける） --- */
+  /* --- 出題順 ---
+     6軸をラウンドロビンで交互に出す（似た設問を続けない）のは固定。
+     そのうえで、受けるたびに「各軸の中の15問の並び」と「1周の中の軸の順番」を
+     入れ替える。設問セットは同じなので測定は変わらず、順序の慣れだけが薄まる。
+     ラウンドの境目で同じ軸が続かないように、先頭だけ入れ替えて避ける。 */
   var byAxis = {};
   AXES.forEach(function(a){ byAxis[a.key] = []; });
   Q.forEach(function(q, i){ byAxis[q.axis].push(i); });
-  var ORDER = [];
-  for (var r = 0; r < 15; r++) AXES.forEach(function(a){ ORDER.push(byAxis[a.key][r]); });
+  var ROUNDS = byAxis[AXES[0].key].length;   /* 各軸の問数 = 15 */
+
+  function shuffled(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /* random=false なら、以前と同じ決まった並び（古い途中保存の復元に使う） */
+  function makeOrder(random){
+    var pool = {};
+    AXES.forEach(function(a){ pool[a.key] = random ? shuffled(byAxis[a.key]) : byAxis[a.key]; });
+    var order = [], prevLast = null;
+    for (var r = 0; r < ROUNDS; r++){
+      var axes = random ? shuffled(AXES) : AXES.slice();
+      if (random && prevLast && axes[0].key === prevLast){
+        var j = 1 + Math.floor(Math.random() * (axes.length - 1));
+        var t = axes[0]; axes[0] = axes[j]; axes[j] = t;
+      }
+      axes.forEach(function(a){ order.push(pool[a.key][r]); });
+      prevLast = axes[axes.length - 1].key;
+    }
+    return order;
+  }
+
+  /* 保存された並びが壊れていないか（全設問がちょうど1回ずつ入っているか） */
+  function validOrder(o){
+    if (!Array.isArray(o) || o.length !== Q.length) return false;
+    var seen = new Array(Q.length).fill(false);
+    for (var i = 0; i < o.length; i++){
+      var v = o[i];
+      if (typeof v !== "number" || v < 0 || v >= Q.length || seen[v]) return false;
+      seen[v] = true;
+    }
+    return true;
+  }
 
   /* ---------- 途中保存 ---------- */
   function save(st){
-    return lsSet(KEY, JSON.stringify({ v:QV, a:st.answers, p:st.pos, t:st.ms, m:st.mile }));
+    return lsSet(KEY, JSON.stringify({ v:QV, a:st.answers, p:st.pos, t:st.ms, m:st.mile, o:st.order }));
   }
   function load(){
     try {
@@ -83,6 +124,8 @@
       var d = JSON.parse(s);
       /* 設問が入れ替わったあとの古い回答は、番号がずれるので使わない */
       if (!d || d.v !== QV || !Array.isArray(d.a) || d.a.length !== Q.length){ clearSave(); return null; }
+      /* 並びを保存する前の途中保存も、以前と同じ並びで復元できる */
+      if (!validOrder(d.o)) d.o = makeOrder(false);
       return d;
     } catch(e){ return null; }
   }
@@ -111,7 +154,7 @@
   }
 
   root.ENGINE = {
-    KEY:KEY, QV:QV, ORDER:ORDER, TOTAL:Q.length,
+    KEY:KEY, QV:QV, TOTAL:Q.length, makeOrder:makeOrder,
     track:track, save:save, load:load, clearSave:clearSave,
     getMyType:getMyType, setMyType:setMyType, getLast:getLast, setLast:setLast,
     score:score, codeFrom:codeFrom,
