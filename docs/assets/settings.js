@@ -55,9 +55,11 @@
   var GALLERY = B + "types.html";
   var HOME = B || "index.html";
   var QUIZ = B + "quiz/";
+  var HIST = B + "history/";
   /* いま開いているのがギャラリーなら、リンクに現在地を示す */
   var onGallery = /types\.html$/.test(location.pathname);
   var onQuiz = /\/quiz\/?$/.test(location.pathname);
+  var onHist = /\/history\/?$/.test(location.pathname);
 
   /* ---------- ヘッダー ---------- */
   var wrapCls = document.querySelector(".wrap.wide") ? "wrap wide" : "wrap";
@@ -71,6 +73,7 @@
         '<a class="sh-my hidden" id="shMy" href="#"><span class="thumb"><img src="" alt=""></span>' +
           '<span class="sm-code mono"></span></a>' +
         '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
+        '<a class="sh-link" href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>履歴</a>' +
         '<button type="button" class="sh-link" id="shSet">各種設定</button>' +
       '</nav>' +
       '<a class="btn sh-cta" href="' + QUIZ + '" id="shCta">診断</a>' +
@@ -129,6 +132,8 @@
           '<span>90問の診断を受ける</span>' + SVG_CHEV + '</a>' +
         '<a href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>' +
           '<span>モンスターギャラリー</span>' + SVG_CHEV + '</a>' +
+        '<a href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>' +
+          '<span>鑑定履歴</span>' + SVG_CHEV + '</a>' +
       '</nav>' +
       '<div class="drawer-sec"><p class="drawer-h">My Type</p><div id="drawerMy"></div></div>' +
       '<div class="drawer-sec"><p class="drawer-h">表示設定</p><div id="drawerBody"></div></div>' +

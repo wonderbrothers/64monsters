@@ -14,6 +14,7 @@
 docs/                     ← GitHub に公開するのはこのフォルダだけ
   index.html              トップ（診断の入口・6軸の説明・タイプ選択）
   quiz/index.html         設問90問（noindex。終わると /t/<CODE>/ へ）
+  history/index.html      鑑定履歴（noindex。ブラウザ内の記録を時系列で見る）
   types.html              64タイプの一覧ページ（キャラクター画像つき）
   t/<CODE>/index.html     タイプごとの結果・解説ページ（64枚・自動生成）
   pair/index.html         2人の相性ページ（?a=CODE&b=CODE）
@@ -26,6 +27,7 @@ docs/                     ← GitHub に公開するのはこのフォルダだ�
   assets/quiz.js          設問の出題（終わると /t/<CODE>/ へ遷移する）
   assets/type.js          個別ページ側（6軸ゲージ・マイタイプ・画像保存）
   assets/pair.js          相性ページ側
+  assets/history.js       鑑定履歴ページ側（書き出し・読み込み）
   assets/share.js         結果の一枚絵（1080×1080）をcanvasで作る
   images/thumbs/          表示用サムネイル（440px・WebP・64枚／約1.4MB）
   images/ogp/             タイプ別のOGP画像（1200×630・JPEG・64枚／約4MB・自動生成）
@@ -51,6 +53,9 @@ DESIGN.md                 設計メモ「なぜそうしたか」（.gitignore �
 - **`/t/<CODE>/`** … 結果ページ兼、そのタイプの解説ページ。本文はビルド時に静的に書き出してあるので、
   検索エンジンにも読まれます。自分で診断した直後だけ、6軸のスコアが上に足されます（判定は端末内に保存された回答から出しており、サーバーには送っていません）。
 - **`/pair/?a=CODE&b=CODE`** … 2人の相性。6軸のどこが同じでどこが違うかを出します。
+- **`/history/`** … 受けるたびの記録を時系列で。`noindex`（中身は各自のブラウザの中にしかありません）。
+  生スコア（`-30〜+30`）と満点を保存しているので、設問数を変えても過去の記録を正しく読めます。
+  JSONで書き出し・読み込みができ、端末をまたいで合流できます。上限300件。
 - 旧URL（`index.html#ENTP-A-H`）で来た人は、対応する個別ページへ自動で転送されます。
 
 ## 公開について
@@ -138,6 +143,10 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 | `pair_view` | 相性を表示した | `pair_a` `pair_b` `axis_match` |
 | `share_pair_image` | 相性の一枚絵を保存・共有した | `pair_a` `pair_b` `method` |
 | `invite_copy` | 「診断リンクをコピー」を押した | `from` |
+| `history_view` | 鑑定履歴を開いた | `records` |
+| `history_export` | 記録をJSONで書き出した | `records` |
+| `history_import` | 記録をJSONから読み込んだ | `added` `total` |
+| `history_clear` | 記録をすべて削除した | — |
 
 > **GTM側の設定が要ります。** ここで送っているのは dataLayer までです。GA4 に届けるには、GTM で各イベント名のトリガーと GA4 イベントタグを作る必要があります（既存の設定にないイベントは、そのままでは GA4 に現れません）。
 

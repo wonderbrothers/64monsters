@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PDKDBFBW');</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鑑定履歴｜64モンスターズ</title>
+<meta name="description" content="これまでに受けた診断の記録。コードと6軸の数値を時系列で見られます。">
+<link rel="canonical" href="https://64monsters.wonder-bros.com/history/">
+<!-- 中身は各自のブラウザの中にしかないので、検索結果に出す意味がない -->
+<meta name="robots" content="noindex, follow">
+<meta name="author" content="WONDER BROTHERS INC.">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181B" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+
+<link rel="icon" href="../favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-dark-32.png" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/style.css?v=9a0c57d7">
+<script>
+/* 表示設定を描画前に反映（ちらつき防止） */
+(function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
+</script>
+<script>window.SITE_BASE = "../";</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDKDBFBW"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<section id="history" class="wrap">
+  <div class="hist-head">
+    <p class="eyebrow">history</p>
+    <h1 class="subtitle">鑑定履歴</h1>
+    <p class="lede">
+      これまでに受けた診断の記録です。同じ人でも受けるたびに数値は動きます。
+      その動き方を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。
+    </p>
+  </div>
+
+  <!-- 記録が無いとき -->
+  <div id="empty" class="hist-empty hidden">
+    <p class="body-text">まだ記録がありません。診断を受けると、ここに1件ずつ積まれていきます。</p>
+    <p class="g-note">記録はこのブラウザの中だけに保存されます。サーバーには送っていません。<br>
+      別の端末やブラウザで受けた分は入りません。書き出したJSONを読み込めば合流できます。</p>
+    <div class="hist-foot">
+      <a class="btn" href="../quiz/?restart=1">診断を受ける</a>
+      <button class="btn ghost" id="importBtn">JSONを読み込む</button>
+    </div>
+  </div>
+
+  <!-- 記録があるとき -->
+  <div id="body" class="hidden">
+    <div class="hist-tiles" id="tiles"></div>
+
+    <div class="sec split">
+      <h2>軸ごとのばらつき</h2>
+      <div class="axstrips" id="strips"></div>
+      <p class="g-note">
+        点ひとつが1回の診断です。<b>いちばん濃い点が最新</b>。
+        中央の線が均衡点で、左右どちらに寄っているかが極を表します。
+        幅が狭い軸ほど、状況によらず安定している軸です。
+        <b>幅の広い軸は、変化ではなく測定のばらつきの可能性もあります。</b>
+        数回受けて自分の振れ幅を掴むまでは、1回の増減を意味づけしないでください。
+      </p>
+    </div>
+
+    <div class="sec split">
+      <h2>記録</h2>
+      <div class="hist-tablewrap"><table class="histtable" id="table"></table></div>
+      <p class="g-note">
+        数値は各軸の生スコアで、範囲は <span class="mono">-30 〜 +30</span>（15問 × ±2）。
+        負が左の極（E・S・T・P・A・C）、正が右の極（I・N・F・J・O・H）です。
+        括弧内は0〜100に直した割合で、結果ページのゲージと同じ値です。
+      </p>
+    </div>
+
+    <div class="hist-foot">
+      <button class="btn ghost" id="exportBtn">JSONで書き出す</button>
+      <button class="btn ghost" id="importBtn2">JSONを読み込む</button>
+      <a class="btn ghost" href="../quiz/?restart=1">もう一度受ける</a>
+    </div>
+    <p class="hist-danger"><button type="button" class="hist-clear" id="clearBtn">すべての記録を削除する</button></p>
+  </div>
+
+  <input type="file" id="importFile" accept="application/json,.json" class="sr-only">
+
+  <details class="notice">
+    <summary>この記録について</summary>
+    <ul>
+      <li>記録はお使いのブラウザの中（localStorage）にのみ保存しています。サーバーには送っていません。ブラウザのデータを消すと失われます。</li>
+      <li>別の端末・別のブラウザで受けた記録は入りません。「JSONで書き出す」で保存し、別の端末で「JSONを読み込む」と合流できます。</li>
+      <li>同じ設問を短い間隔で繰り返すと、設問を覚えてしまうため回答が安定します。変化を見たい場合は、数週間以上の間隔をあけてください。</li>
+      <li>上限は300件です。超えると古いものから捨てられます。</li>
+    </ul>
+  </details>
+
+  <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
+</section>
+
+<script src="../assets/questions.js?v=0b31d093"></script>
+<script src="../assets/types.js?v=2c6264bd"></script>
+<script src="../assets/render.js?v=f156683c"></script>
+<script src="../assets/engine.js?v=92614a3e"></script>
+<script src="../assets/history.js?v=d2530251"></script>
+<script src="../assets/settings.js?v=c4203469"></script>
+</body>
+</html>

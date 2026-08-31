@@ -36,6 +36,36 @@
   }
   function setLast(code, sc){ lsSet(LASTKEY, JSON.stringify({ code: code, sc: sc })); }
 
+  /* ---------- 鑑定履歴 ----------
+     受けるたびに1件積む。生スコア（sum）と満点（max）を残すのが肝で、
+     設問数が変わっても過去の記録を正しく読めるようにしている。
+     pctPos は sum と max から導けるので保存しない。 */
+  var HISTKEY = KEY + ".history";
+  var HIST_MAX = 300;   /* localStorage を圧迫しないための上限。古いものから捨てる */
+
+  function getHistory(){
+    try {
+      var a = JSON.parse(ls(HISTKEY));
+      if (!Array.isArray(a)) return [];
+      return a.filter(function(r){ return r && r.t && r.code && r.sum; })
+              .sort(function(x, y){ return x.t - y.t; });
+    } catch(e){ return []; }
+  }
+  function setHistory(list){
+    var a = list.slice(-HIST_MAX);
+    return lsSet(HISTKEY, JSON.stringify(a));
+  }
+  function pushHistory(code, sc, sec){
+    var sum = {}, max = {};
+    AXES.forEach(function(x){ sum[x.key] = sc[x.key].sum; max[x.key] = 30; });
+    var h = getHistory();
+    h.push({ t: Date.now(), code: code, sec: sec, sum: sum, max: max });
+    return setHistory(h);
+  }
+  function clearHistory(){ lsDel(HISTKEY); }
+  /* 生スコア → pos極の割合（0〜100） */
+  function pct(sum, max){ return Math.round(((sum + max) / (2 * max)) * 100); }
+
   /* --- 出題順：6軸をラウンドロビンで交互に出す（連続する類似設問を避ける） --- */
   var byAxis = {};
   AXES.forEach(function(a){ byAxis[a.key] = []; });
@@ -84,6 +114,8 @@
     KEY:KEY, QV:QV, ORDER:ORDER, TOTAL:Q.length,
     track:track, save:save, load:load, clearSave:clearSave,
     getMyType:getMyType, setMyType:setMyType, getLast:getLast, setLast:setLast,
-    score:score, codeFrom:codeFrom
+    score:score, codeFrom:codeFrom,
+    getHistory:getHistory, setHistory:setHistory, pushHistory:pushHistory,
+    clearHistory:clearHistory, pct:pct
   };
 })(window);

@@ -113,6 +113,7 @@
     var sc = E.score(answers), code = E.codeFrom(sc), sec = elapsedSec();
     E.clearSave();
     E.setLast(code, sc);
+    E.pushHistory(code, sc, sec);
     /* 遷移先で quiz_complete を1回だけ送るための目印と、かかった秒数 */
     try {
       sessionStorage.setItem(E.KEY + ".fresh", code);
