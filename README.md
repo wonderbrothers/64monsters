@@ -1,13 +1,14 @@
 # 64monsters — 64モンスターズ
 
 6軸・全90問で、64通りの性格タイプを判定するブラウザ診断です。
-`docs/index.html` をダブルクリックすればそのまま動きます（サーバー不要）。
+`npm run dev` でローカルサーバーを起動して確認します（依存パッケージなし）。
 
 ## 構成
 
 ```
 docs/                     ← GitHub に公開するのはこのフォルダだけ
-  index.html              診断本体（イントロ / 設問）
+  index.html              トップ（診断の入口・6軸の説明・タイプ選択）
+  quiz/index.html         設問90問（noindex。終わると /t/<CODE>/ へ）
   types.html              64タイプの一覧ページ（キャラクター画像つき）
   t/<CODE>/index.html     タイプごとの結果・解説ページ（64枚・自動生成）
   pair/index.html         2人の相性ページ（?a=CODE&b=CODE）
@@ -15,7 +16,9 @@ docs/                     ← GitHub に公開するのはこのフォルダだ�
   assets/questions.js     設問データ（90問）
   assets/types.js         軸の定義 / 基本16タイプ / 64サブタイプ
   assets/render.js        相性・マトリクスの組み立て（ブラウザとビルドで共用）
-  assets/app.js           出題・採点（終わると /t/<CODE>/ へ遷移する）
+  assets/engine.js        出題順・途中保存・採点（/ と /quiz/ が共有）
+  assets/home.js          トップの描画（軸の一覧・キャラクターの帯・タイプ選択）
+  assets/quiz.js          設問の出題（終わると /t/<CODE>/ へ遷移する）
   assets/type.js          個別ページ側（6軸ゲージ・マイタイプ・画像保存）
   assets/pair.js          相性ページ側
   assets/share.js         結果の一枚絵（1080×1080）をcanvasで作る
@@ -36,7 +39,8 @@ package.json              npm scripts の入り口。依存パッケージはあ
 
 ## ページの構成
 
-- **`/`** … イントロと90問。答え終わると `/t/<CODE>/` へ移動します。
+- **`/`** … 診断の入口。6軸の説明とタイプ選択。ここからは設問を出しません。
+- **`/quiz/`** … 90問の設問。答え終わると `/t/<CODE>/` へ移動します。JSで描画するため中身を持たないので `noindex`（sitemapにも載せていません）。`?restart=1` が付いていれば途中保存を捨てて最初から始めます。
 - **`/t/<CODE>/`** … 結果ページ兼、そのタイプの解説ページ。本文はビルド時に静的に書き出してあるので、
   検索エンジンにも読まれます。自分で診断した直後だけ、6軸のスコアが上に足されます（判定は端末内に保存された回答から出しており、サーバーには送っていません）。
 - **`/pair/?a=CODE&b=CODE`** … 2人の相性。6軸のどこが同じでどこが違うかを出します。
@@ -115,11 +119,11 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 
 | イベント | いつ | 一緒に送る値 |
 |---|---|---|
-| `quiz_start` | 「診断をはじめる」を押した | `total_questions` |
+| `quiz_start` | `/quiz/` を新規に開いた | `total_questions` |
 | `quiz_progress` | 25% / 50% / 75%（23・45・68問目）を通過した | `question_no` `progress_pct` `elapsed_sec` |
 | `quiz_pause` | 「保存して中断」を押した | `question_no` `answered` `progress_pct` `elapsed_sec` |
-| `quiz_exit` | 設問画面から HOME で抜けた | 同上 |
-| `quiz_resume` | 「途中から再開する」を押した | `question_no` `elapsed_sec` |
+| `quiz_exit` | `/quiz/` から HOME で抜けた、またはタブを閉じた・戻った | 同上 |
+| `quiz_resume` | 途中保存のある状態で `/quiz/` を開いた | `question_no` `elapsed_sec` |
 | `quiz_complete` | 90問終えて結果ページに着いた | `monster_type` `base_type` `elapsed_sec` |
 | `type_view` | 結果ページを見た（診断直後をのぞく） | `monster_type` `base_type` |
 | `cta_click` | 結果ページ下部の導線を押した | `monster_type` `label` `from_result` |

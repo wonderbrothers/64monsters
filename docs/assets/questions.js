@@ -1,7 +1,7 @@
 /* 64モンスターズ — 設問データ
    axis: EI / SN / TF / JP / AO / HC
    dir : +1 = 後者の極 (I, N, F, J, O, H) 方向に加点 / -1 = 逆
-   QV  : 設問を入れ替えたら docs/assets/app.js の QV を上げる（中断した回答の互換性）
+   QV  : 設問を入れ替えたら docs/assets/engine.js の QV を上げる（中断した回答の互換性）
    ※ 各軸15問・逆転項目を混在させて黙従傾向を相殺 */
 window.QUESTIONS = [
   /* ---- E / I : エネルギーの向き ---- */

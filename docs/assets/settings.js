@@ -49,8 +49,10 @@
 
   var GALLERY = B + "types.html";
   var HOME = B || "index.html";
+  var QUIZ = B + "quiz/";
   /* いま開いているのがギャラリーなら、リンクに現在地を示す */
   var onGallery = /types\.html$/.test(location.pathname);
+  var onQuiz = /\/quiz\/?$/.test(location.pathname);
 
   /* ---------- ヘッダー ---------- */
   var wrapCls = document.querySelector(".wrap.wide") ? "wrap wide" : "wrap";
@@ -66,7 +68,7 @@
         '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
         '<button type="button" class="sh-link" id="shSet">各種設定</button>' +
       '</nav>' +
-      '<a class="btn sh-cta" href="' + HOME + '" id="shCta">診断</a>' +
+      '<a class="btn sh-cta" href="' + QUIZ + '" id="shCta">診断</a>' +
     '</div>';
   document.body.insertBefore(head, document.body.firstChild);
 
@@ -118,6 +120,8 @@
         '<button type="button" class="modal-x" data-dclose aria-label="メニューを閉じる">×</button>' +
       '</div>' +
       '<nav class="drawer-nav" aria-label="サイト内">' +
+        '<a href="' + QUIZ + '"' + (onQuiz ? ' aria-current="page"' : '') + '>' +
+          '<span>90問の診断を受ける</span>' + SVG_CHEV + '</a>' +
         '<a href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>' +
           '<span>モンスターギャラリー</span>' + SVG_CHEV + '</a>' +
       '</nav>' +
@@ -253,12 +257,11 @@
 
   /* ---------- 診断ボタン ---------- */
   /* トップページにいるときは、遷移せずにその場で診断を始める */
-  document.getElementById("shCta").addEventListener("click", function(e){
-    var start = document.getElementById("startBtn"), quiz = document.getElementById("quiz");
-    if (!start || !quiz) return;                 /* 他ページ → 通常のリンクとして遷移 */
-    e.preventDefault();
-    closeDrawer();
-    if (!quiz.classList.contains("hidden")) return;  /* すでに設問中なら何もしない */
-    start.click();
-  });
+  /* 設問ページにいるあいだは「診断」を現在地として示し、押しても何も起きないようにする */
+  (function markCurrent(){
+    var cta = document.getElementById("shCta");
+    if (!/\/quiz\/?$/.test(location.pathname)) return;
+    cta.setAttribute("aria-current", "page");
+    cta.addEventListener("click", function(e){ e.preventDefault(); });
+  })();
 })();

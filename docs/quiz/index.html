@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PDKDBFBW');</script>
+<!-- End Google Tag Manager -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>診断を受ける｜64モンスターズ</title>
+<meta name="description" content="6軸・全90問の性格診断。直感で答えていくと、64通りのうちのどれかに行き着きます。">
+<link rel="canonical" href="https://64monsters.wonder-bros.com/quiz/">
+<!-- 設問はJSで描画するため、検索結果に出す中身を持たない。トップに集約する -->
+<meta name="robots" content="noindex, follow">
+<meta name="author" content="WONDER BROTHERS INC.">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#15181B" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+
+<!-- OGP / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="64モンスターズ">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:url" content="https://64monsters.wonder-bros.com/quiz/">
+<meta property="og:title" content="診断を受ける｜64モンスターズ">
+<meta property="og:description" content="6軸・全90問の性格診断。直感で答えていくと、64通りのうちのどれかに行き着きます。">
+<meta property="og:image" content="https://64monsters.wonder-bros.com/images/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="64モンスターズ｜6軸でわかる64通りの性格診断">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="診断を受ける｜64モンスターズ">
+<meta name="twitter:description" content="6軸・全90問の性格診断。直感で答えていくと、64通りのうちのどれかに行き着きます。">
+<meta name="twitter:image" content="https://64monsters.wonder-bros.com/images/ogp.png">
+
+<link rel="icon" href="../favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-dark-32.png" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="manifest" href="../site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/style.css?v=9158b53c">
+<script>
+/* 表示設定を描画前に反映（ちらつき防止） */
+(function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
+</script>
+<script>window.SITE_BASE = "../";</script>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PDKDBFBW"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<section id="quiz" class="wrap">
+  <div class="qbar">
+    <div class="qbar-inner">
+      <a class="qhome" id="homeBtn" href="../">← HOME</a>
+      <div class="seg" id="seg" role="progressbar" aria-label="回答の進み具合" aria-valuemin="0" aria-valuemax="100"></div>
+      <div class="qcount"><span id="qNow">1</span> / 90</div>
+    </div>
+  </div>
+
+  <div class="qmain">
+    <p class="eyebrow qaxis" id="qAxis">エネルギーの向き</p>
+    <h1 class="qtext" id="qText">—</h1>
+
+    <div class="scale">
+      <div class="scale-ends"><span>そう思わない</span><span>そう思う</span></div>
+      <div class="opts" id="opts"></div>
+      <p class="opt-lab" id="optLab"></p>
+    </div>
+  </div>
+
+  <div class="qfoot">
+    <button class="btn ghost" id="backBtn">← 前の設問</button>
+    <span class="qhint">キーボードの <span class="mono">1</span>〜<span class="mono">5</span> でも回答できます</span>
+    <button class="btn ghost" id="pauseBtn">保存して中断</button>
+  </div>
+
+  <noscript>
+    <p class="note">この診断は、回答の採点をブラウザの中だけで行っています。JavaScript を有効にしてから、もう一度お試しください。</p>
+  </noscript>
+</section>
+
+<script src="../assets/questions.js?v=2227c52e"></script>
+<script src="../assets/types.js?v=686ce1b7"></script>
+<script src="../assets/render.js?v=9269135e"></script>
+<script src="../assets/engine.js?v=6a9ba1e7"></script>
+<script src="../assets/quiz.js?v=807aa111"></script>
+<script src="../assets/settings.js?v=0176665d"></script>
+</body>
+</html>

@@ -90,8 +90,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div>判定タイプ<span class="mono">64通り</span></div>
     </div>
     <div class="fv-cta">
-      <button class="btn" id="startBtn">診断をはじめる</button>
-      <button class="btn ghost hidden" id="resumeBtn">途中から再開する</button>
+      <a class="btn" id="startBtn" href="quiz/?restart=1">診断をはじめる</a>
+      <a class="btn ghost hidden" id="resumeBtn" href="quiz/">途中から再開する</a>
     </div>
     <p class="savenote hidden" id="saveNote"></p>
     <p class="note">
@@ -133,38 +133,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
 </section>
 
-<!-- ============ 設問 ============ -->
-<section id="quiz" class="wrap hidden">
-  <div class="qbar">
-    <div class="qbar-inner">
-      <button class="qhome" id="homeBtn">← HOME</button>
-      <div class="seg" id="seg" role="progressbar" aria-label="回答の進み具合" aria-valuemin="0" aria-valuemax="100"></div>
-      <div class="qcount"><span id="qNow">1</span> / 90</div>
-    </div>
-  </div>
-
-  <div class="qmain">
-    <p class="eyebrow qaxis" id="qAxis">エネルギーの向き</p>
-    <h2 class="qtext" id="qText">—</h2>
-
-    <div class="scale">
-      <div class="scale-ends"><span>そう思わない</span><span>そう思う</span></div>
-      <div class="opts" id="opts"></div>
-      <p class="opt-lab" id="optLab"></p>
-    </div>
-  </div>
-
-  <div class="qfoot">
-    <button class="btn ghost" id="backBtn">← 前の設問</button>
-    <span class="qhint">キーボードの <span class="mono">1</span>〜<span class="mono">5</span> でも回答できます</span>
-    <button class="btn ghost" id="pauseBtn">保存して中断</button>
-  </div>
-</section>
-
-<script src="assets/questions.js?v=d0594591"></script>
+<script src="assets/questions.js?v=2227c52e"></script>
 <script src="assets/types.js?v=686ce1b7"></script>
 <script src="assets/render.js?v=9269135e"></script>
-<script src="assets/app.js?v=da45c7f9"></script>
-<script src="assets/settings.js?v=3f7c7e99"></script>
+<script src="assets/engine.js?v=6a9ba1e7"></script>
+<script src="assets/home.js?v=ebd8047d"></script>
+<script src="assets/settings.js?v=0176665d"></script>
 </body>
 </html>
