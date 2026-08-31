@@ -80,8 +80,11 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .rule{ height:1px; background:var(--line); border:0; margin:0; }
 
 /* ---------- イントロ ---------- */
+/* 各ページの見出し（*-head）に下罫線は引かない。罫線はセクションの
+   区切りにだけ使い、見出しと本文のあいだは余白で分ける。
+   モンスターギャラリーだけ罫線が無く、ページごとに見え方が違っていた。 */
 #intro{ padding:clamp(34px,7vh,72px) 0 40px; }
-.intro-head{ border-bottom:1px solid var(--line); padding-bottom:34px; }
+.intro-head{ padding-bottom:34px; }
 .intro-head .eyebrow{ margin-bottom:14px; }
 .title{ font-size:clamp(2.25rem, 7vw, 3.5rem); letter-spacing:.02em; margin-top:14px; }
 .title .num{
@@ -172,7 +175,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 /* ---------- 結果 ---------- */
 #result{ padding:0 0 40px; }
 #result .res-head{ margin-top:34px; }
-.res-head{ text-align:center; padding:26px 0 34px; border-bottom:1px solid var(--line); }
+.res-head{ text-align:center; padding:26px 0 34px; }
 .code{
   font-family:var(--f-mono); font-size:clamp(2rem, 7.5vw, 3.25rem); font-weight:500;
   letter-spacing:.06em; display:inline-block;
@@ -278,7 +281,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 
 /* /about/ */
 #about{ padding:clamp(30px,6vh,64px) 0 40px; }
-.about-head{ border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:8px; }
+.about-head{ padding-bottom:28px; margin-bottom:8px; }
 #about .sec .list{ margin-top:14px; }
 #about .sec .list li{ font-size:var(--fs-base); color:var(--ink-2); }
 #about .body-text + .body-text{ margin-top:16px; }
@@ -637,7 +640,7 @@ body.modal-open{ overflow:hidden; }
 
 /* ---------- 相性ページ ---------- */
 #pair{ padding:clamp(30px,6vh,64px) 0 40px; }
-.pair-head{ border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:30px; }
+.pair-head{ padding-bottom:28px; margin-bottom:30px; }
 
 .pick2{ display:grid; gap:18px; grid-template-columns:1fr 1fr; align-items:start; }
 @media (max-width:620px){ .pick2{ grid-template-columns:1fr; } }
@@ -1005,7 +1008,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
    「どれだけ揺れるか」を同時に出す。回数が少なくても読めるのが折れ線との違い。
    ============================================================ */
 #history, #friends{ padding:clamp(30px,6vh,64px) 0 40px; }
-.hist-head{ border-bottom:1px solid var(--line); padding-bottom:28px; margin-bottom:30px; }
+.hist-head{ padding-bottom:28px; margin-bottom:30px; }
 .hist-empty{ padding:8px 0 30px; }
 .hist-empty .g-note{ margin-top:14px; }
 .hist-foot{ display:flex; flex-wrap:wrap; gap:12px; margin-top:26px; justify-content:center; }
