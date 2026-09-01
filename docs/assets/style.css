@@ -377,7 +377,9 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 }
 .copy-link{ color:inherit; text-decoration:none; }
 /* 版とビルド日。著作権表示の下に、小さく添える */
-.ver{ display:block; margin-top:8px; font-size:var(--fs-xs); color:var(--ink-3); opacity:.7; }
+/* 版・ビルド番号・更新日。問い合わせのときにそのまま伝えてもらうので、
+   ひと押しで全部選べるようにしておく */
+.ver{ display:block; margin-top:8px; font-size:var(--fs-xs); color:var(--ink-3); opacity:.7; user-select:all; }
 .copy-link:hover{ color:var(--ink); }
 
 /* 設問画面のナビゲーション */

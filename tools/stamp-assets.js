@@ -53,6 +53,9 @@ function htmlFiles(dir = ""){
    日付は「ビルドを回した日」ではなく「中身が最後に変わった日」にする。
    何も直していない日にビルドし直しても、日付は動かない。
 
+   ハッシュの頭7桁は、そのままビルド番号としてフッターに出す。
+   問い合わせを受けたとき、その人が見ているものを1つに特定できる。
+
    そのために docs/ の中身のハッシュを取り、前回のものと突き合わせる。
    ?v= と VERSION / BUILT の行は、ビルドのたびに変わるので取り除いてから数える
    （これを忘れると毎回ハッシュが変わり、日付が毎日動いてしまう）。
@@ -61,6 +64,7 @@ const STATE = path.join(__dirname, "..", "build-state.json");
 const VOLATILE = [
   [/\?v=[a-f0-9]{8}/g, ""],
   [/var VERSION = "[^"]*";/g, ""],
+  [/var BUILD   = "[^"]*";/g, ""],
   [/var BUILT   = "[^"]*";/g, ""]
 ];
 
@@ -107,12 +111,14 @@ function writeVersion(){
 
   const file = path.join(DOCS, "assets/settings.js");
   const before = fs.readFileSync(file, "utf8");
+  const build = hash.slice(0, 7);
   const after = before
     .replace(/var VERSION = "[^"]*";/, `var VERSION = "${pkg.version}";`)
+    .replace(/var BUILD   = "[^"]*";/, `var BUILD   = "${build}";`)
     .replace(/var BUILT   = "[^"]*";/, `var BUILT   = "${updated}";`);
   if (after !== before) fs.writeFileSync(file, after);
 
-  return { version: pkg.version, updated: updated, changed: changed };
+  return { version: pkg.version, build: build, updated: updated, changed: changed };
 }
 const ver = writeVersion();
 
@@ -126,7 +132,7 @@ for (const f of htmlFiles()){
   total += n; files++;
 }
 console.log(ver.changed
-  ? `中身が変わっています。更新日を ${ver.updated} にしました（v${ver.version}）。`
-  : `中身は前回と同じです。更新日は ${ver.updated} のままです（v${ver.version}）。`);
+  ? `中身が変わりました → v${ver.version}+${ver.build} ・ ${ver.updated}`
+  : `中身は前回と同じ    → v${ver.version}+${ver.build} ・ ${ver.updated}（据え置き）`);
 console.log(`HTML ${files} ファイルを走査し、${total} 件のURLを更新しました。`);
 console.log(total ? "完了。docs/ をコミットして push してください。" : "変更なし（すべて最新）。");

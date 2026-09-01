@@ -17,9 +17,12 @@
   var KEY   = "shindan64.v1";
   var KEY_THEME = KEY + ".theme";  /* "system"（既定・端末設定に追従） | "light" | "dark" */
   var KEY_FS    = KEY + ".fs";     /* "s" | "m" | "l" */
-  /* 版と更新日。この2行は tools/stamp-assets.js が書き換える。手で触らないこと。
-     更新日は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
+  /* 版・ビルド番号・更新日。この3行は tools/stamp-assets.js が書き換える。手で触らないこと。
+     BUILD は docs/ の中身のハッシュ。問い合わせを受けたとき、
+     その人が見ているものを1つに特定するために出している。
+     BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.1.0";
+  var BUILD   = "1f0fcac";
   var BUILT   = "2026-09-01";
 
   var MYKEY = KEY + ".mytype";
@@ -209,7 +212,7 @@
     if (!copy) return;
     var v = document.createElement("span");
     v.className = "ver";
-    v.textContent = "v" + VERSION + " ・ " + BUILT + " 更新";
+    v.textContent = "v" + VERSION + "+" + BUILD + " ・ " + BUILT;
     copy.appendChild(v);
   })();
 
