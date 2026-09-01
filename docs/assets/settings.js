@@ -17,8 +17,8 @@
   var KEY   = "shindan64.v1";
   var KEY_THEME = KEY + ".theme";  /* "system"（既定・端末設定に追従） | "light" | "dark" */
   var KEY_FS    = KEY + ".fs";     /* "s" | "m" | "l" */
-  /* 版とビルド日。この2行は tools/stamp-assets.js が
-     package.json の version と実行日で書き換える。手で触らないこと。 */
+  /* 版と更新日。この2行は tools/stamp-assets.js が書き換える。手で触らないこと。
+     更新日は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.1.0";
   var BUILT   = "2026-09-01";
 
@@ -209,7 +209,7 @@
     if (!copy) return;
     var v = document.createElement("span");
     v.className = "ver";
-    v.textContent = "v" + VERSION + " ・ " + BUILT;
+    v.textContent = "v" + VERSION + " ・ " + BUILT + " 更新";
     copy.appendChild(v);
   })();
 

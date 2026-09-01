@@ -49,23 +49,72 @@ function htmlFiles(dir = ""){
   return out;
 }
 
-/* フッターに出す版とビルド日を settings.js に書き込む。
-   ハッシュを取る前に書き換えること（順序が重要）。
-   version は package.json のものを使う。診断の中身が変わったら上げる。 */
+/* ---------- フッターに出す版と「更新日」 ----------
+   日付は「ビルドを回した日」ではなく「中身が最後に変わった日」にする。
+   何も直していない日にビルドし直しても、日付は動かない。
+
+   そのために docs/ の中身のハッシュを取り、前回のものと突き合わせる。
+   ?v= と VERSION / BUILT の行は、ビルドのたびに変わるので取り除いてから数える
+   （これを忘れると毎回ハッシュが変わり、日付が毎日動いてしまう）。
+   前回の値は build-state.json に置く。これはリポジトリに入れる。 */
+const STATE = path.join(__dirname, "..", "build-state.json");
+const VOLATILE = [
+  [/\?v=[a-f0-9]{8}/g, ""],
+  [/var VERSION = "[^"]*";/g, ""],
+  [/var BUILT   = "[^"]*";/g, ""]
+];
+
+function allFiles(dir = ""){
+  const out = [];
+  for (const e of fs.readdirSync(path.join(DOCS, dir), { withFileTypes: true })){
+    const rel = dir ? dir + "/" + e.name : e.name;
+    if (e.isDirectory()) out.push(...allFiles(rel));
+    else out.push(rel);
+  }
+  return out.sort();
+}
+
+function contentHash(){
+  const h = crypto.createHash("md5");
+  for (const rel of allFiles()){
+    let buf = fs.readFileSync(path.join(DOCS, rel));
+    if (/\.(html|js|css|svg|xml|txt|json|webmanifest)$/.test(rel)){
+      let t = buf.toString("utf8");
+      for (const [re, to] of VOLATILE) t = t.replace(re, to);
+      buf = Buffer.from(t, "utf8");
+    }
+    h.update(rel); h.update(buf);
+  }
+  return h.digest("hex").slice(0, 12);
+}
+
+function today(){
+  const d = new Date(), p2 = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate());
+}
+
 function writeVersion(){
   const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
-  const d = new Date();
-  const p2 = n => String(n).padStart(2, "0");
-  const built = d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate());
+  const hash = contentHash();
+  let prev = {};
+  try { prev = JSON.parse(fs.readFileSync(STATE, "utf8")); } catch(e){}
+
+  const changed = prev.hash !== hash || prev.version !== pkg.version;
+  const updated = changed ? today() : prev.updated;
+
+  if (changed) fs.writeFileSync(STATE, JSON.stringify(
+    { version: pkg.version, updated: updated, hash: hash }, null, 2) + "\n");
+
   const file = path.join(DOCS, "assets/settings.js");
   const before = fs.readFileSync(file, "utf8");
   const after = before
     .replace(/var VERSION = "[^"]*";/, `var VERSION = "${pkg.version}";`)
-    .replace(/var BUILT   = "[^"]*";/, `var BUILT   = "${built}";`);
+    .replace(/var BUILT   = "[^"]*";/, `var BUILT   = "${updated}";`);
   if (after !== before) fs.writeFileSync(file, after);
-  return pkg.version + " / " + built;
+
+  return { version: pkg.version, updated: updated, changed: changed };
 }
-const stampedVersion = writeVersion();
+const ver = writeVersion();
 
 let total = 0, files = 0;
 /* settings.js 自身が logo*.svg を参照しているので先に処理し、
@@ -76,6 +125,8 @@ for (const f of htmlFiles()){
   const n = stamp(f);
   total += n; files++;
 }
-console.log(`版 v${stampedVersion} をフッターに書き込みました。`);
+console.log(ver.changed
+  ? `中身が変わっています。更新日を ${ver.updated} にしました（v${ver.version}）。`
+  : `中身は前回と同じです。更新日は ${ver.updated} のままです（v${ver.version}）。`);
 console.log(`HTML ${files} ファイルを走査し、${total} 件のURLを更新しました。`);
 console.log(total ? "完了。docs/ をコミットして push してください。" : "変更なし（すべて最新）。");
