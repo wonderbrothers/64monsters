@@ -219,8 +219,12 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .g-note{ font-size:var(--fs-md); color:var(--ink-3); }
 
 .tablebtn{ font-size:var(--fs-sm); color:var(--ink-3); text-decoration:underline; text-underline-offset:3px; margin-top:22px; }
+/* 狭い画面で「情報の受け取り方（S/N）」や「+11 / ±30」が折り返すと、
+   行の高さがばらついて読みにくい。折り返さず、表ごと横に流す。
+   （ヒストリーの .hist-tablewrap と同じ扱い） */
+#tableWrap{ overflow-x:auto; }
 .scoretable{ width:100%; border-collapse:collapse; margin-top:16px; font-size:var(--fs-md); }
-.scoretable th,.scoretable td{ border-bottom:1px solid var(--line-2); padding:8px 10px; text-align:left; }
+.scoretable th,.scoretable td{ border-bottom:1px solid var(--line-2); padding:8px 10px; text-align:left; white-space:nowrap; }
 .scoretable td.n{ font-family:var(--f-mono); text-align:right; }
 .scoretable th{ color:var(--ink-3); font-weight:400; font-size:var(--fs-sm); letter-spacing:.1em; }
 
