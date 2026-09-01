@@ -149,7 +149,10 @@
     AXES.forEach(function(a){
       var sum = r.sum[a.key], m = (r.max && r.max[a.key]) || 30;
       var p = pct(sum, m);
-      out[a.key] = { sum:sum, pctPos:p, letter: sum > 0 ? a.pos.l : a.neg.l, tie: Math.abs(p - 50) < 4 };
+  /* 「決着していない」の閾値は生スコア±3（満点±30なら50%から5ポイント）。
+     鑑定書側の判定ルール五と揃えている。片方だけ動かすと、結果ページと
+     鑑定書で同じ人の同じ軸の判定が食い違うので、変えるときは両方直すこと。 */
+      out[a.key] = { sum:sum, pctPos:p, letter: sum > 0 ? a.pos.l : a.neg.l, tie: Math.abs(p - 50) <= 5 };
     });
     return out;
   }
@@ -332,7 +335,10 @@
       var s = sums[a.key], m = max[a.key];
       var pctPos = Math.round(((s + m) / (2*m)) * 100);      // pos極の割合
       var letter = s > 0 ? a.pos.l : a.neg.l;
-      out[a.key] = { sum:s, pctPos:pctPos, letter:letter, tie: Math.abs(pctPos - 50) < 4 };
+  /* 「決着していない」の閾値は生スコア±3（満点±30なら50%から5ポイント）。
+     鑑定書側の判定ルール五と揃えている。片方だけ動かすと、結果ページと
+     鑑定書で同じ人の同じ軸の判定が食い違うので、変えるときは両方直すこと。 */
+      out[a.key] = { sum:s, pctPos:pctPos, letter:letter, tie: Math.abs(pctPos - 50) <= 5 };
     });
     return out;
   }
