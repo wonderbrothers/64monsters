@@ -120,6 +120,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
   </div>
 
+  <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
+  <div class="sec split hidden" id="secToken">
+    <h2>鑑定コード</h2>
+    <div>
+      <p class="g-note">この結果を16文字にしたものです。別の端末に移すときや、人に渡すときに使います。</p>
+      <div class="token-row">
+        <code class="token" id="tokenOut">—</code>
+        <button class="btn ghost" id="tokenCopy">コピー</button>
+      </div>
+      <p class="g-note tk-lead">受け取ったコードは <a href="../../friends/">Myフレンド</a> に登録できます。これまでの記録は <a href="../../history/">ヒストリー</a> で見られます。</p>
+    </div>
+  </div>
+
   <div class="sec split hidden" id="secGauge">
     <h2>6軸のスコア</h2>
     <div class="gauges" id="gauges"></div>
@@ -171,19 +184,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="pair-cta">
       <p class="pair-cta-txt">相手のコードがわかれば、2人の相性をこの場で見られます。</p>
       <a class="btn" href="../../pair/?a=ISFJ-O-C">この人との相性を調べる</a>
-    </div>
-  </div>
-
-  <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
-  <div class="sec split hidden" id="secToken">
-    <h2>鑑定コード</h2>
-    <div>
-      <p class="g-note">この結果を16文字にしたものです。別の端末に移すときや、人に渡すときに使います。</p>
-      <div class="token-row">
-        <code class="token" id="tokenOut">—</code>
-        <button class="btn ghost" id="tokenCopy">コピー</button>
-      </div>
-      <p class="g-note tk-lead">受け取ったコードは <a href="../../friends/">Myフレンド</a> に登録できます。これまでの記録は <a href="../../history/">ヒストリー</a> で見られます。</p>
     </div>
   </div>
 
