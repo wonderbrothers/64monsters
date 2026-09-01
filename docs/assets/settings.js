@@ -17,6 +17,11 @@
   var KEY   = "shindan64.v1";
   var KEY_THEME = KEY + ".theme";  /* "system"（既定・端末設定に追従） | "light" | "dark" */
   var KEY_FS    = KEY + ".fs";     /* "s" | "m" | "l" */
+  /* 版とビルド日。この2行は tools/stamp-assets.js が
+     package.json の version と実行日で書き換える。手で触らないこと。 */
+  var VERSION = "1.1.0";
+  var BUILT   = "2026-09-01";
+
   var MYKEY = KEY + ".mytype";
   var MYOFF = KEY + ".myoff";      /* 自分で解除した印 */
   var HISTKEY = KEY + ".history";
@@ -196,6 +201,17 @@
     catch(e){}
   }
   reconcileMyType();
+
+  /* フッターに版を添える。どのページにも .copy があるので、そこに1行足す。
+     「いま見ているのがいつのものか」を確かめるためのもの。 */
+  (function(){
+    var copy = document.querySelector(".copy");
+    if (!copy) return;
+    var v = document.createElement("span");
+    v.className = "ver";
+    v.textContent = "v" + VERSION + " ・ " + BUILT;
+    copy.appendChild(v);
+  })();
 
   /* ヘッダーのマイタイプ（PCのみ表示。登録がなければ出さない） */
   function renderHeadMy(){

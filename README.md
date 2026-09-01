@@ -42,7 +42,7 @@ prompts.html              プロンプトの一覧・コピー用ページ
 tools/make-thumbs.py      サムネイル生成スクリプト
 tools/make-ogp.py         タイプ別OGP画像の生成スクリプト
 tools/build-pages.js      個別ページ64枚と sitemap.xml の生成スクリプト
-tools/stamp-assets.js     キャッシュ対策のハッシュ付与
+tools/stamp-assets.js     キャッシュ対策のハッシュ付与＋フッターの版の書き込み
 tools/serve.js            ローカル確認用の静的サーバー（依存パッケージなし）
 package.json              npm scripts の入り口。依存パッケージはありません
 LICENSE                   利用条件（オープンソースではありません）
@@ -89,7 +89,7 @@ npm run dev -- --port 5174   # ポートを変えたいとき
 | `npm run dev` | ローカルサーバーを起動 |
 | `npm run build` | 個別ページ64枚＋sitemap を作り直し、続けてハッシュを付け直す |
 | `npm run pages` | 個別ページ64枚と sitemap.xml だけを生成 |
-| `npm run stamp` | アセットURLのハッシュだけを付け直す |
+| `npm run stamp` | アセットURLのハッシュを付け直し、フッターの版とビルド日を書き込む |
 | `npm run ogp` | OGP画像64枚を生成（原寸画像とPythonが必要） |
 | `npm run prompts` | イラスト生成プロンプトを書き出す（制作用） |
 

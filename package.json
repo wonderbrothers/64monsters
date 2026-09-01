@@ -1,6 +1,6 @@
 {
   "name": "64monsters",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "6軸でわかる64通りの性格診断。docs/ をそのまま GitHub Pages で配信する静的サイト",
   "homepage": "https://64monsters.wonder-bros.com",

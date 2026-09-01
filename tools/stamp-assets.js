@@ -49,6 +49,24 @@ function htmlFiles(dir = ""){
   return out;
 }
 
+/* フッターに出す版とビルド日を settings.js に書き込む。
+   ハッシュを取る前に書き換えること（順序が重要）。
+   version は package.json のものを使う。診断の中身が変わったら上げる。 */
+function writeVersion(){
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
+  const d = new Date();
+  const p2 = n => String(n).padStart(2, "0");
+  const built = d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate());
+  const file = path.join(DOCS, "assets/settings.js");
+  const before = fs.readFileSync(file, "utf8");
+  const after = before
+    .replace(/var VERSION = "[^"]*";/, `var VERSION = "${pkg.version}";`)
+    .replace(/var BUILT   = "[^"]*";/, `var BUILT   = "${built}";`);
+  if (after !== before) fs.writeFileSync(file, after);
+  return pkg.version + " / " + built;
+}
+const stampedVersion = writeVersion();
+
 let total = 0, files = 0;
 /* settings.js 自身が logo*.svg を参照しているので先に処理し、
    そのあとハッシュを取り直してから HTML を処理する（順序が重要） */
@@ -58,5 +76,6 @@ for (const f of htmlFiles()){
   const n = stamp(f);
   total += n; files++;
 }
+console.log(`版 v${stampedVersion} をフッターに書き込みました。`);
 console.log(`HTML ${files} ファイルを走査し、${total} 件のURLを更新しました。`);
 console.log(total ? "完了。docs/ をコミットして push してください。" : "変更なし（すべて最新）。");

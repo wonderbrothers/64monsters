@@ -372,6 +372,8 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
   font-size:min(var(--fs-sm), calc((100vw - 44px) / 33));
 }
 .copy-link{ color:inherit; text-decoration:none; }
+/* 版とビルド日。著作権表示の下に、小さく添える */
+.ver{ display:block; margin-top:8px; font-size:var(--fs-xs); color:var(--ink-3); opacity:.7; }
 .copy-link:hover{ color:var(--ink); }
 
 /* 設問画面のナビゲーション */
@@ -1120,7 +1122,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .token-row input:focus{ outline:none; border-color:var(--ink-3); }
 .token-row .btn{ flex:0 0 auto; padding:11px 22px; font-size:var(--fs-md); }
 .token-row .btn:disabled{ opacity:.45; cursor:default; transform:none; }
-.tk-lead{ margin-top:22px; }
+.tk-lead{ margin-top:40px; }
 /* 表が隠れているとき（記録0件）は、いちばん上に来るので余白を戻す */
 #recWrap.hidden + .tk-lead{ margin-top:0; }
 .token-msg{ margin-top:10px; font-size:var(--fs-md); color:var(--ink-2); }
