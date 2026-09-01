@@ -188,6 +188,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 
+  <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
+  <div class="sec split hidden" id="secToken">
+    <h2>鑑定コード</h2>
+    <div>
+      <p class="g-note">この結果を16文字にしたものです。別の端末に移すときや、人に渡すときに使います。</p>
+      <div class="token-row">
+        <code class="token" id="tokenOut">—</code>
+        <button class="btn ghost" id="tokenCopy">コピー</button>
+      </div>
+      <p class="g-note tk-lead">受け取ったコードは <a href="${base}friends/">Myフレンド</a> に登録できます。これまでの記録は <a href="${base}history/">ヒストリー</a> で見られます。</p>
+    </div>
+  </div>
+
   <p class="disclaimer">
     この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
   </p>
@@ -202,6 +215,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="${base}assets/types.js"></script>
 <script src="${base}assets/render.js"></script>
+<script src="${base}assets/questions.js"></script>
+<script src="${base}assets/engine.js"></script>
 <script src="${base}assets/share.js"></script>
 <script src="${base}assets/type.js"></script>
 <script src="${base}assets/settings.js"></script>

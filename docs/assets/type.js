@@ -93,6 +93,32 @@
     });
   }
 
+  /* ---------- 鑑定コード ----------
+     自分の結果として開かれたときだけ出す。ギャラリーから来た人には
+     6軸の数値が無く、符号化するものが無い。
+     記録（.history）から、このタイプで受けたいちばん新しい回を探して使う。
+     受けた日時が要るので .last だけでは作れない。 */
+  var E = window.ENGINE;
+  if (sc && E){
+    var h = E.getHistory(), rec = null;
+    for (var hi = h.length - 1; hi >= 0; hi--){
+      if (h[hi].code === CODE){ rec = h[hi]; break; }
+    }
+    var token = rec ? E.encodeRecord(rec) : null;
+    if (token){
+      $("tokenOut").textContent = token;
+      $("secToken").classList.remove("hidden");
+      $("tokenCopy").addEventListener("click", function(){
+        var btn = this;
+        navigator.clipboard.writeText(token).then(function(){
+          btn.textContent = "コピーしました";
+          setTimeout(function(){ btn.textContent = "コピー"; }, 1800);
+          track("code_copy", { monster_type: CODE, from: "result" });
+        }).catch(function(){ btn.textContent = "コピーできませんでした"; });
+      });
+    }
+  }
+
   /* ---------- マイタイプ ---------- */
   var MYKEY = KEY + ".mytype";
   var MYOFF = KEY + ".myoff";   /* 解除は「自分で外した」として残す（履歴から戻さないため） */
