@@ -30,7 +30,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=eaeb31be">
+<link rel="stylesheet" href="../assets/style.css?v=c5b016d4">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -57,7 +57,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2>フレンドを登録</h2>
     <div>
       <p class="g-note">
-        相手に <a href="../history/">ヒストリー</a> の「鑑定コード」をコピーして送ってもらってください。
+        相手に、<b>結果ページ</b>（その人のタイプのページ）の「鑑定コード」をコピーして送ってもらってください。
         <b>タイプコード（例：<span class="mono">ENTP-A-H</span>）だけでも登録できます。</b>
         相性を見るのはどちらでも同じです。鑑定コードなら、その人が受けた日も一緒に残ります。
       </p>
@@ -77,7 +77,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- フレンドがいないとき -->
   <div id="frEmpty" class="hist-empty hidden">
     <p class="body-text">まだ誰も登録されていません。</p>
-    <p class="g-note">名前と、鑑定コードまたはタイプコード（例：<span class="mono">ENTP-A-H</span>）を入れると登録できます。自分の鑑定コードを相手に渡したいときは、<a href="../history/">ヒストリー</a>でコピーできます。</p>
+    <p class="g-note">名前と、鑑定コードまたはタイプコード（例：<span class="mono">ENTP-A-H</span>）を入れると登録できます。自分の鑑定コードを相手に渡したいときは、自分の結果ページでコピーできます。</p>
   </div>
 
   <!-- フレンドがいるとき -->
@@ -93,7 +93,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div id="frFoot" class="hist-actions hidden">
     <div class="hist-foot">
-      <a class="btn ghost" href="../history/">自分の鑑定コードをコピーする</a>
+      <a class="btn ghost hidden" id="frMyLink" href="#">自分の結果ページを開く</a>
       <a class="btn ghost" href="../pair/">相性をくわしく見る</a>
     </div>
     <p class="hist-danger"><button type="button" class="hist-clear" id="frClear">登録したフレンドをすべて削除する</button></p>
@@ -127,7 +127,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="../assets/types.js?v=2c6264bd"></script>
 <script src="../assets/render.js?v=f156683c"></script>
 <script src="../assets/engine.js?v=b962afbb"></script>
-<script src="../assets/friends.js?v=c67d7f17"></script>
+<script src="../assets/friends.js?v=0963131d"></script>
 <script src="../assets/settings.js?v=e5ad046f"></script>
 </body>
 </html>

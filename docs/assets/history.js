@@ -177,11 +177,6 @@
   }
 
   /* ---------- 鑑定コード ---------- */
-  function renderToken(h){
-    var t = h.length ? E.encodeRecord(h[h.length - 1]) : null;
-    $("tokenOut").textContent = t || "—";
-    $("tokenCopy").disabled = !t;
-  }
   function tokenMsg(text, bad){
     var el = $("tokenMsg");
     el.textContent = text;
@@ -196,7 +191,7 @@
     $("empty").classList.toggle("hidden", has);
     $("body").classList.toggle("hidden", !has);
     $("foot").classList.toggle("hidden", !has);
-    renderToken(h);            /* 記録が0件でも、貼り付けて読み込めるようにしておく */
+    $("recWrap").classList.toggle("hidden", !has);   /* 表だけ隠す。貼り付け欄は残す */
     if (!has) return;
     renderTiles(h);
     renderStrips(h);
@@ -221,15 +216,6 @@
   $("importBtn").addEventListener("click", function(){ pickFile(this); });
   $("importBtn2").addEventListener("click", function(){ pickFile(this); });
   $("exportBtn").addEventListener("click", download);
-
-  $("tokenCopy").addEventListener("click", function(){
-    var btn = this, t = $("tokenOut").textContent;
-    if (!t || t === "—") return;
-    navigator.clipboard.writeText(t).then(function(){
-      say(btn, "コピーしました");
-      E.track("code_copy", {});
-    }).catch(function(){ say(btn, "コピーできませんでした"); });
-  });
 
   $("tokenAdd").addEventListener("click", function(){
     var v = $("tokenIn").value;

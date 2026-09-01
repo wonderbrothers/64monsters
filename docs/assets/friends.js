@@ -61,6 +61,10 @@
     $("frFoot").classList.toggle("hidden", !has);
     if (!has) return;
     $("frList").innerHTML = list.map(function(f){ return row(f, my); }).join("");
+    /* 自分の鑑定コードは結果ページにあるので、そこへの導線を出す */
+    var link = $("frMyLink");
+    if (my){ link.href = R.typeUrl(B, my); link.classList.remove("hidden"); }
+    else { link.classList.add("hidden"); }
     $("frMineNote").innerHTML = my
       ? 'あなたは <span class="mono">' + my + '</span>（' + esc(SUB[my].label) + '）として相性を出しています。'
       : '<b>あなたのタイプがまだ登録されていません。</b>' +

@@ -1121,6 +1121,8 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .token-row .btn{ flex:0 0 auto; padding:11px 22px; font-size:var(--fs-md); }
 .token-row .btn:disabled{ opacity:.45; cursor:default; transform:none; }
 .tk-lead{ margin-top:22px; }
+/* 表が隠れているとき（記録0件）は、いちばん上に来るので余白を戻す */
+#recWrap.hidden + .tk-lead{ margin-top:0; }
 .token-msg{ margin-top:10px; font-size:var(--fs-md); color:var(--ink-2); }
 .token-msg.bad{ color:var(--shu); }
 @media (max-width:560px){

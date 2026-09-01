@@ -30,7 +30,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=eaeb31be">
+<link rel="stylesheet" href="../assets/style.css?v=c5b016d4">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -80,28 +80,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </p>
     </div>
 
-    <div class="sec split">
-      <h2>記録</h2>
-      <div class="hist-tablewrap"><table class="histtable" id="table"></table></div>
-      <p class="g-note">
-        数値は各軸の生スコアで、範囲は <span class="mono">-30 〜 +30</span>（15問 × ±2）。
-        負が左の極（E・S・T・P・A・C）、正が右の極（I・N・F・J・O・H）です。
-        括弧内は0〜100に直した割合で、結果ページのゲージと同じ値です。
-      </p>
-    </div>
-
   </div>
 
+  <!-- 「記録」の節だけは #body の外に出して、0件でも出す。
+       別の端末から移してくる人は、まだ1件も持っていないので、
+       表と一緒に隠すと貼り付ける場所が無くなる。表だけを隠す。 -->
   <div class="sec split">
-    <h2>鑑定コード</h2>
+    <h2>記録</h2>
     <div>
-      <p class="g-note">いちばん新しい記録を16文字に符号化したものです。別の端末に移すときや、人に渡すときに使います。</p>
-      <div class="token-row">
-        <code class="token" id="tokenOut">—</code>
-        <button class="btn ghost" id="tokenCopy">コピー</button>
+      <div id="recWrap" class="hidden">
+        <div class="hist-tablewrap"><table class="histtable" id="table"></table></div>
+        <p class="g-note">
+          数値は各軸の生スコアで、範囲は <span class="mono">-30 〜 +30</span>（15問 × ±2）。
+          負が左の極（E・S・T・P・A・C）、正が右の極（I・N・F・J・O・H）です。
+          括弧内は0〜100に直した割合で、結果ページのゲージと同じ値です。
+        </p>
       </div>
 
-      <p class="g-note tk-lead">別の端末で受けた<b>自分の</b>記録は、鑑定コードから加えられます。<br>
+      <p class="g-note tk-lead">別の端末で受けた<b>自分の</b>記録は、鑑定コードから加えられます。
+        鑑定コードは<b>結果ページ</b>でコピーできます。<br>
         人からもらったコードは<a href="../friends/">Myフレンド</a>に登録してください。自分の記録に混ぜると、変化を追うという記録の意味が崩れます。</p>
       <div class="token-row">
         <input type="text" id="tokenIn" placeholder="64M-1234-5678-9ABC-D" autocomplete="off" spellcheck="false" aria-label="鑑定コード">
@@ -154,7 +151,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="../assets/types.js?v=2c6264bd"></script>
 <script src="../assets/render.js?v=f156683c"></script>
 <script src="../assets/engine.js?v=b962afbb"></script>
-<script src="../assets/history.js?v=8324369d"></script>
+<script src="../assets/history.js?v=ee6e7426"></script>
 <script src="../assets/settings.js?v=e5ad046f"></script>
 </body>
 </html>
