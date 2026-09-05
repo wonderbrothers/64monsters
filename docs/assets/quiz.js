@@ -64,6 +64,9 @@
     var qi = ORDER[pos], q = Q[qi];
     $("qText").textContent = q.text;
     $("qNow").textContent = pos + 1;
+    /* 前置きは最初の設問にだけ添える。「いまの自分」で答えてもらうため。
+       毎問出すと設問より目立って読み飛ばされる。 */
+    $("qPre").classList.toggle("hidden", pos !== 0);
     $("optLab").textContent = answers[qi] === null ? "" : LABELS[String(answers[qi])];
     $("opts").innerHTML = VALS.map(function(v, i){
       var sel = answers[qi] === v ? " sel" : "";

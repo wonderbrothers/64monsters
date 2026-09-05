@@ -29,6 +29,25 @@
   var isMyResult = !!(last && last.code === CODE && last.sc);
   var sc = isMyResult ? last.sc : null;
 
+  /* 記録（.history）から、このタイプで受けたいちばん新しい回。
+     診断日の表示と鑑定コードの両方で使う。 */
+  var E = window.ENGINE, rec = null;
+  if (sc && E){
+    var hh = E.getHistory();
+    for (var hi = hh.length - 1; hi >= 0; hi--){
+      if (hh[hi].code === CODE){ rec = hh[hi]; break; }
+    }
+  }
+  function fmtDate(t){
+    var d = new Date(t), p = function(n){ return (n < 10 ? "0" : "") + n; };
+    return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate());
+  }
+  /* 極の名前＋大きさ。符号は出さない。「外向 −9」は「外向が9足りない」と読まれる。 */
+  function poleAbs(a, d){
+    if (d.sum === 0) return "0 / 30";
+    return (d.sum > 0 ? a.pos.name : a.neg.name) + " " + Math.abs(d.sum) + " / 30";
+  }
+
   /* 診断直後の1回だけ quiz_complete を送る（再訪では type_view）。
      かかった秒数は設問ページから sessionStorage 経由で受け取る。 */
   var fresh = false, sec = null;
@@ -64,6 +83,20 @@
     }
   }
 
+  /* ---------- 4文字コード：立っていない軸の文字は薄く出す ----------
+     その文字は数点の差で決まっている。濃く出すと「T」が確定したように見える。 */
+  if (sc){
+    var sp = function(d){ return '<span' + (d.tie ? ' class="weak"' : '') + '>' + d.letter + '</span>'; };
+    $("rCode").innerHTML =
+      '<span class="base">' + sp(sc.EI) + sp(sc.SN) + sp(sc.TF) + sp(sc.JP) + '</span>' +
+      '<span class="dash">-</span><span class="sub">' + sp(sc.AO) + '</span>' +
+      '<span class="dash">-</span><span class="sub">' + sp(sc.HC) + '</span>';
+    if (rec && rec.t){
+      $("rDate").textContent = "診断日 " + fmtDate(rec.t) + "　この日時点のあなたです";
+      $("rDate").classList.remove("hidden");
+    }
+  }
+
   /* ---------- 6軸ゲージ ---------- */
   if (sc){
     $("rEyebrow").textContent = "your type";
@@ -73,18 +106,19 @@
       var w = Math.abs(d.pctPos - 50), left = right ? 50 : d.pctPos;
       return '<div class="gauge">' +
         '<div class="g-top"><span class="g-title">' + a.title + '</span>' +
-        '<span class="g-pct">' + pct + '%' + (d.tie ? '（ほぼ拮抗）' : '') + '</span></div>' +
+        '<span class="g-pct">' + poleAbs(a, d) + (d.tie ? '<span class="g-flat">立っていない</span>' : '') + '</span></div>' +
         '<div class="g-track"><div class="g-fill ' + (right ? "right" : "left") + '" style="left:' + left + '%;width:' + w + '%"></div></div>' +
         '<div class="g-poles">' +
           '<span class="g-pole left' + (right ? "" : " on") + '"><span class="l">' + a.neg.l + '</span>' + a.neg.name + '</span>' +
           '<span class="g-pole right' + (right ? " on" : "") + '">' + a.pos.name + '<span class="l">' + a.pos.l + '</span></span>' +
         '</div></div>';
     }).join("");
-    $("tableWrap").innerHTML = '<table class="scoretable"><thead><tr><th>軸</th><th>判定</th><th style="text-align:right">スコア</th><th style="text-align:right">傾向の強さ</th></tr></thead><tbody>' +
+    $("tableWrap").innerHTML = '<table class="scoretable"><thead><tr><th>軸</th><th>判定</th><th style="text-align:right">スコア</th></tr></thead><tbody>' +
       AXES.map(function(a){
-        var d = sc[a.key], p = d.pctPos > 50 ? d.pctPos : 100 - d.pctPos;
-        return '<tr><td>' + a.title + '（' + a.neg.l + '/' + a.pos.l + '）</td><td class="mono">' + d.letter +
-               '</td><td class="n">' + (d.sum > 0 ? "+" : "") + d.sum + ' / ±30</td><td class="n">' + p + '%</td></tr>';
+        var d = sc[a.key];
+        return '<tr><td>' + a.title + '（' + a.neg.l + '/' + a.pos.l + '）</td>' +
+               '<td class="mono' + (d.tie ? ' weak' : '') + '">' + d.letter + (d.tie ? '<span class="flat">立っていない</span>' : '') +
+               '</td><td class="n">' + poleAbs(a, d).replace(' / 30', '') + '</td></tr>';   /* 表は「/ 30」を省いて幅を抑える。満点は上の注記にある */
       }).join("") + '</tbody></table>';
 
     $("tableBtn").addEventListener("click", function(){
@@ -98,12 +132,7 @@
      6軸の数値が無く、符号化するものが無い。
      記録（.history）から、このタイプで受けたいちばん新しい回を探して使う。
      受けた日時が要るので .last だけでは作れない。 */
-  var E = window.ENGINE;
   if (sc && E){
-    var h = E.getHistory(), rec = null;
-    for (var hi = h.length - 1; hi >= 0; hi--){
-      if (h[hi].code === CODE){ rec = h[hi]; break; }
-    }
     var token = rec ? E.encodeRecord(rec) : null;
     if (token){
       $("tokenOut").textContent = token;

@@ -29,6 +29,9 @@
     return m + "分" + (s < 10 ? "0" : "") + s + "秒";
   }
   function signed(n){ return (n > 0 ? "+" : "") + n; }
+  /* 表示は極の名前＋大きさ。「外向 −9」は「外向が9足りない」と読まれるので符号を出さない。
+     signed() は書き出しの互換のために残す。 */
+  function poleAbs(a, v){ return v === 0 ? "0" : (v > 0 ? a.pos.name : a.neg.name) + " " + Math.abs(v); }
 
   /* ---------- サマリー ---------- */
   function renderTiles(h){
@@ -76,7 +79,7 @@
         var isLast = i === vals.length - 1;
         return '<span class="sp-dot' + (isLast ? " last" + side : "") + '"' +
           ' style="left:' + posOf(x.v).toFixed(2) + '%"' +
-          ' title="' + fmtDate(x.t) + '　' + signed(x.v) + '"></span>';
+          ' title="' + fmtDate(x.t) + '　' + poleAbs(a, x.v) + '"></span>';
       }).join("");
 
       var range = hi === lo ? "" :
@@ -86,8 +89,7 @@
       return '<div class="axstrip">' +
         '<div class="sp-top">' +
           '<span class="sp-title">' + esc(a.title) + '</span>' +
-          '<span class="sp-now mono' + side + '">' + signed(latest.v) +
-            '<span class="sp-pct">（' + E.pct(latest.v, max) + '%）</span></span>' +
+          '<span class="sp-now mono' + side + '">' + poleAbs(a, latest.v) + ' / ' + max + '</span>' +
         '</div>' +
         '<div class="sp-track">' + range + '<span class="sp-mid"></span>' + dots + '</div>' +
         '<div class="sp-ends">' +
@@ -112,8 +114,7 @@
         AXES.map(function(a){
           var v = r.sum[a.key], m = r.max[a.key] || 30;
           var cls = v === 0 ? "" : (v > 0 ? " pos" : " neg");
-          return '<td class="n mono' + cls + '">' + signed(v) +
-            '<span class="tp">（' + E.pct(v, m) + "）</span></td>";
+          return '<td class="n mono' + cls + '">' + poleAbs(a, v) + "</td>";
         }).join("") +
         '<td class="n mono">' + fmtMin(r.sec) + "</td>" +
       "</tr>";

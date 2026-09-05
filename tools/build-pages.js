@@ -127,10 +127,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="code" id="rCode"><span class="base">${bt}</span><span class="dash">-</span><span class="sub">${ao}</span><span class="dash">-</span><span class="sub">${hc}</span></p>
     <h1 class="res-label">${esc(s.label)}</h1>
     <p class="res-tag">${esc(b.tagline)}</p>
+    <p class="res-date hidden" id="rDate"></p>
+    <p class="res-note">モンスター名は、6軸の組み合わせにつけた分類名です。軸ごとの表現ではありません。</p>
   </div>
 
   <div class="flatnote hidden" id="flatNote">
-    <p class="fn-h">6つの軸すべてが、ほぼ均衡しました。</p>
+    <p class="fn-h">6つの軸すべてが、立っていません。</p>
     <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
   </div>
 
@@ -149,6 +151,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="sec split hidden" id="secGauge">
     <h2>6軸のスコア</h2>
+    <p class="g-note">数値は、満点30に対するその極への寄りです。3以内は「立っていない」として扱います。</p>
     <div class="gauges" id="gauges"></div>
     <button class="tablebtn" id="tableBtn">数値の一覧を表示</button>
     <div id="tableWrap" class="hidden"></div>

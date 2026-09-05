@@ -100,7 +100,7 @@
       var col = i % 2, row = (i / 2) | 0;
       var x = PAD + col * (colW + 40), y = top + row * 74;
       var d = sc[a.key];
-      var right = d.pctPos > 50, pct = right ? d.pctPos : 100 - d.pctPos;
+      var right = d.pctPos > 50;
       var letter = d.letter, name = right ? a.pos.name : a.neg.name;
 
       ctx.textAlign = "left";
@@ -110,7 +110,7 @@
       ctx.fillText("　" + name, x + 20, y);
       ctx.textAlign = "right";
       ctx.font = "500 22px " + FM; ctx.fillStyle = INK3;
-      ctx.fillText(pct + "%", x + colW, y);
+      ctx.fillText(Math.abs(d.sum) + " / 30", x + colW, y);   /* 符号も%も出さない */
 
       /* 中央を均衡点とする発散バー */
       var by = y + 16, bw = colW, bh = 8;

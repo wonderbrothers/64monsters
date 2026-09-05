@@ -1195,3 +1195,12 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 }
 .hist-clear:hover{ color:var(--ink-2); }
 .hist-clear.armed{ color:var(--shu); font-weight:500; }
+
+/* ---- 2026-09 表記の統一：符号を出さない／立っていない軸を薄く ---- */
+.code .weak{ opacity:.32; }
+.scoretable .weak{ color:var(--ink-3); }
+.scoretable .flat, .g-flat{ font-family:inherit; font-size:var(--fs-sm); color:var(--ink-3); margin-left:8px; }
+.res-note{ color:var(--ink-3); font-size:var(--fs-sm); margin-top:10px; }
+.res-date{ color:var(--ink-3); font-size:var(--fs-sm); font-family:var(--f-mono); font-variant-numeric:tabular-nums; margin-top:10px; }
+.qpre{ color:var(--ink-2); font-size:var(--fs-md); line-height:1.8; margin:0 0 18px; }
+.pre-note{ color:var(--ink-2); font-size:var(--fs-md); line-height:1.8; margin:14px 0 0; max-width:var(--measure); }
