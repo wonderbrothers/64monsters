@@ -18,17 +18,30 @@
 
   /* ---------- 軸の一覧 ---------- */
   $("axisList").innerHTML = AXES.map(function(a){
-    return '<div class="axis-row">' +
-      '<div class="pair"><span class="l">' + a.neg.l + '</span><span class="sep"> / </span><span class="r">' + a.pos.l + '</span></div>' +
-      '<div class="desc"><b>' + a.title + '</b>　' + a.neg.name + '＝' + a.neg.note + '／' + a.pos.name + '＝' + a.pos.note + '</div>' +
+    return '<div class="axis-row" data-ax="' + a.key + '">' +
+      '<div class="pair"><span class="dot" aria-hidden="true"></span>' +
+        '<span class="l">' + a.neg.l + '</span><span class="sep">/</span><span class="r">' + a.pos.l + '</span></div>' +
+      '<div class="desc"><b>' + a.title + '</b>' +
+        '<span class="pole"><i>' + a.neg.l + '・' + a.neg.name + '</i>' + a.neg.note + '</span>' +
+        '<span class="pole"><i>' + a.pos.l + '・' + a.pos.name + '</i>' + a.pos.note + '</span>' +
+      '</div>' +
     '</div>';
   }).join("");
 
   /* ---------- キャラクターの帯 ---------- */
+  /* 16の基本タイプを1枚ずつ。絵は各タイプの A-H を代表に使い、
+     押すとそのタイプのページへ行く（行き先は従来の帯と同じ /t/<CODE>/）。 */
   (function renderStrip(){
-    var picks = ["INTJ-A-H","ENFP-A-H","ISFJ-O-H","ESTP-A-C","INFJ-O-C","ESFP-A-H","ISTP-A-C","ENFJ-O-H"];
-    $("strip").innerHTML = picks.map(function(c){
-      return '<a class="thumb" href="' + TURL(c) + '" title="' + c + '"><img src="' + THUMB(c) + '" alt="' + c + '" loading="lazy"></a>';
+    $("strip").innerHTML = Object.keys(BASE).map(function(k){
+      var code = k + "-A-H", b = BASE[k];
+      return '<a class="mcard" href="' + TURL(code) + '">' +
+        '<span class="thumb"><img src="' + THUMB(code) + '" alt="" loading="lazy"></span>' +
+        '<span class="mbody">' +
+          '<span class="mcode">' + k + '</span>' +
+          '<span class="mname">' + b.name + '</span>' +
+          '<span class="mtag">' + b.tagline + '</span>' +
+        '</span>' +
+      '</a>';
     }).join("");
   })();
 

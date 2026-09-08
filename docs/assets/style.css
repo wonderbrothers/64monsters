@@ -17,24 +17,34 @@ html{ font-size:16px; }   /* ← ここが base。すべての --fs-* はこの�
 }
 
 :root{
-  --paper:#FFFFFF; --surface:#FFFFFF; --surface-2:#F7F7F6;
-  --ink:#14171A; --ink-2:#4C545B; --ink-3:#636C74;
-  --line:rgba(22,25,28,.14); --line-2:rgba(22,25,28,.07);
-  /* プライマリー：紫 → ピンクのグラデーション（両端とも白文字で 5:1 以上） */
-  --g1:#6D4AC8; --g2:#C22E6C;
-  --grad:linear-gradient(100deg, var(--g1) 0%, var(--g2) 100%);
-  --grad-text:var(--grad);
+  /* 2026-09 リデザイン：白地・太い黒。色は6軸の識別だけに使う */
+  --paper:#FFFFFF; --surface:#FFFFFF; --surface-2:#F4F4F2;
+  --ink:#111111; --ink-2:#3D4145; --ink-3:#71716D;
+  /* --line＝カード・入力・ボタンの枠（黒・2px）／--line-2＝区切りのヘアライン */
+  --line:#111111; --line-2:#DCDCD8;
+  /* 塗りは単色の黒。グラデーションは廃止したが、変数名は各所で使うので残す */
+  --g1:#111111; --g2:#111111;
+  --grad:var(--ink);
+  --grad-text:var(--ink);
   --on-brand:#FFFFFF;
-  --ai:#6D4AC8; --shu:#C22E6C; --gold:#806331;
-  --thumb:#F2F2F4;
-  --shadow:0 1px 2px rgba(22,25,28,.05), 0 12px 32px -18px rgba(22,25,28,.35);
-  /* 角丸：--r=角丸 / --r-full=全丸。--r-btn を切り替えるとボタン全体の形が変わる */
-  --r:4px;
+  --ai:var(--ink); --shu:var(--ink); --gold:#806331;
+  --danger:#C4183F;
+  --thumb:#F4F4F2;
+  --shadow:none;
+  /* 6軸の識別色。色は「どの軸か」だけを表し、大きさや良し悪しは表さない */
+  --ax-EI:#3DDC97; --ax-SN:#A64BF0; --ax-TF:#1E86F0;
+  --ax-JP:#FF7A45; --ax-AO:#D4F53C; --ax-HC:#FF3D6E;
+  /* 角丸：--r=小 / --r-card=カード / --r-box=大きな箱 / --r-full=全丸 */
+  --r:10px;
+  --r-card:18px;
+  --r-box:20px;
   --r-full:999px;
-  --r-btn:var(--r-full);
+  --r-btn:16px;
+  --bw:2px;                        /* 枠線の太さ（カード・入力・ボタン） */
+  --f-en:"Montserrat Alternates", "Noto Sans JP", system-ui, sans-serif;
   --f-disp:"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
   --f-body:"Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
-  --f-mono:"Noto Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --f-mono:"DM Mono", "Noto Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 *,*::before,*::after{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; }
@@ -483,17 +493,19 @@ html[data-fs="l"]{ font-size:18px; }
 /* ---------- 表示設定：ダークモード ---------- */
 html[data-theme="dark"]{ color-scheme:dark; }
 html[data-theme="dark"]{
-  --paper:#15181B; --surface:#1B1F23; --surface-2:#20252A;
-  --ink:#EAECEE; --ink-2:#B3BAC1; --ink-3:#8D959C;
-  --line:rgba(255,255,255,.17); --line-2:rgba(255,255,255,.09);
-  /* 暗い背景の上でも 3:1 以上を保つよう、両端を少し明るく */
-  --g1:#7A5AD8; --g2:#C93872;
-  --grad:linear-gradient(100deg, var(--g1) 0%, var(--g2) 100%);
-  --grad-text:linear-gradient(100deg, #A98BF5 0%, #F282B4 100%);
-  --on-brand:#FFFFFF;
-  --ai:#A98BF5; --shu:#F282B4; --gold:#D2B26B;
-  --thumb:#252A30;
-  --shadow:0 1px 2px rgba(0,0,0,.5), 0 12px 32px -18px rgba(0,0,0,.8);
+  /* ライトの黒と白をそっくり入れ替える。枠線は「紙の色」ではなく「文字の色」 */
+  --paper:#111315; --surface:#111315; --surface-2:#1B1E21;
+  --ink:#F7F7F5; --ink-2:#C8CCD0; --ink-3:#9AA0A5;
+  --line:#F7F7F5; --line-2:#33383D;
+  --g1:#F7F7F5; --g2:#F7F7F5;
+  --grad:var(--ink);
+  --grad-text:var(--ink);
+  /* 塗りつぶしのボタンは「明るい地に暗い文字」になる */
+  --on-brand:#111315;
+  --ai:var(--ink); --shu:var(--ink); --gold:#D2B26B;
+  --danger:#FF8FA8;
+  --thumb:#1B1E21;
+  --shadow:none;
 }
 
 /* ---------- 共通ヘッダー（中央ロゴ／右上に設定） ---------- */
@@ -861,8 +873,10 @@ body.modal-open{ overflow:hidden; }
 /* ============================================================
    SPヘッダーとドロアー
    ============================================================ */
-@media (max-width:720px){
-  /* SP：メニュー ／ ロゴ ／ 診断 の3分割 */
+@media (max-width:900px){
+  /* SP：メニュー ／ ロゴ ／ 診断 の3分割
+     900px を切ると、英字＋日本語2行のナビ4項目＋マイタイプ＋診断が横に収まらず、
+     診断ボタンの字が折り返す。ここから先はドロアーに全部入れる。 */
   .sh-inner{ display:grid; grid-template-columns:1fr auto 1fr; gap:8px; }
   .sh-menu{
     display:grid; place-items:center; justify-self:start;
@@ -942,7 +956,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .drawer-sec .set-row:last-child{ border-bottom:0; }
 
 /* PCではドロアーを使わない */
-@media (min-width:721px){ .drawer{ display:none !important; } }
+@media (min-width:901px){ .drawer{ display:none !important; } }
 
 /* ============================================================
    1080pxの枠の中での、要素ごとの適正幅
@@ -1204,3 +1218,357 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .res-date{ color:var(--ink-3); font-size:var(--fs-sm); font-family:var(--f-mono); font-variant-numeric:tabular-nums; margin-top:10px; }
 .qpre{ color:var(--ink-2); font-size:var(--fs-md); line-height:1.8; margin:0 0 18px; }
 .pre-note{ color:var(--ink-2); font-size:var(--fs-md); line-height:1.8; margin:14px 0 0; max-width:var(--measure); }
+
+/* ============================================================
+   2026-09 リデザイン
+   Figma「64monsters — Redesign v0.1」を実装した層。
+   上の定義を上書きするだけで、クラス名も DOM の作りも変えていない。
+   （変えたのは見た目だけ。導線と機能は従来のまま）
+   ・白地に太い黒。枠線は 2px、影は使わない
+   ・色は6軸の識別にだけ使う（--ax-XX）。強弱や良し悪しは表さない
+   ・ダークは --paper と --ink を入れ替えるだけで成立させる
+   ============================================================ */
+
+/* ---- 文字 ---- */
+h1,h2,h3{ font-weight:900; letter-spacing:.01em; }
+.en{ font-family:var(--f-en); font-weight:900; letter-spacing:.02em; font-style:normal; }
+.eyebrow{
+  font-family:var(--f-mono); font-size:var(--fs-xs); letter-spacing:.42em;
+  color:var(--ink-3); text-transform:uppercase;
+}
+.subtitle{ font-weight:900; letter-spacing:0; line-height:1.45; }
+.lede{ color:var(--ink); font-weight:700; line-height:1.9; }
+.sub-h{ font-family:var(--f-body); font-weight:900; font-size:var(--fs-lg); color:var(--ink); letter-spacing:0; }
+
+/* ---- ボタン ---- */
+.btn{
+  padding:17px 26px; border:var(--bw) solid var(--ink); border-radius:var(--r-btn);
+  background:var(--ink); color:var(--on-brand);
+  font-weight:900; letter-spacing:.06em;
+}
+.btn:hover{ transform:none; opacity:.85; }
+.btn.ghost{ background:transparent; color:var(--ink); border-color:var(--ink); }
+.btn.ghost:hover{ background:var(--ink); color:var(--on-brand); border-color:var(--ink); opacity:1; }
+.btn.sm{ padding:10px 18px; border-radius:var(--r-full); font-size:var(--fs-sm); }
+.btn.done{ border-color:var(--ink); color:var(--ink); }
+.qfoot .btn{ padding:17px 24px; font-size:var(--fs-lg); }
+.picker .btn, .token-row .btn, .fr-form .btn{ padding:13px 22px; font-size:var(--fs-md); border-radius:var(--r-btn); }
+.fr-btn{ padding:9px 16px; border-radius:var(--r-full); font-size:var(--fs-sm); }
+
+/* ---- 枠線は 2px の「文字色」に統一。区切りのヘアラインだけ --line-2 ---- */
+.btn.ghost, .savenote, .jobs span, .modal-card, .token, .token-row input, .fr-form input,
+.picker select, .pick-card, .pick-card select, .seg-toggle button, .htile, .friend,
+.pair-cta, .pair-ask, .pair-verdict, .stbox, .flatnote, .drawer-my, .sh-my,
+.tcard, .chip, .cell, .pscore, .axis-row, .mcard{
+  border-width:var(--bw); border-style:solid; border-color:var(--ink);
+}
+.savenote, .flatnote{ border-left-width:var(--bw); border-left-color:var(--ink); }
+.tcard, .cell, .pscore, .htile, .friend, .pick-card, .modal-card, .drawer-my,
+.savenote, .flatnote, .axis-row, .mcard{ border-radius:var(--r-card); }
+.pair-cta, .pair-ask, .pair-verdict, .stbox{ border-radius:var(--r-box); }
+.chip{ border-radius:var(--r-full); }
+.thumb{ border-radius:12px; }
+.tcard .thumb, .mcard .thumb{ border-radius:0; }
+.tcard:hover, .chip:hover, a.cell:hover, .drawer-my:hover{
+  transform:none; box-shadow:none; background:var(--surface-2); border-color:var(--ink);
+}
+.hero .thumb{ border-radius:24px; border:var(--bw) solid var(--ink); box-shadow:none; }
+
+/* ---- ヘッダー ---- */
+:root{ --head-h:64px; }
+.sh-logo .logo{ height:30px; }
+.sh-nav{ gap:8px; }
+.sh-link{
+  display:block; padding:6px 10px; border-radius:10px; text-align:left; color:var(--ink);
+}
+.sh-link:hover{ background:var(--surface-2); }
+.sh-link[aria-current="page"]{ background:var(--surface-2); }
+.sh-en{
+  display:block; font-family:var(--f-en); font-weight:900;
+  font-size:var(--fs-sm); letter-spacing:.02em; color:var(--ink); line-height:1.15;
+}
+.sh-jp{ display:block; font-size:var(--fs-xs); color:var(--ink-3); line-height:1.3; margin-top:3px; }
+.sh-cta{ padding:11px 20px; border-radius:var(--r-full); font-size:var(--fs-md); }
+.sh-my{ border-radius:var(--r-full); }
+@media (max-width:360px){ .sh-logo .logo{ height:24px; } }
+
+/* ---- フッター ---- */
+.site-foot{ margin-top:80px; padding-top:28px; border-top:var(--bw) solid var(--ink); }
+.site-foot .logo{ display:block; height:34px; width:auto; }
+.site-foot .logo-dark{ display:none; }
+html[data-theme="dark"] .site-foot .logo-light{ display:none; }
+html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
+.site-foot + .copy{ margin-top:20px; text-align:left; }
+.copy{ font-family:var(--f-mono); color:var(--ink-3); }
+.ver{ opacity:1; color:var(--ink-3); }
+.site-foot + .copy + .ver{ text-align:left; }
+
+/* ---- ファーストビュー（トップ） ---- */
+#intro{ padding:clamp(30px,6vh,64px) 0 8px; }
+.intro-head{ padding-bottom:0; }
+.intro-head .eyebrow{ margin-bottom:26px; }
+.fv{ display:grid; grid-template-columns:1fr; gap:28px; align-items:start; }
+.fv-art{ display:block; width:100%; max-width:520px; color:var(--ink); }
+.fv-art svg{ display:block; width:100%; height:auto; }
+.fv-copy > * + *{ margin-top:20px; }
+.fv-copy .subtitle{ font-size:clamp(1.375rem, 4.4vw, 1.875rem); }
+.fv-copy .lede{ margin-top:18px; max-width:none; }
+.meta{ gap:0; display:grid; grid-template-columns:repeat(3,1fr); margin-top:26px; }
+.meta div{
+  padding-top:12px; border-top:var(--bw) solid var(--ink);
+  font-size:var(--fs-xs); font-weight:700; letter-spacing:.14em; color:var(--ink-3);
+}
+.meta div + div{ padding-left:16px; margin-left:16px; }
+.meta div span{ font-family:var(--f-body); font-weight:900; font-size:var(--fs-3xl); color:var(--ink); letter-spacing:0; margin-top:2px; }
+.fv-cta{ margin-top:22px; }
+.pre-note, .note{ color:var(--ink-3); }
+@media (min-width:900px){
+  .fv{ grid-template-columns:1fr 1fr; gap:40px; }
+  .fv-art{ max-width:none; }
+}
+/* FVのボタンは右カラムの中に2つ並ぶ。列が狭いと「途中から再開する（47問目）」が
+   折り返してボタンだけ背が高くなるので、横に並べるのは 1200px 以上のときだけにし、
+   文字も画面幅で伸縮させる（固定 px だと折り返しを防げない）。 */
+.fv-cta .btn{
+  font-size:clamp(0.875rem, 0.85vw + 0.25rem, 1.0625rem);
+  padding-block:17px; padding-inline:clamp(14px, 1.4vw, 26px);
+  white-space:nowrap;
+}
+/* 横に並ぶときは2つで行を埋める（幅は文字数なりに配分される） */
+@media (min-width:561px){
+  .fv-cta .btn{ flex:1 1 auto; }
+}
+
+/* ---- 帯（セクション） ---- */
+.band{ padding:clamp(44px,7vw,88px) 0; border-top:1px solid var(--line-2); }
+.band-alt{ background:var(--surface-2); border-top:0; }
+.band-dark{ background:var(--ink); color:var(--on-brand); border-top:0; }
+.band-dark .eyebrow, .band-dark .sec-lede{ color:var(--paper); opacity:.72; }
+.band-dark .sec-title{ color:var(--on-brand); }
+.sec-title{ font-size:clamp(1.5rem, 4.4vw, 2.5rem); font-weight:900; line-height:1.35; margin:14px 0 0; }
+.sec-lede{ margin-top:16px; color:var(--ink-3); font-size:var(--fs-md); line-height:1.9; max-width:var(--measure); }
+.more{
+  display:inline-flex; align-items:center; gap:10px; margin-top:26px;
+  font-family:var(--f-en); font-weight:900; font-size:var(--fs-base); letter-spacing:.04em;
+  color:var(--ink); text-decoration:none;
+}
+.more:hover{ opacity:.7; }
+
+/* ---- 6つの軸（カード） ---- */
+.axis-list{ display:grid; grid-template-columns:1fr; gap:16px; margin-top:34px; }
+.axis-row{ display:block; padding:22px 22px 24px; border-bottom:var(--bw) solid var(--ink); }
+.axis-row:last-child{ border-bottom:var(--bw) solid var(--ink); }
+.axis-row .pair{
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--f-en); font-weight:900; font-size:var(--fs-2xl); letter-spacing:.02em;
+}
+.axis-row .pair .l, .axis-row .pair .r, .axis-row .pair .sep{ color:var(--ink); }
+.axis-row .dot{ width:14px; height:14px; border-radius:5px; flex:none; background:var(--ink-3); }
+.axis-row[data-ax="EI"] .dot{ background:var(--ax-EI); }
+.axis-row[data-ax="SN"] .dot{ background:var(--ax-SN); }
+.axis-row[data-ax="TF"] .dot{ background:var(--ax-TF); }
+.axis-row[data-ax="JP"] .dot{ background:var(--ax-JP); }
+.axis-row[data-ax="AO"] .dot{ background:var(--ax-AO); }
+.axis-row[data-ax="HC"] .dot{ background:var(--ax-HC); }
+.axis-row .desc{ max-width:none; margin-top:12px; font-size:var(--fs-md); color:var(--ink-3); }
+.axis-row .desc b{ display:block; font-weight:900; font-size:var(--fs-lg); color:var(--ink); margin-bottom:12px; }
+.axis-row .pole{ display:block; margin-top:8px; line-height:1.7; }
+.axis-row .pole i{ font-style:normal; font-weight:700; color:var(--ink); margin-right:.6em; }
+@media (min-width:700px){ .axis-list{ grid-template-columns:1fr 1fr; } }
+@media (min-width:1000px){ .axis-list{ grid-template-columns:repeat(3,1fr); } }
+
+/* ---- 16体のモンスター（トップ） ---- */
+.strip{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:34px 0 0; }
+@media (min-width:700px){ .strip{ grid-template-columns:repeat(3,1fr); } }
+@media (min-width:1000px){ .strip{ grid-template-columns:repeat(4,1fr); } }
+.mcard{
+  display:block; overflow:hidden; text-decoration:none; color:inherit;
+  background:var(--paper);
+}
+.mcard:hover{ background:var(--surface-2); }
+.mcard .thumb{ border-radius:0; }
+.mcard .mbody{ display:block; padding:14px 16px 16px; border-top:var(--bw) solid var(--ink); }
+.mcard .mcode{ display:block; font-family:var(--f-mono); font-size:var(--fs-xs); letter-spacing:.3em; color:var(--ink-3); }
+.mcard .mname{ display:block; font-weight:900; font-size:var(--fs-lg); line-height:1.5; margin-top:5px; }
+.mcard .mtag{ display:block; font-size:var(--fs-xs); color:var(--ink-3); line-height:1.7; margin-top:6px; }
+.strip-note{ margin-top:20px; color:var(--ink-3); }
+
+/* ---- 使い方（黒帯） ---- */
+.how{ list-style:none; margin:36px 0 0; padding:0; display:grid; gap:26px; }
+@media (min-width:820px){ .how{ grid-template-columns:repeat(3,1fr); gap:24px; } }
+.how-step{ padding-top:22px; border-top:1px solid rgba(255,255,255,.28); }
+.how-n{ display:block; font-family:var(--f-en); font-weight:900; font-size:2.25rem; line-height:1; letter-spacing:-.02em; }
+.how-step:nth-child(1) .how-n{ color:var(--ax-AO); }
+.how-step:nth-child(2) .how-n{ color:var(--ax-EI); }
+.how-step:nth-child(3) .how-n{ color:var(--ax-HC); }
+.how-t{ display:block; font-weight:900; font-size:var(--fs-xl); line-height:1.5; margin-top:16px; }
+.how-d{ display:block; font-size:var(--fs-md); line-height:1.9; margin-top:10px; color:var(--paper); opacity:.74; }
+
+/* ---- タイプを選ぶ ---- */
+.picker{ border-top:0; padding-top:0; margin-top:0; }
+.picker select, .pick-card select{ border-radius:var(--r-btn); padding-top:14px; padding-bottom:14px; }
+.seg-toggle button{ border-radius:var(--r-btn); font-weight:700; color:var(--ink); }
+.seg-toggle button:hover{ border-color:var(--ink); background:var(--surface-2); }
+.seg-toggle button.on{
+  background:var(--ink); border-color:var(--ink);
+}
+.seg-toggle button.on > span{
+  font-weight:900; background:none; color:var(--on-brand);
+  -webkit-text-fill-color:var(--on-brand); -webkit-background-clip:border-box; background-clip:border-box;
+}
+.picker-note .mono{ color:var(--ink); letter-spacing:.2em; }
+
+/* ---- 設問 ---- */
+.seg{ height:12px; border:var(--bw) solid var(--ink); background:var(--surface-2); }
+.seg b{ background:var(--ink); }
+.qcount{ font-family:var(--f-en); font-weight:900; font-size:var(--fs-xl); color:var(--ink); letter-spacing:0; }
+.qhome{ font-family:var(--f-en); font-weight:900; letter-spacing:.06em; color:var(--ink); }
+.qtext{ font-weight:900; }
+.opt{ border-width:var(--bw); --c:var(--ink); }
+.opt[data-v="2"], .opt[data-v="1"], .opt[data-v="-2"], .opt[data-v="-1"]{ --c:var(--ink); }
+.opt:hover{ transform:none; background:var(--surface-2); }
+.opt .k{ font-family:var(--f-en); font-weight:900; font-size:var(--fs-lg); color:var(--ink-3); opacity:1; }
+.opt.sel{ background:var(--ink); border-color:var(--ink); }
+.opt.sel:hover{ background:var(--ink); }
+.opt.sel .k{ opacity:1; color:var(--on-brand); }
+.opt-lab{ font-weight:700; color:var(--ink); font-size:var(--fs-md); }
+
+/* ---- 結果 ---- */
+.code{ font-family:var(--f-en); font-weight:900; letter-spacing:-.01em; }
+.code .base, .code .sub, .code .sub:nth-of-type(3), .code .dash{ color:var(--ink); }
+.res-label{ font-weight:900; }
+.g-track{
+  height:18px; border:var(--bw) solid var(--ink); border-radius:6px;
+  background:var(--surface-2);
+}
+.g-track::after{ top:0; bottom:0; width:2px; background:var(--ink-3); }
+.g-fill{ top:0; bottom:0; border-radius:0; background:var(--ink); }
+.g-fill.left, .g-fill.right{ background:var(--ink); }
+.g-pole .l{ font-family:var(--f-en); font-weight:900; }
+.g-pole.on.left .l, .g-pole.on.right .l{ color:var(--ink); }
+.g-pct{ font-family:var(--f-mono); }
+.cell.on{ border-width:3px; border-color:var(--ink); background:var(--surface-2); box-shadow:none; }
+.cell.on .c-code{ color:var(--ink); }
+.cell .c-code, .chip .c1, .tcard .tcode{ font-family:var(--f-mono); letter-spacing:.24em; color:var(--ink-3); font-size:var(--fs-xs); }
+.cell .c-lab, .chip .c2, .tcard .tlab{ font-weight:900; color:var(--ink); }
+.chip .c2{ font-size:var(--fs-sm); }
+.chip{ padding:8px 18px 8px 8px; }
+.chip .thumb{ border-radius:var(--r-full); }
+.jobs span{ border-radius:var(--r-full); padding:8px 16px; color:var(--ink); font-weight:700; }
+.list li{ color:var(--ink); }
+.list li::before{ background:var(--ink); }
+.list.plus li::before, .list.minus li::before{ background:var(--ink); }
+.stbox-h{ border-bottom:1px solid var(--line-2); }
+.stbox-h .mono{ letter-spacing:.24em; }
+.pair-verdict .pv-lab{ font-weight:900; }
+
+/* ---- 相性 ---- */
+.ps-bar{ height:14px; border:var(--bw) solid var(--ink); background:var(--surface-2); border-radius:var(--r-full); }
+.pscore[open] .ps-bar{ background:var(--surface-2); }
+.ps-fill{ background:var(--ink); }
+.ps-n{ font-family:var(--f-en); font-weight:900; }
+.ps-title{ font-weight:900; }
+.ps-state, .acmp .ac-t .tag{
+  border-width:var(--bw); border-color:var(--ink); color:var(--ink);
+  font-family:var(--f-body); font-weight:700; padding:3px 12px;
+}
+.acmp .ac-t .tag{ background:var(--ink); color:var(--on-brand); }
+.acmp .ac-t .tag.diff{ background:transparent; color:var(--ink); border-color:var(--ink); }
+.acmp .ac-l{ font-family:var(--f-body); font-weight:900; }
+.acmp .ac-l .a, .acmp .ac-l .b{ color:var(--ink); }
+.acmp .ac-t{ font-weight:900; }
+.duo-side .thumb{ border-radius:24px; border:var(--bw) solid var(--ink); }
+.duo-side .dn{ font-weight:900; }
+.duo-x{ font-family:var(--f-en); font-weight:900; color:var(--ink); font-size:var(--fs-3xl); }
+
+/* ---- ヒストリー / Myフレンド ---- */
+.ht-v .mono{ font-family:var(--f-body); font-weight:900; }
+.ht-last .thumb{ border-radius:10px; }
+.sp-track{ border-bottom:1px solid var(--line-2); }
+.sp-mid{ background:var(--ink-3); }
+.sp-range{ background:var(--ink-3); }
+.sp-dot{ background:var(--ink-3); }
+.sp-dot.last, .sp-dot.last.neg, .sp-dot.last.pos{ background:var(--ink); box-shadow:0 0 0 3px var(--paper); }
+.sp-now.neg, .sp-now.pos, .sp-ends .l.neg, .sp-ends .l.pos{ color:var(--ink); }
+.sp-ends .l{ font-family:var(--f-en); font-weight:900; }
+.histtable td.neg, .histtable td.pos{ color:var(--ink); }
+.histtable .hcode:hover{ color:var(--ink); }
+.fr-main:hover .fr-name{ color:var(--ink); }
+.fr-name{ font-weight:900; }
+.fr-main .thumb{ border-radius:10px; }
+.token{ border-radius:var(--r-btn); background:var(--surface-2); letter-spacing:.2em; }
+.token-row input, .fr-form input{ border-radius:var(--r-btn); padding-top:14px; padding-bottom:14px; }
+.token-row input:focus, .fr-form input:focus{ border-color:var(--ink); }
+.hist-clear.armed, .fr-del.armed, .token-msg.bad{ color:var(--danger); }
+
+/* ---- 設定・モーダル・ドロアー ---- */
+.switch{ border-width:var(--bw); border-color:var(--ink); background:var(--surface-2); }
+.switch.on{ background:var(--ink); border-color:var(--ink); }
+.switch .knob{ background:var(--ink-3); }
+.switch.on .knob{ background:var(--on-brand); }
+.modal-back, .drawer-back{ background:rgba(17,17,17,.55); }
+html[data-theme="dark"] .modal-back, html[data-theme="dark"] .drawer-back{ background:rgba(0,0,0,.66); }
+.drawer-panel{ border-right:var(--bw) solid var(--ink); }
+.drawer-logo .logo{ height:26px; }
+.set-h{ font-weight:900; }
+:focus-visible{ outline:3px solid var(--ink); outline-offset:3px; }
+
+/* Hero の英字図版もロゴと同じくライト／ダークで差し替える */
+.fv-art{ margin:0; line-height:0; }
+.fv-art img{ display:block; width:100%; height:auto; }
+.fv-art .art-dark{ display:none; }
+html[data-theme="dark"] .fv-art .art-light{ display:none; }
+html[data-theme="dark"] .fv-art .art-dark{ display:block; }
+
+/* ダークのときの反転帯。
+   ライトでは黒帯だが、ダークでそのまま反転すると「白い帯」になり、
+   工程番号（6軸の色）が白地に乗って読めなくなる。
+   ダークでは地より一段暗い黒にして、帯としての切り替わりを保つ。 */
+html[data-theme="dark"] .band-dark{ background:#000000; color:var(--ink); }
+html[data-theme="dark"] .band-dark .sec-title{ color:var(--ink); }
+html[data-theme="dark"] .band-dark .eyebrow{ color:var(--ink-3); opacity:1; }
+html[data-theme="dark"] .band-dark .how-d{ color:var(--ink-2); opacity:1; }
+html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,.22); }
+
+/* 強み＝＋、気をつけたいところ＝− を記号そのもので出す（色に頼らない） */
+.list li::before{ width:10px; height:2px; left:0; top:.86em; background:var(--ink); }
+.list.plus li::after{
+  content:""; position:absolute; left:4px; top:calc(.86em - 4px);
+  width:2px; height:10px; background:var(--ink);
+}
+.list li{ padding-left:24px; }
+
+/* 入力欄のプレースホルダ */
+.token-row input::placeholder, .fr-form input::placeholder{ color:var(--ink-3); opacity:1; }
+
+/* 広い画面では「ALL 64 MONSTERS」を見出しの行の右端に置く */
+@media (min-width:900px){
+  .band-alt .wrap{ position:relative; }
+  .band-alt .more{ position:absolute; right:0; top:0; margin-top:0; }
+  .band-alt .sec-title{ padding-right:220px; }
+}
+
+/* ヒーローの直後の帯には上罫線を引かない（FVの下に線が1本出てしまう） */
+#intro + .band{ border-top:0; }
+
+/* ヘッダーの診断ボタンは、幅が詰まっても折り返さない */
+.sh-cta{ white-space:nowrap; }
+@media (max-width:400px){
+  .sh-cta{ padding:9px 14px; font-size:var(--fs-sm); }
+  .sh-logo .logo{ height:24px; }
+}
+
+/* ヘッダー右側の「マイタイプ」と「診断」は、高さをそろえて1本の線に見せる */
+:root{ --hd-btn-h:44px; }
+.sh-my, .sh-cta{
+  height:var(--hd-btn-h);
+  padding-top:0; padding-bottom:0;
+  display:inline-flex; align-items:center;
+}
+.sh-cta{ justify-content:center; padding-inline:20px; }
+.sh-my{ padding-right:14px; padding-left:5px; gap:9px; }
+.sh-my .thumb{ width:calc(var(--hd-btn-h) - 14px); height:calc(var(--hd-btn-h) - 14px); }
+@media (max-width:400px){
+  :root{ --hd-btn-h:38px; }
+  .sh-cta{ padding-inline:14px; }
+}

@@ -61,8 +61,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=083e477f">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=02bca8e6">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -76,61 +76,120 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 
-<!-- ============ イントロ ============ -->
+<!-- ============ ファーストビュー ============ -->
 <section id="intro" class="wrap">
   <div class="intro-head">
-    <p class="eyebrow">6 axes &nbsp;/&nbsp; 90 questions</p>
-    <h1 class="subtitle">6軸でわかる64通りの性格診断</h1>
-    <p class="lede">
-      よく知られた4つの軸に、<b>自分への確信</b>と<b>人への構え</b>という2軸を加えた6軸構成。
-      16タイプでは同じ枠に入っていた人が、64通りに分かれます。
-    </p>
-    <div class="meta">
-      <div>設問数<span class="mono">90問</span></div>
-      <div>所要時間<span class="mono">約10分</span></div>
-      <div>判定タイプ<span class="mono">64通り</span></div>
+    <p class="eyebrow">6 axes &nbsp;/&nbsp; 90 questions &nbsp;/&nbsp; 64 monsters</p>
+
+    <div class="fv">
+      <!-- 見出しの英字は字形そのものが絵なので、フォントではなく図版（SVG）で置く -->
+      <p class="fv-art">
+        <img class="art-light" src="assets/hero-copy.svg?v=e0af519d" alt="WHICH MONSTER ARE YOU?" width="337" height="185">
+        <img class="art-dark" src="assets/hero-copy-dark.svg?v=1800951d" alt="" width="337" height="185" aria-hidden="true">
+      </p>
+
+      <div class="fv-copy">
+        <h1 class="subtitle">6軸でわかる、64通りの性格診断。</h1>
+        <p class="lede">
+          よく知られた4つの軸に、<b>自分への確信</b>と<b>人への構え</b>という2軸を加えた6軸構成。
+          16タイプでは同じ枠に入っていた人が、64通りに分かれます。
+        </p>
+        <div class="meta">
+          <div>設問数<span class="mono">90問</span></div>
+          <div>所要時間<span class="mono">約10分</span></div>
+          <div>判定タイプ<span class="mono">64通り</span></div>
+        </div>
+        <div class="fv-cta">
+          <a class="btn" id="startBtn" href="quiz/?restart=1">診断をはじめる</a>
+          <a class="btn ghost hidden" id="resumeBtn" href="quiz/">途中から再開する</a>
+        </div>
+        <p class="savenote hidden" id="saveNote"></p>
+        <p class="pre-note">回答は、「本来はこうだ」「昔はこうだった」ではなく、<b>直近数か月の、実際の行動</b>で。いまのあなたとして答えてください。</p>
+      </div>
     </div>
-    <p class="pre-note">回答は、「本来はこうだ」「昔はこうだった」ではなく、<b>直近数か月の、実際の行動</b>で。いまのあなたとして答えてください。</p>
-    <div class="fv-cta">
-      <a class="btn" id="startBtn" href="quiz/?restart=1">診断をはじめる</a>
-      <a class="btn ghost hidden" id="resumeBtn" href="quiz/">途中から再開する</a>
-    </div>
-    <p class="savenote hidden" id="saveNote"></p>
-    <p class="note">
-      直感で、いまの自分に近いほうを選んでください。深く考え込むより、最初に浮かんだ答えのほうが結果は正確になります。
-    </p>
   </div>
+</section>
 
-  <div class="strip" id="strip"></div>
-  <p class="strip-note">16体のキャラクターが、それぞれ4つのサブタイプで登場します（全64体）。</p>
-
-  <div class="axis-list" id="axisList"></div>
-
-  <div class="picker">
-    <p class="sub-h">すでに自分のタイプがわかっている方</p>
-    <div class="picker-row">
-      <select id="pkBase" aria-label="基本タイプ"></select>
-      <span class="seg-toggle" id="pkAO" role="group" aria-label="自分への確信">
-        <button data-v="A"><span>A・確信</span></button><button data-v="O"><span>O・揺らぎ</span></button>
-      </span>
-      <span class="seg-toggle" id="pkHC" role="group" aria-label="人への構え">
-        <button data-v="H"><span>H・信頼</span></button><button data-v="C"><span>C・慎重</span></button>
-      </span>
-      <button class="btn" id="pkGo">このタイプを見る</button>
-    </div>
-    <p class="picker-note" id="pkNote"></p>
+<!-- ============ 6つの軸 ============ -->
+<section class="band">
+  <div class="wrap">
+    <p class="eyebrow">01 — axes</p>
+    <h2 class="sec-title">6つの軸で、64通りに分ける。</h2>
+    <p class="sec-lede">
+      よく知られた4軸に、行動の速さと相性に直結する2軸を足しました。
+      同じ判断をする人でも迷いの長さで行動の速さが変わり、初対面の相手をまず信じるかどうかで相性が変わります。
+    </p>
+    <div class="axis-list" id="axisList"></div>
   </div>
+</section>
 
-  <p class="notice-link"><a href="about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
+<!-- ============ 16体のモンスター ============ -->
+<section class="band band-alt">
+  <div class="wrap">
+    <p class="eyebrow">02 — monsters</p>
+    <h2 class="sec-title">16体のモンスター。それぞれに4つの顔。</h2>
+    <div class="strip" id="strip"></div>
+    <p class="strip-note">16体のキャラクターが、それぞれ4つのサブタイプで登場します（全64体）。</p>
+    <a class="more" href="types.html"><span class="en">ALL 64 MONSTERS</span> →</a>
+  </div>
+</section>
 
-  <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
+<!-- ============ 使い方 ============ -->
+<section class="band band-dark">
+  <div class="wrap">
+    <p class="eyebrow">03 — how it works</p>
+    <h2 class="sec-title">10分で、自分のモンスターに会う。</h2>
+    <ol class="how">
+      <li class="how-step">
+        <span class="how-n">01</span>
+        <span class="how-t">90問に、直感で答える</span>
+        <span class="how-d">所要は約10分。途中で保存して、あとから再開できます。回答はサーバーへ送らず、端末の中だけで判定します。</span>
+      </li>
+      <li class="how-step">
+        <span class="how-n">02</span>
+        <span class="how-t">64体から、あなたの1体が決まる</span>
+        <span class="how-d">6軸のスコアと解説つき。ヒストリーに残るので、数か月後に受け直すと「変化」が見えます。</span>
+      </li>
+      <li class="how-step">
+        <span class="how-n">03</span>
+        <span class="how-t">相性を見る・友だちに渡す</span>
+        <span class="how-d">結果の一枚絵をシェア。2人の相性は、6軸のどこが同じで、どこが違うかで読めます。</span>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ すでにタイプがわかっている方 ============ -->
+<section class="band">
+  <div class="wrap">
+    <p class="eyebrow">04 — already know?</p>
+    <h2 class="sec-title">すでに自分のタイプがわかっている方</h2>
+
+    <div class="picker">
+      <div class="picker-row">
+        <select id="pkBase" aria-label="基本タイプ"></select>
+        <span class="seg-toggle" id="pkAO" role="group" aria-label="自分への確信">
+          <button data-v="A"><span>A・確信</span></button><button data-v="O"><span>O・揺らぎ</span></button>
+        </span>
+        <span class="seg-toggle" id="pkHC" role="group" aria-label="人への構え">
+          <button data-v="H"><span>H・信頼</span></button><button data-v="C"><span>C・慎重</span></button>
+        </span>
+        <button class="btn" id="pkGo">このタイプを見る</button>
+      </div>
+      <p class="picker-note" id="pkNote"></p>
+    </div>
+
+    <p class="notice-link"><a href="about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
+
+    <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
+  </div>
 </section>
 
 <script src="assets/questions.js?v=0b31d093"></script>
 <script src="assets/types.js?v=2c6264bd"></script>
 <script src="assets/render.js?v=f156683c"></script>
 <script src="assets/engine.js?v=b962afbb"></script>
-<script src="assets/home.js?v=7cdc1f57"></script>
-<script src="assets/settings.js?v=4e776bbb"></script>
+<script src="assets/home.js?v=f0dbc825"></script>
+<script src="assets/settings.js?v=a6b463d3"></script>
 </body>
 </html>

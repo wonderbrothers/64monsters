@@ -22,8 +22,8 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.1.0";
-  var BUILD   = "9f5e741";
-  var BUILT   = "2026-09-05";
+  var BUILD   = "5d51c06";
+  var BUILT   = "2026-09-08";
 
   var MYKEY = KEY + ".mytype";
   var MYOFF = KEY + ".myoff";      /* 自分で解除した印 */
@@ -59,8 +59,13 @@
     'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M9 5l7 7-7 7"></path></svg>';
   var LOGO =
-    '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=5f144fbe" alt="" width="1238" height="280">' +
-    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=4ac2348c" alt="" width="1238" height="280">';
+    '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=07d44381" alt="" width="183" height="39">' +
+    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=4028cf3a" alt="" width="183" height="39">';
+
+  /* ヘッダーのリンクは、英字を大きく・日本語を小さく2行で出す（読み上げは日本語だけ） */
+  function navLabel(en, jp){
+    return '<span class="sh-en" aria-hidden="true">' + en + '</span><span class="sh-jp">' + jp + '</span>';
+  }
 
   var GALLERY = B + "types.html";
   var HOME = B || "index.html";
@@ -85,16 +90,26 @@
       '<a class="sh-logo" href="' + HOME + '" aria-label="64モンスターズ ホーム">' + LOGO + '</a>' +
       /* 並びは モンスターギャラリー → ヒストリー → 設定 → Myフレンド → マイタイプ → 診断 */
       '<nav class="sh-nav" aria-label="サイト内">' +
-        '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>モンスターギャラリー</a>' +
-        '<a class="sh-link" href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>ヒストリー</a>' +
-        '<button type="button" class="sh-link" id="shSet">設定</button>' +
-        '<a class="sh-link" href="' + FRIENDS + '"' + (onFriends ? ' aria-current="page"' : '') + '>Myフレンド</a>' +
+        '<a class="sh-link" href="' + GALLERY + '"' + (onGallery ? ' aria-current="page"' : '') + '>' + navLabel("MONSTERS", "モンスターギャラリー") + '</a>' +
+        '<a class="sh-link" href="' + HIST + '"' + (onHist ? ' aria-current="page"' : '') + '>' + navLabel("HISTORY", "ヒストリー") + '</a>' +
+        '<button type="button" class="sh-link" id="shSet">' + navLabel("SETTINGS", "設定") + '</button>' +
+        '<a class="sh-link" href="' + FRIENDS + '"' + (onFriends ? ' aria-current="page"' : '') + '>' + navLabel("FRIENDS", "Myフレンド") + '</a>' +
         '<a class="sh-my hidden" id="shMy" href="#"><span class="thumb"><img src="" alt=""></span>' +
           '<span class="sm-code mono"></span></a>' +
       '</nav>' +
       '<a class="btn sh-cta" href="' + QUIZ + '" id="shCta">診断</a>' +
     '</div>';
   document.body.insertBefore(head, document.body.firstChild);
+
+  /* ---------- フッターのロゴ（著作権表示の上に置くだけ） ---------- */
+  (function(){
+    var copy = document.querySelector(".copy");
+    if (!copy || !copy.parentNode) return;
+    var f = document.createElement("div");
+    f.className = "site-foot";
+    f.innerHTML = '<a class="sh-logo" href="' + HOME + '" aria-label="64モンスターズ ホーム">' + LOGO + '</a>';
+    copy.parentNode.insertBefore(f, copy);
+  })();
 
   /* ---------- 表示設定のUI（1つだけ作って使い回す） ---------- */
   var panel = document.createElement("div");
