@@ -1405,7 +1405,8 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 .how-d{ display:block; font-size:var(--fs-md); line-height:1.9; margin-top:10px; color:var(--paper); opacity:.74; }
 
 /* ---- タイプを選ぶ ---- */
-.picker{ border-top:0; padding-top:0; margin-top:0; }
+/* 見出しと中身のあいだは、他のセクション（.axis-list / .strip）と同じ34px */
+.picker{ border-top:0; padding-top:0; margin-top:34px; }
 .picker select, .pick-card select{ border-radius:var(--r-btn); padding-top:14px; padding-bottom:14px; }
 .seg-toggle button{ border-radius:var(--r-btn); font-weight:700; color:var(--ink); }
 .seg-toggle button:hover{ border-color:var(--ink); background:var(--surface-2); }
