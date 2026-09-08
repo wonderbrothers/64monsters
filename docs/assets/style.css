@@ -1572,3 +1572,51 @@ html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,
   :root{ --hd-btn-h:38px; }
   .sh-cta{ padding-inline:14px; }
 }
+
+/* ============================================================
+   モンスターギャラリー（/types.html）
+   16の基本タイプが縦に長く続くので、上に移動用のチップを貼りつける。
+   絞り込みではなく「その並びまで飛ぶ」ためのもの。
+   ============================================================ */
+.gjump{
+  position:sticky; top:var(--head-h); z-index:20;
+  display:flex; gap:8px; margin:26px 0 4px; padding:12px 0;
+  overflow-x:auto; overscroll-behavior-x:contain;
+  scrollbar-width:none; -ms-overflow-style:none;
+  background:var(--paper);
+  /* 帯の地色だけ画面の端まで伸ばす（枠は .wrap の幅のままにしたい） */
+  box-shadow:0 0 0 100vmax var(--paper);
+  clip-path:inset(0 -100vmax);
+}
+.gjump::-webkit-scrollbar{ display:none; }
+.gjump a{
+  flex:0 0 auto; display:inline-flex; align-items:baseline; gap:8px;
+  padding:9px 16px; border-radius:var(--r-full);
+  border:var(--bw) solid var(--ink); background:var(--paper);
+  color:var(--ink); text-decoration:none; white-space:nowrap;
+  transition:background .12s ease, color .12s ease;
+}
+.gjump a:hover{ background:var(--surface-2); }
+.gjump a[aria-current="true"]{ background:var(--ink); color:var(--on-brand); }
+.gjump .gj-c{ font-family:var(--f-mono); font-size:var(--fs-sm); letter-spacing:.16em; }
+.gjump .gj-n{ font-size:var(--fs-xs); font-weight:700; opacity:.72; }
+@media (max-width:560px){
+  .gjump{ gap:6px; padding:10px 0; }
+  .gjump a{ padding:8px 13px; }
+  .gjump .gj-n{ display:none; }
+}
+
+/* 基本タイプごとの並び */
+.group{
+  padding:44px 0;
+  border-top:1px solid var(--line-2);
+  /* チップの帯とヘッダーのぶんだけ、飛び先を下げる */
+  scroll-margin-top:calc(var(--head-h) + var(--gjump-h, 56px) + 12px);
+}
+.group:first-child{ border-top:0; padding-top:28px; }
+.group-head{ display:flex; align-items:baseline; flex-wrap:wrap; gap:8px 16px; }
+.gc{ font-family:var(--f-en); font-weight:900; font-size:var(--fs-3xl); letter-spacing:-.01em; }
+.gn{ font-weight:900; font-size:var(--fs-xl); }
+.gt{ font-size:var(--fs-md); color:var(--ink-3); }
+.group-sum{ margin-top:14px; font-size:var(--fs-md); line-height:1.95; color:var(--ink-2); }
+.tgrid{ margin-top:24px; }

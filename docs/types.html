@@ -45,7 +45,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=02bca8e6">
+<link rel="stylesheet" href="assets/style.css?v=37112ac2">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -73,7 +73,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="eyebrow">index</p>
   <h1 class="title" style="font-size:clamp(1.875rem, 5vw, 2.625rem)">モンスターギャラリー</h1>
   <p class="lede">基本16タイプ × 自分への確信（A / O）× 人への構え（H / C）。カードをクリックすると詳しい解説が開きます。</p>
-  <div id="groups" style="margin-top:10px"></div>
+  <nav class="gjump" id="gjump" aria-label="基本タイプへ移動"></nav>
+  <div id="groups"></div>
   <p class="notice-link"><a href="about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
 
   <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
@@ -83,7 +84,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>
 (function(){
   var B = window.BASE_TYPES, S = window.SUBTYPES;
-  document.getElementById("groups").innerHTML = Object.keys(B).map(function(k){
+  var keys = Object.keys(B);
+
+  /* 16グループ。チップから飛べるように id を振る */
+  document.getElementById("groups").innerHTML = keys.map(function(k){
     var b = B[k];
     var cards = ["A-H","A-C","O-H","O-C"].map(function(sfx){
       var code = k + "-" + sfx;
@@ -93,13 +97,76 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '<span class="tlab" style="display:block">' + S[code].label + '</span>' +
         '<span class="tdesc" style="display:block">' + S[code].desc + '</span></span></a>';
     }).join("");
-    return '<div class="group"><div class="group-head"><span class="gc">' + k + '</span>' +
+    return '<section class="group" id="g-' + k + '"><div class="group-head"><span class="gc">' + k + '</span>' +
            '<span class="gn">' + b.name + '</span><span class="gt">' + b.tagline + '</span></div>' +
            '<p class="group-sum">' + b.summary + '</p>' +
-           '<div class="tgrid">' + cards + '</div></div>';
+           '<div class="tgrid">' + cards + '</div></section>';
   }).join("");
+
+  /* 移動用のチップ。押すとそのタイプの並びまでスクロールする */
+  var bar = document.getElementById("gjump");
+  bar.innerHTML = keys.map(function(k){
+    return '<a href="#g-' + k + '" data-k="' + k + '"><span class="gj-c">' + k + '</span>' +
+           '<span class="gj-n">' + B[k].name.replace("モンスター", "") + '</span></a>';
+  }).join("");
+  var links = {};
+  Array.prototype.forEach.call(bar.querySelectorAll("a"), function(a){ links[a.getAttribute("data-k")] = a; });
+
+  /* チップの帯のぶんだけ、飛び先を下にずらす（帯は共通ヘッダーの下に貼りつく） */
+  function syncOffset(){
+    document.documentElement.style.setProperty("--gjump-h", bar.offsetHeight + "px");
+  }
+  syncOffset();
+  window.addEventListener("resize", syncOffset);
+
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function goTo(k, smooth){
+    var el = document.getElementById("g-" + k);
+    if (!el) return;
+    el.scrollIntoView({ behavior: (smooth && !reduce) ? "smooth" : "auto", block: "start" });
+  }
+  bar.addEventListener("click", function(e){
+    var a = e.target.closest ? e.target.closest("a[data-k]") : null;
+    if (!a) return;
+    e.preventDefault();
+    var k = a.getAttribute("data-k");
+    goTo(k, true);
+    if (history.replaceState) history.replaceState(null, "", "#g-" + k);
+    setCurrent(k);
+  });
+
+  /* いま見ているグループのチップを塗る。押した先が分かるように、帯の中でも見える位置へ寄せる */
+  var current = null;
+  function setCurrent(k){
+    if (k === current) return;
+    if (current && links[current]) links[current].removeAttribute("aria-current");
+    current = k;
+    if (!links[k]) return;
+    links[k].setAttribute("aria-current", "true");
+    var a = links[k], l = a.offsetLeft, r = l + a.offsetWidth;
+    if (l < bar.scrollLeft + 8) bar.scrollLeft = l - 8;
+    else if (r > bar.scrollLeft + bar.clientWidth - 8) bar.scrollLeft = r - bar.clientWidth + 8;
+  }
+  if ("IntersectionObserver" in window){
+    var headH = 64;
+    var probe = getComputedStyle(document.documentElement).getPropertyValue("--head-h");
+    if (probe) headH = parseInt(probe, 10) || 64;
+    var obs = new IntersectionObserver(function(entries){
+      /* 帯のすぐ下に入っているグループのうち、いちばん上のものを現在地にする */
+      var vis = entries.filter(function(x){ return x.isIntersecting; });
+      if (!vis.length) return;
+      vis.sort(function(a, b){ return a.boundingClientRect.top - b.boundingClientRect.top; });
+      setCurrent(vis[0].target.id.slice(2));
+    }, { rootMargin: "-" + (headH + bar.offsetHeight + 4) + "px 0px -62% 0px", threshold: 0 });
+    keys.forEach(function(k){ obs.observe(document.getElementById("g-" + k)); });
+  }
+
+  /* #g-INTJ 付きで開かれたとき。グループはJSで作るので、作ったあとに自分で飛ぶ */
+  var m = /^#g-([A-Z]{4})$/.exec(location.hash || "");
+  if (m && links[m[1]]){ goTo(m[1], false); setCurrent(m[1]); }
+  else { setCurrent(keys[0]); }
 })();
 </script>
-<script src="assets/settings.js?v=a6b463d3"></script>
+<script src="assets/settings.js?v=d739dc28"></script>
 </body>
 </html>
