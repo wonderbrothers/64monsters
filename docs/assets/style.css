@@ -1621,3 +1621,12 @@ html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,
 .gt{ font-size:var(--fs-md); color:var(--ink-3); }
 .group-sum{ margin-top:14px; font-size:var(--fs-md); line-height:1.95; color:var(--ink-2); }
 .tgrid{ margin-top:24px; }
+
+/* Hero の英字図版は、モンスターが左から歩いてくるぶんだけ
+   キャンバスを左に 90（＝元の幅の 26.687%）広げてある。
+   その広げたぶんをマイナスマージンで引き戻すので、文字の位置は変わらない。 */
+.fv-art img{ width:126.687%; max-width:none; margin-left:-26.687%; }
+/* はみ出したぶんで横スクロールが出ないようにする。
+   overflow:hidden と違って clip はスクロール枠を作らないので、
+   ヘッダーやギャラリーのチップの position:sticky が効いたままになる。 */
+html{ overflow-x:clip; }
