@@ -1506,7 +1506,7 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 /* ---- 設定・モーダル・ドロアー ---- */
 .switch{ border-width:var(--bw); border-color:var(--ink); background:var(--surface-2); }
 .switch.on{ background:var(--ink); border-color:var(--ink); }
-.switch .knob{ background:var(--ink-3); }
+.switch .knob{ background:var(--ink); }
 .switch.on .knob{ background:var(--on-brand); }
 .modal-back, .drawer-back{ background:rgba(17,17,17,.55); }
 html[data-theme="dark"] .modal-back, html[data-theme="dark"] .drawer-back{ background:rgba(0,0,0,.66); }
