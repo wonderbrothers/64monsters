@@ -1624,9 +1624,9 @@ html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,
 .tgrid{ margin-top:24px; }
 
 /* Hero の英字図版は、モンスターが左から歩いてくるぶんだけ
-   キャンバスを左に 90（＝元の幅の 26.687%）広げてある。
+   キャンバスを左に 135（＝元の幅 499 の 27.054%）広げてある。
    その広げたぶんをマイナスマージンで引き戻すので、文字の位置は変わらない。 */
-.fv-art img{ width:126.687%; max-width:none; margin-left:-26.687%; }
+.fv-art img{ width:127.054%; max-width:none; margin-left:-27.054%; }
 /* はみ出したぶんで横スクロールが出ないようにする。
    overflow:hidden と違って clip はスクロール枠を作らないので、
    ヘッダーやギャラリーのチップの position:sticky が効いたままになる。 */

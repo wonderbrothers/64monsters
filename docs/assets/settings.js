@@ -22,8 +22,8 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.1.0";
-  var BUILD   = "482f554";
-  var BUILT   = "2026-09-08";
+  var BUILD   = "19f2f1f";
+  var BUILT   = "2026-09-09";
 
   var MYKEY = KEY + ".mytype";
   var MYOFF = KEY + ".myoff";      /* 自分で解除した印 */
@@ -59,8 +59,8 @@
     'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M9 5l7 7-7 7"></path></svg>';
   var LOGO =
-    '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=07d44381" alt="" width="183" height="39">' +
-    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=4028cf3a" alt="" width="183" height="39">';
+    '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=0596b964" alt="" width="183" height="39">' +
+    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=ad0597a8" alt="" width="183" height="39">';
 
   /* ヘッダーのリンクは、英字を大きく・日本語を小さく2行で出す（読み上げは日本語だけ） */
   function navLabel(en, jp){

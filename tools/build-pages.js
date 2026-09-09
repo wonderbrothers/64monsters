@@ -91,7 +91,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="icon" href="${base}favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" type="image/png" sizes="32x32" href="${base}favicon-32.png" media="(prefers-color-scheme: light)">
 <link rel="icon" type="image/png" sizes="32x32" href="${base}favicon-dark-32.png" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/png" sizes="192x192" href="${base}favicon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="${base}favicon-192.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="192x192" href="${base}favicon-dark-192.png" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="512x512" href="${base}favicon-512.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" sizes="512x512" href="${base}favicon-dark-512.png" media="(prefers-color-scheme: dark)">
 <link rel="apple-touch-icon" sizes="180x180" href="${base}apple-touch-icon.png">
 <link rel="manifest" href="${base}site.webmanifest">
 
