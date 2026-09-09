@@ -5,20 +5,37 @@
    タイプ名・ひとことから組み立てる。SNSに貼ったときに
    「どのモンスターか」が絵で伝わるようにするのが目的。
 
+   2026-09 のリデザインに合わせて、タイプページの見出しと同じ組みにしてある。
+   ロゴ → 2px の罫 → 左に写真（2px枠・角丸24）／右に MONSTER TYPE・コード・
+   タイプ名・ひとこと → 2px の罫 → サイト名。色は白と黒だけ。
+
+   書体は tools/fonts/ に置いた実ファイルを使う（サイトと同じ書体にするため）。
+   和文だけはシステムの Noto Sans CJK を使う。
+
    使い方: プロジェクト直下で  python3 tools/make-ogp.py
 """
-import os, re, glob, json, io
+import os, re, glob, io
 from PIL import Image, ImageDraw, ImageFont
 
 SRC   = "images/characters"
 DST   = "docs/images/ogp"
 TYPES = "docs/assets/types.js"
-W, H  = 1200, 630
-PAD   = 64
-G1, G2 = (0x6D, 0x4A, 0xC8), (0xC2, 0x2E, 0x6C)
-INK, INK2, INK3 = (0x14, 0x17, 0x1A), (0x4C, 0x54, 0x5B), (0x8A, 0x92, 0x99)
-SITE = "64monsters.wonder-bros.com"
+LOGO_SVG = "docs/assets/logo.svg"
+LOGO_PNG = "tools/assets/logo-lockup.png"
 
+W, H = 1200, 630
+PAD  = 56
+BW   = 2                      # --bw
+R    = 24                     # .hero .thumb の角丸
+PAPER = (0xFF, 0xFF, 0xFF)
+INK   = (0x11, 0x11, 0x11)
+INK2  = (0x3D, 0x41, 0x45)
+INK3  = (0x71, 0x71, 0x6D)
+SITE  = "64monsters.wonder-bros.com"
+STRAP = "6 AXES / 90 QUESTIONS / 64 MONSTERS"
+
+F_MONO = "tools/fonts/DMMono-Medium.ttf"
+F_EN   = "tools/fonts/MontserratAlternates-Black.ttf"
 NOTO_R = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
 NOTO_B = "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"
 
@@ -36,9 +53,25 @@ def jp_index(path):
     return 0
 
 IDX_R, IDX_B = jp_index(NOTO_R), jp_index(NOTO_B)
-def font(size, bold=False):
+
+def jp(size, bold=False):
     p, i = (NOTO_B, IDX_B) if bold else (NOTO_R, IDX_R)
     return ImageFont.truetype(p, size, index=i)
+
+def mono(size): return ImageFont.truetype(F_MONO, size)
+def en(size):   return ImageFont.truetype(F_EN, size)
+
+
+# ---- 字送りつきの描画（CSS の letter-spacing にあたるもの）----
+def ls_width(d, text, fnt, ls):
+    return sum(d.textlength(c, font=fnt) + ls for c in text) - (ls if text else 0)
+
+def ls_text(d, xy, text, fnt, fill, ls):
+    x, y = xy
+    for c in text:
+        d.text((x, y), c, font=fnt, fill=fill)
+        x += d.textlength(c, font=fnt) + ls
+    return x
 
 
 def parse_types():
@@ -51,19 +84,10 @@ def parse_types():
     return taglines, labels
 
 
-def grad_h(w, h, c1, c2):
-    g = Image.new("RGB", (w, 1))
-    px = g.load()
-    for x in range(w):
-        t = x / max(w - 1, 1)
-        px[x, 0] = tuple(round(c1[i] + (c2[i] - c1[i]) * t) for i in range(3))
-    return g.resize((w, h), Image.BILINEAR)
-
-
-def wrap(draw, text, fnt, max_w, max_lines):
+def wrap(d, text, fnt, max_w, max_lines):
     lines, cur = [], ""
     for ch in text:
-        if draw.textlength(cur + ch, font=fnt) > max_w and cur:
+        if d.textlength(cur + ch, font=fnt) > max_w and cur:
             lines.append(cur); cur = ch
             if len(lines) == max_lines:
                 return lines
@@ -74,84 +98,112 @@ def wrap(draw, text, fnt, max_w, max_lines):
     return lines
 
 
-def fit_label(draw, text, fnt, max_w):
+def fit_label(d, text, fnt, max_w):
     """タイプ名は2行までに収める。2行になるときは、語の途中で切れて見えないよう
        できるだけ均等な位置で折る（例：場を焚きつける／突破モンスター）"""
-    if draw.textlength(text, font=fnt) <= max_w:
+    if d.textlength(text, font=fnt) <= max_w:
         return [text]
-    n = len(text)
     best, best_gap = None, None
-    for i in range(2, n - 1):
+    for i in range(2, len(text) - 1):
         a, b = text[:i], text[i:]
-        wa, wb = draw.textlength(a, font=fnt), draw.textlength(b, font=fnt)
+        wa, wb = d.textlength(a, font=fnt), d.textlength(b, font=fnt)
         if wa > max_w or wb > max_w:
             continue
         gap = abs(wa - wb)
         if best_gap is None or gap < best_gap:
             best, best_gap = [a, b], gap
-    return best or wrap(draw, text, fnt, max_w, 2)
+    return best or wrap(d, text, fnt, max_w, 2)
 
 
-def rounded(im, r):
-    mask = Image.new("L", im.size, 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, im.size[0] - 1, im.size[1] - 1], r, fill=255)
-    out = Image.new("RGBA", im.size)
-    out.paste(im, (0, 0), mask)
+def logo_img(height):
+    """ロゴは SVG が正。cairosvg があればそこから、なければ焼いておいた PNG を使う。
+       PNG を作り直すには:
+         python3 -c "import cairosvg; cairosvg.svg2png(url='docs/assets/logo.svg',
+                     write_to='tools/assets/logo-lockup.png',
+                     output_width=936, output_height=120)" """
+    m = re.search(r'<svg[^>]*\bwidth="([\d.]+)"[^>]*\bheight="([\d.]+)"', io.open(LOGO_SVG, encoding="utf-8").read())
+    ratio = (float(m.group(1)) / float(m.group(2))) if m else 234 / 30
+    w = round(height * ratio)
+    try:
+        import cairosvg
+        buf = cairosvg.svg2png(url=LOGO_SVG, output_width=w * 3, output_height=height * 3)
+        im = Image.open(io.BytesIO(buf))
+    except Exception:
+        im = Image.open(LOGO_PNG)
+    return im.convert("RGBA").resize((w, height), Image.LANCZOS)
+
+
+def framed(src_png, size):
+    """写真を角丸で切り抜き、2px の枠をつける（.hero .thumb と同じ見た目）"""
+    ph = Image.open(src_png).convert("RGB").resize((size, size), Image.LANCZOS)
+    mask = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(mask).rounded_rectangle([0, 0, size - 1, size - 1], R, fill=255)
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    out.paste(ph, (0, 0), mask)
+    ImageDraw.Draw(out).rounded_rectangle(
+        [BW / 2, BW / 2, size - 1 - BW / 2, size - 1 - BW / 2], R, outline=INK + (255,), width=BW)
     return out
 
 
-def build(code, tagline, label, src_png):
-    im = Image.new("RGB", (W, H), (255, 255, 255))
+def build(code, tagline, label, src_png, logo):
+    im = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(im)
 
-    # 上部のグラデーション帯
-    im.paste(grad_h(W, 8, G1, G2), (0, 0))
+    # ヘッダー：ロゴ＋2pxの罫
+    im.paste(logo, (PAD, 42), logo)
+    rule_top = 104
+    d.rectangle([PAD, rule_top, W - PAD - 1, rule_top + BW - 1], fill=INK)
 
-    # 左：キャラクター
-    cs = H - PAD * 2 - 2           # 500
-    ch = Image.open(src_png).convert("RGB").resize((cs, cs), Image.LANCZOS)
-    cx, cy = PAD, (H - cs) // 2 + 4
-    im.paste(rounded(ch, 14), (cx, cy), rounded(ch, 14))
+    # フッター：2pxの罫＋惹句とサイト名
+    rule_bot = H - 84
+    d.rectangle([PAD, rule_bot, W - PAD - 1, rule_bot + BW - 1], fill=INK)
+    fm = mono(18)
+    ls_text(d, (PAD, rule_bot + 28), STRAP, fm, INK3, 2.6)
+    d.text((W - PAD - d.textlength(SITE, font=fm), rule_bot + 28), SITE, font=fm, fill=INK3)
 
-    # 右：テキスト
-    x = cx + cs + 50
-    maxw = W - x - PAD
+    # 左：写真
+    band_top, band_bot = rule_top + BW, rule_bot
+    cs = 392
+    cy = band_top + (band_bot - band_top - cs) // 2
+    ph = framed(src_png, cs)
+    im.paste(ph, (PAD, cy), ph)
 
-    d.text((x, 118), "64モンスターズ", font=font(24), fill=INK3)
+    # 右：MONSTER TYPE → コード → タイプ名 → ひとこと
+    x = PAD + cs + 56
+    maxw = W - PAD - x
 
-    # コードはグラデーションで塗る（マスク合成）
-    fc = font(38, bold=True)
-    tw = int(d.textlength(code, font=fc)) + 6
-    m = Image.new("L", (tw, 60), 0)
-    ImageDraw.Draw(m).text((0, 0), code, font=fc, fill=255)
-    im.paste(grad_h(tw, 60, G1, G2), (x, 166), m)
+    f_eye, f_code = mono(18), en(58)
+    f_lab, f_tag = jp(42, bold=True), jp(23)
+    lab_lines = fit_label(d, label, f_lab, maxw)
+    tag_lines = wrap(d, tagline, f_tag, maxw, 2)
 
-    y = 236
-    fl = font(46, bold=True)
-    for line in fit_label(d, label, fl, maxw):
-        d.text((x, y), line, font=fl, fill=INK)
-        y += 62
+    h_eye, h_code, lead_lab, lead_tag = 24, 62, 56, 36
+    total = h_eye + 18 + h_code + 20 + lead_lab * len(lab_lines) + 10 + lead_tag * len(tag_lines)
+    y = band_top + (band_bot - band_top - total) // 2
 
-    y += 12
-    ft = font(24)
-    for line in wrap(d, tagline, ft, maxw, 2):
-        d.text((x, y), line, font=ft, fill=INK2)
-        y += 38
+    ls_text(d, (x, y), "MONSTER TYPE", f_eye, INK3, 7.6)
+    y += h_eye + 18
+    d.text((x, y - 12), code, font=f_code, fill=INK)
+    y += h_code + 20
+    for t in lab_lines:
+        d.text((x, y), t, font=f_lab, fill=INK); y += lead_lab
+    y += 10
+    for t in tag_lines:
+        d.text((x, y), t, font=f_tag, fill=INK2); y += lead_tag
 
-    d.line([(x, H - PAD - 44), (W - PAD, H - PAD - 44)], fill=(22, 25, 28, 30), width=1)
-    d.text((x, H - PAD - 30), SITE, font=font(22), fill=INK3)
     return im
 
 
 def main():
     taglines, labels = parse_types()
     os.makedirs(DST, exist_ok=True)
+    logo = logo_img(38)
     n = 0
     for f in sorted(glob.glob(os.path.join(SRC, "*.png"))):
         code = os.path.splitext(os.path.basename(f))[0]
         if code not in labels:
             print("  スキップ（types.js にないコード）:", code); continue
-        img = build(code, taglines[code.split("-")[0]], labels[code], f)
+        img = build(code, taglines[code.split("-")[0]], labels[code], f, logo)
         img.save(os.path.join(DST, code + ".jpg"), "JPEG", quality=86, optimize=True, progressive=True)
         n += 1
     total = sum(os.path.getsize(os.path.join(DST, x)) for x in os.listdir(DST))

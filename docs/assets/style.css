@@ -1317,20 +1317,28 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 .fv-art{ display:block; width:100%; max-width:none; color:var(--ink); }
 .fv-art svg{ display:block; width:100%; height:auto; }
 .fv-copy > * + *{ margin-top:20px; }
-.fv-copy .subtitle{ font-size:clamp(1.375rem, 4.4vw, 1.875rem); }
-.fv-copy .lede{ margin-top:18px; max-width:none; }
-.meta{ gap:0; display:grid; grid-template-columns:repeat(3,1fr); margin-top:26px; }
+/* FVの見出しは図版の次に強い要素なので、他の見出しより一段大きく組む。
+   大きくしたぶん、下の本文と数値までの間もそれに合わせて広げる */
+.fv-copy .subtitle{ font-size:clamp(1.75rem, 8vw, 2.75rem); line-height:1.38; }
+/* 改行位置は HTML の br で固定してある。行が2本なので、スマホでも
+   1行の長いほう「64通りの性格診断。」が入るぎりぎりまで大きくできる */
+.fv-copy .lede{ margin-top:26px; max-width:none; }
+.meta{ gap:0; display:grid; grid-template-columns:repeat(3,1fr); margin-top:32px; }
 .meta div{
   padding-top:12px; border-top:var(--bw) solid var(--ink);
   font-size:var(--fs-xs); font-weight:700; letter-spacing:.14em; color:var(--ink-3);
 }
-.meta div + div{ padding-left:16px; margin-left:16px; }
-.meta div span{ font-family:var(--f-body); font-weight:900; font-size:var(--fs-3xl); color:var(--ink); letter-spacing:0; margin-top:2px; }
+.meta div + div{ margin-left:16px; }
+.meta div span{ font-family:var(--f-body); font-weight:900; font-size:var(--fs-xl); color:var(--ink); letter-spacing:0; margin-top:2px; line-height:1.25; }
+/* 数字だけ英字書体で大きく。単位の和文はそのぶん小さくして、数を主役にする */
+.meta div span .n{ font-family:var(--f-en); font-weight:900; font-size:1.66em; letter-spacing:-.01em; line-height:1; }
 .fv-cta{ margin-top:22px; }
 .pre-note, .note{ color:var(--ink-3); }
 @media (min-width:900px){
   .fv{ grid-template-columns:1fr 1fr; gap:40px; }
   .fv-art{ max-width:none; }
+  /* 2カラムでは右カラムの幅で決まるので、伸び方をゆるめる */
+  .fv-copy .subtitle{ font-size:clamp(2.25rem, 4.2vw, 2.75rem); }
   /* 2カラムのときは左右の下端を揃える。右カラムは
      「見出し＋概要＋数値」と「ボタン＋注記」の2かたまりとして扱い、
      余った高さは全部そのあいだの余白に送る（行間は均一のまま） */
@@ -1566,9 +1574,11 @@ html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,
 
 /* ヘッダーの診断ボタンは、幅が詰まっても折り返さない */
 .sh-cta{ white-space:nowrap; }
+/* ロゴが 234×30（横長）になったぶん、狭い幅ではヘッダーが1pxはみ出していた。
+   高さを落として収める */
 @media (max-width:400px){
   .sh-cta{ padding:9px 14px; font-size:var(--fs-sm); }
-  .sh-logo .logo{ height:24px; }
+  .sh-logo .logo{ height:20px; }
 }
 
 /* ヘッダー右側の「マイタイプ」と「診断」は、高さをそろえて1本の線に見せる */
