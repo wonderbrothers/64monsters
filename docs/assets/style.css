@@ -884,7 +884,7 @@ body.modal-open{ overflow:hidden; }
     transition:color .12s ease, background .12s ease;
   }
   .sh-menu:hover{ color:var(--ink); background:var(--surface-2); }
-  .sh-logo{ margin-right:0; justify-self:center; }
+  .sh-inner .sh-logo{ margin-right:0; justify-self:center; }
   .sh-nav{ display:none; }
   .sh-cta{ justify-self:end; margin-left:0; padding:4px 16px; }
 }
@@ -1304,8 +1304,12 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 .ver{ opacity:1; color:var(--ink-3); }
 .site-foot + .copy + .ver{ text-align:left; }
 /* ロゴが中央に来る幅（ヘッダーをハンバーガーに切り替えるのと同じ 900px）では、
-   著作権表示と版も中央に寄せる。.ver は .copy の中の要素なので継承される */
+   著作権表示と版も中央に寄せる。.ver は .copy の中の要素なので継承される。
+   フッターのロゴは flex で中央にする。block の直下に置いた justify-self は
+   Safari が見ないので、それに頼ると iPhone だけ左寄りになる */
 @media (max-width:900px){
+  .site-foot{ display:flex; justify-content:center; }
+  .site-foot .sh-logo{ margin-right:0; }
   .site-foot + .copy{ text-align:center; }
 }
 
