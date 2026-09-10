@@ -21,3 +21,6 @@ Thumbs.db
 
 # 動作確認用に一時的に固めたもの（Claude がブラウザ検証で使う）
 /_verify_site.tgz
+
+# Cowork がファイルを書き出す場所。制作物ではないのでリポジトリに入れない
+/Claude outputs/

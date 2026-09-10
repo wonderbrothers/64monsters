@@ -1339,7 +1339,7 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 .fv-cta{ margin-top:22px; }
 .pre-note, .note{ color:var(--ink-3); }
 @media (min-width:900px){
-  .fv{ grid-template-columns:1fr 1fr; gap:40px; }
+  .fv{ grid-template-columns:3fr 2fr; gap:40px; }
   .fv-art{ max-width:none; }
   /* 2カラムでは右カラムの幅で決まるので、伸び方をゆるめる */
   .fv-copy .subtitle{ font-size:clamp(2.25rem, 4.2vw, 2.75rem); }
