@@ -115,7 +115,7 @@
       var chips = lists[i].slice(0, n || 5).map(function(x){
         return chipHTML(base, x.code, x.score, x.code === code);
       }).join("");
-      return '<div class="match-group"><p class="sub-h">' + PURPOSE_LEAD[P.key] + '</p>' +
+      return '<div class="match-group" data-purpose="' + P.key + '"><p class="sub-h">' + PURPOSE_LEAD[P.key] + '</p>' +
              '<div class="match-list">' + chips + '</div>' +
              '<p class="match-why">' + purposeWhy(i) + '</p></div>';
     }).join("");

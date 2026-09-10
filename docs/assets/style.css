@@ -1490,7 +1490,7 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 .cell.on .c-lab{ color:var(--on-brand); }
 a.cell.on:hover{ background:var(--ink); border-color:var(--ink); }
 .chip .c2{ font-size:var(--fs-sm); }
-.chip{ padding:8px 18px 8px 8px; }
+.chip{ padding:8px 6px 8px 8px; }
 .chip .thumb{ border-radius:var(--r-full); }
 .jobs span{ border-radius:var(--r-full); padding:8px 16px; color:var(--ink); font-weight:700; }
 .list li{ color:var(--ink); }
@@ -1878,10 +1878,23 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .qc-note a:hover{ text-decoration-color:var(--ink); }
 
 /* ---- 相性：用途ごとの順位 ---- */
+/* スコアは黒い丸に白抜きで、カードの右端に置く。
+   地に --ink・文字に --on-brand を使っているので、ダークでは自動で反転する */
 .chip .c-score{
-  margin-left:auto; padding-left:12px;
-  font-family:var(--f-mono); font-size:var(--fs-base); color:var(--ink);
+  /* 丸はサムネより少し大きく。上下のマイナスマージンで、
+     大きくしたぶんカードの高さが増えないようにしている */
+  flex:0 0 auto; margin:-2px 0 -2px auto; padding-left:0;
+  width:46px; height:46px;
+  display:grid; place-items:center;
+  border-radius:var(--r-full);
+  background:var(--ink); color:var(--on-brand);
+  font-family:var(--f-en); font-weight:900; font-size:var(--fs-base);
+  letter-spacing:0; line-height:1;
 }
+/* 用途ごとに、その相性でいちばん重く見ている軸の色を丸に使う。 */
+.match-group[data-purpose="love"] .c-score{ background:var(--ax-HC); }
+.match-group[data-purpose="work"] .c-score{ background:var(--ax-TF); }
+.match-group[data-purpose="friend"] .c-score{ background:var(--ax-EI); }
 .match-list .chip{ min-width:0; }
 .cmp-s.on{ border-color:var(--ink); border-width:var(--bw); }
 .cmp-s.on .cs-n{ font-weight:700; }
