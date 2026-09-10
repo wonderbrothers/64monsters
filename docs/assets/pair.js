@@ -81,20 +81,20 @@
            '</span>';
   }
 
-  /* 16の基本タイプ同士の、手書きの相性リストによる判定。
-     上の6軸スコアとは別系統なので、そう分かる言い方にしている。 */
+  /* 判定。以前は手書きの相性リストで「かみ合う相手」などと言い切っていたが、
+     そのリストは上の6軸スコアと別系統で、しかも食い違っていた（詳細は render.js）。
+     いまは同じスコアだけを土台にして、用途ごとに64タイプ中の何位かを出す。
+     自分と同じタイプも相手になりうるので、母数は63ではなく64。 */
   function verdictOf(a, b){
     var rel = R.relation(a, b);
-    if (rel && rel.exact) return { lab: rel.title, sub: "サブタイプ（A / O・H / C）まで当てはまる組み合わせ", why: rel.why };
-    if (rel) return {
-      lab: rel.title + "に近い",
-      sub: "基本タイプ同士は当てはまりますが、自分への確信（A / O）か人への構え（H / C）が少しずれています",
-      why: rel.why
-    };
+    var top = rel.best;
     return {
-      lab: "リストには入らない組み合わせ",
-      sub: "16タイプの相性リストのどれにも載っていない相手",
-      why: "このリストは16の基本タイプ同士で作ったもので、載っていないことは相性が悪いという意味ではありません。実際の噛み合い方は、上の6軸のスコアと内訳のほうをご覧ください。"
+      lab: top.short + "としては 64タイプ中 " + top.rank + "位",
+      sub: rel.purposes.map(function(x){
+        return x.short + " " + x.rank + "位（" + x.score + "）";
+      }).join("　/　"),
+      why: "順位は下の6軸の重みづけから出しています。用途ごとに効く軸が違うので、同じ相手でも順位は変わります。" +
+           "設計した重みであって測定値ではないので、内訳のほうを見てください。"
     };
   }
 
@@ -130,17 +130,12 @@
     var same = AXES.filter(function(x){ return La[x.key] === Lb[x.key]; }).length;
     $("pscores").innerHTML = scoresHTML(a, b);
 
+    /* スコアは左右対称なので、以前あった「相手から見たあなた」の注記は要らなくなった */
     var v = verdictOf(a, b);
-    var back = R.relation(b, a);
-    var backLine = "";
-    if (back && back.title !== (R.relation(a, b) || {}).title){
-      backLine = '<p class="pv-why">なお、相手から見たあなたは「' + back.title + '」にあたります。見え方が一方向でないのは珍しくありません。</p>';
-    }
-
     $("verdict").innerHTML =
       '<p class="pv-lab">' + v.lab + '</p>' +
       '<p class="pv-sub">' + v.sub + '</p>' +
-      '<p class="pv-why">' + v.why + '</p>' + backLine;
+      '<p class="pv-why">' + v.why + '</p>';
 
     $("axisCmp").innerHTML = AXES.map(function(x){
       var la = La[x.key], lb = Lb[x.key], eq = la === lb;

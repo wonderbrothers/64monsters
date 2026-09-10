@@ -42,10 +42,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="manifest" href="../site.webmanifest">
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "64モンスターズ",
+      "item": "https://64monsters.wonder-bros.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "2人の相性",
+      "item": "https://64monsters.wonder-bros.com/pair/"
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=07ff724c">
+<link rel="stylesheet" href="../assets/style.css?v=60f7b891">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -59,7 +79,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager -->
 
 <section id="pair" class="wrap">
-  <div class="pair-head">
+  <nav class="crumb" aria-label="現在地"><a href="../">64モンスターズ</a><span class="crumb-sep" aria-hidden="true">/</span><span aria-current="page">2人の相性</span></nav>
+  <div class="page-head gap">
     <p class="eyebrow">compatibility</p>
     <h1 class="subtitle">2人の相性を調べる</h1>
     <p class="lede">
@@ -118,7 +139,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="sec split">
-      <h2>基本タイプ同士の相性</h2>
+      <h2>64タイプの中での位置</h2>
       <div class="pair-verdict" id="verdict"></div>
     </div>
 
@@ -143,6 +164,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button class="btn ghost" id="inviteBtn">診断リンクをコピー</button>
   </div>
 
+  <nav class="sitenav" aria-label="サイト内リンク">
+    <p class="sitenav-h">サイト内のページ</p>
+    <ul><li><a href="../">ホーム</a></li><li><a href="../quiz/">診断を受ける</a></li><li><a href="../types.html">モンスターギャラリー</a></li><li><a href="../64types/">64タイプ性格診断とは</a></li><li><a href="../axis/ao/">AとOの違い</a></li><li><a href="../axis/hc/">HとCの違い</a></li><li><a href="../pair/" aria-current="page">2人の相性</a></li><li><a href="../about/">この診断について</a></li></ul>
+  </nav>
+
   <p class="notice-link"><a href="../about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
 
   <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
@@ -150,10 +176,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <canvas id="shareCanvas" width="1080" height="1080" class="sr-only"></canvas>
 
-<script src="../assets/types.js?v=2c6264bd"></script>
-<script src="../assets/render.js?v=f156683c"></script>
+<script src="../assets/types.js?v=ff983dbf"></script>
+<script src="../assets/render.js?v=a2a84c6d"></script>
 <script src="../assets/share.js?v=315ad15f"></script>
-<script src="../assets/pair.js?v=8c5ff355"></script>
-<script src="../assets/settings.js?v=d1fc2cfc"></script>
+<script src="../assets/pair.js?v=583c8389"></script>
+<script src="../assets/settings.js?v=12cff24f"></script>
 </body>
 </html>

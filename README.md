@@ -17,12 +17,18 @@ docs/                     ← GitHub に公開するのはこのフォルダだ�
   history/index.html      ヒストリー（noindex。ブラウザ内の記録を時系列で見る）
   friends/index.html      Myフレンド（noindex。受け取った鑑定コードに名前をつけて残す）
   about/index.html        この診断について（回答の扱い・外部への通信・権利）
-  types.html              64タイプの一覧ページ（キャラクター画像つき）
+  types.html              64タイプの一覧ページ（キャラクター画像つき・自動生成）
+  64types/index.html      64タイプ性格診断とは（コードの読み方・全64種一覧・自動生成）
+  axis/ao/index.html      A（確信）とO（揺らぎ）の違い（自動生成）
+  axis/hc/index.html      H（信頼）とC（慎重）の違い（自動生成）
   t/<CODE>/index.html     タイプごとの結果・解説ページ（64枚・自動生成）
+  t/<CODE>/compat/        タイプ別の相性ページ（64枚・自動生成）
   pair/index.html         2人の相性ページ（?a=CODE&b=CODE）
   assets/style.css        デザイン（白ベース・文字サイズは base 16px の倍数）
   assets/questions.js     設問データ（90問）
   assets/types.js         軸の定義 / 基本16タイプ / 64サブタイプ
+  assets/extra.js         タイプ別の追加原稿（こんな人 / あるある / 恋愛）。全64タイプぶん。
+                          persona は実在の人物名を使わず、職業・役割・場面の類型で書く
   assets/render.js        相性・マトリクスの組み立て（ブラウザとビルドで共用）
   assets/engine.js        出題順・途中保存・採点（/ と /quiz/ が共有）
   assets/home.js          トップの描画（軸の一覧・キャラクターの帯・タイプ選択）
@@ -41,7 +47,9 @@ prompts/                  イラスト生成プロンプト一式（prompts/READ
 prompts.html              プロンプトの一覧・コピー用ページ
 tools/make-thumbs.py      サムネイル生成スクリプト
 tools/make-ogp.py         タイプ別OGP画像の生成スクリプト
-tools/build-pages.js      個別ページ64枚と sitemap.xml の生成スクリプト
+tools/build-pages.js      静的ページ（132枚）と sitemap.xml の生成スクリプト
+lastmod.json              URLごとの「中身が最後に変わった日」。sitemap の lastmod に使う
+                          （build-state.json と同じく、リポジトリに入れる）
 tools/stamp-assets.js     キャッシュ対策のハッシュ付与＋フッターの版の書き込み
 tools/serve.js            ローカル確認用の静的サーバー（依存パッケージなし）
 package.json              npm scripts の入り口。依存パッケージはありません
@@ -55,6 +63,9 @@ DESIGN.md                 設計メモ「なぜそうしたか」（.gitignore �
 - **`/quiz/`** … 90問の設問。答え終わると `/t/<CODE>/` へ移動します。JSで描画するため中身を持たないので `noindex`（sitemapにも載せていません）。`?restart=1` が付いていれば途中保存を捨てて最初から始めます。
 - **`/t/<CODE>/`** … 結果ページ兼、そのタイプの解説ページ。本文はビルド時に静的に書き出してあるので、
   検索エンジンにも読まれます。自分で診断した直後だけ、6軸のスコアが上に足されます（判定は端末内に保存された回答から出しており、サーバーには送っていません）。
+- **`/t/<CODE>/compat/`** … そのタイプの相性一覧。恋人・仕事・友人の3つの用途ごとに、6軸のどこが効いたかを添えて出します。`/pair/?a=` はクエリパラメータで検索エンジンに評価されにくいため、同じ内容を静的URLでも持たせています。
+- **`/64types/`** … コードの読み方と6軸の説明、全64タイプへのリンク。検索の入口。ここが64枚への内部リンクのハブになっています。
+- **`/axis/ao/` `/axis/hc/`** … 追加2軸それぞれの解説。「A と O の違い」「H と C の違い」で検索する人を受けます。
 - **`/pair/?a=CODE&b=CODE`** … 2人の相性。6軸のどこが同じでどこが違うかを出します。
 - **`/about/`** … 注意書きの本体。各ページの下部からはここへリンクするだけにしています（同じ文面を6か所に複製しないため）。
 - **`/history/`** … 受けるたびの記録を時系列で。`noindex`（中身は各自のブラウザの中にしかありません）。
@@ -87,8 +98,8 @@ npm run dev -- --port 5174   # ポートを変えたいとき
 | コマンド | 何をするか |
 |---|---|
 | `npm run dev` | ローカルサーバーを起動 |
-| `npm run build` | 個別ページ64枚＋sitemap を作り直し、続けてハッシュを付け直す |
-| `npm run pages` | 個別ページ64枚と sitemap.xml だけを生成 |
+| `npm run build` | 静的ページ132枚＋sitemap を作り直し、続けてハッシュを付け直す |
+| `npm run pages` | 静的ページ132枚と sitemap.xml だけを生成 |
 | `npm run stamp` | アセットURLのハッシュを付け直し、フッターの版とビルド日を書き込む |
 | `npm run ogp` | OGP画像64枚を生成（原寸画像とPythonが必要） |
 | `npm run prompts` | イラスト生成プロンプトを書き出す（制作用） |
@@ -98,7 +109,7 @@ npm run dev -- --port 5174   # ポートを変えたいとき
 **タイプの解説（`assets/types.js`）を変えたとき**は、個別ページを作り直します。
 
 ```bash
-npm run pages                  # docs/t/<CODE>/index.html を64枚 + sitemap.xml
+npm run pages                  # 静的ページ132枚 + sitemap.xml
 npm run ogp                    # docs/images/ogp/<CODE>.jpg を64枚（原寸画像が必要）
 ```
 

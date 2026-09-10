@@ -296,8 +296,7 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .disclaimer + .notice-link{ margin-top:16px; padding-top:0; border-top:0; }
 
 /* /about/ */
-#about{ padding:clamp(30px,6vh,64px) 0 40px; }
-.about-head{ padding-bottom:28px; margin-bottom:8px; }
+#about{ padding:0 0 40px; }
 #about .sec .list{ margin-top:14px; }
 #about .sec .list li{ font-size:var(--fs-base); color:var(--ink-2); }
 #about .body-text + .body-text{ margin-top:16px; }
@@ -661,8 +660,7 @@ body.modal-open{ overflow:hidden; }
 .pair-cta-txt{ font-size:var(--fs-md); color:var(--ink-2); margin:0; }
 
 /* ---------- 相性ページ ---------- */
-#pair{ padding:clamp(30px,6vh,64px) 0 40px; }
-.pair-head{ padding-bottom:28px; margin-bottom:30px; }
+#pair{ padding:0 0 40px; }
 
 .pick2{ display:grid; gap:18px; grid-template-columns:1fr 1fr; align-items:start; }
 @media (max-width:620px){ .pick2{ grid-template-columns:1fr; } }
@@ -1041,8 +1039,7 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
    点の並び（ドットストリップ）で「どちらの極に寄っているか」と
    「どれだけ揺れるか」を同時に出す。回数が少なくても読めるのが折れ線との違い。
    ============================================================ */
-#history, #friends{ padding:clamp(30px,6vh,64px) 0 40px; }
-.hist-head{ padding-bottom:28px; margin-bottom:30px; }
+#history, #friends{ padding:0 0 40px; }
 .hist-empty{ padding:8px 0 30px; }
 .hist-empty .g-note{ margin-top:14px; }
 .hist-foot{ display:flex; flex-wrap:wrap; gap:12px; margin-top:26px; justify-content:center; }
@@ -1473,10 +1470,16 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 .g-pole .l{ font-family:var(--f-en); font-weight:900; }
 .g-pole.on.left .l, .g-pole.on.right .l{ color:var(--ink); }
 .g-pct{ font-family:var(--f-mono); }
-.cell.on{ border-width:3px; border-color:var(--ink); background:var(--surface-2); box-shadow:none; }
-.cell.on .c-code{ color:var(--ink); }
 .cell .c-code, .chip .c1, .tcard .tcode{ font-family:var(--f-mono); letter-spacing:.24em; color:var(--ink-3); font-size:var(--fs-xs); }
 .cell .c-lab, .chip .c2, .tcard .tlab{ font-weight:900; color:var(--ink); }
+/* 4つのサブタイプのうち、いま見ているものは地と文字を反転させて示す。
+   3pxの枠と薄いグレーでは他の3つとの差が弱かった。--on-brand はダークで
+   反転するので、ダークでは自動的に「白地＋黒文字」になる。
+   枠の太さは他と同じ 2px にして、1つだけ箱が大きくならないようにする */
+.cell.on{ border-width:var(--bw); border-color:var(--ink); background:var(--ink); box-shadow:none; }
+.cell.on .c-code{ color:var(--on-brand); opacity:.66; }
+.cell.on .c-lab{ color:var(--on-brand); }
+a.cell.on:hover{ background:var(--ink); border-color:var(--ink); }
 .chip .c2{ font-size:var(--fs-sm); }
 .chip{ padding:8px 18px 8px 8px; }
 .chip .thumb{ border-radius:var(--r-full); }
@@ -1657,3 +1660,249 @@ html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,
    overflow:hidden と違って clip はスクロール枠を作らないので、
    ヘッダーやギャラリーのチップの position:sticky が効いたままになる。 */
 html{ overflow-x:clip; }
+
+/* ============================================================
+   検索から来た人のための追加（2026-09）
+   パンくず・サイト内リンク・診断への導線・FAQ・相性ページ・入口ページ
+   色は既存の変数だけを使う。ダークモードは変数側で切り替わる
+   ============================================================ */
+
+/* ---- パンくず。JSのヘッダーが載る前から見えている ---- */
+.crumb{
+  /* 折り返さず、1行に収める。入りきらないときは先頭と中間から「…」で削る。
+     文字は消さずにCSSで隠すだけなので、読み上げにも検索にも全文が残る。
+     縮むのは先頭と中間だけ（flex-shrink:3・下限3.2em）。
+     現在地の直前（タイプコードなど）は最後に、しかも 5.5em まで残す。
+     現在地は縮めない（flex-shrink:0）。いまどこにいるかが読めなくなっては意味がない。
+     そのぶんパンくずのラベルは短く保つこと。長い見出しをそのまま入れない */
+  display:flex; flex-wrap:nowrap; align-items:center; gap:6px;
+  padding-top:18px; font-size:var(--fs-sm); color:var(--ink-3);
+}
+.crumb a, .crumb [aria-current]{
+  min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.crumb a{ flex:0 3 auto; min-width:3.2em; color:var(--ink-3); text-decoration:none; border-bottom:1px solid transparent; }
+/* 現在地のひとつ手前（タイプコードなど、そのページを名指している語）は最後に削る */
+.crumb a:last-of-type{ flex-shrink:1; min-width:5.5em; }
+.crumb a:hover{ color:var(--ink); border-bottom-color:var(--line-2); }
+.crumb [aria-current]{ flex:0 0 auto; color:var(--ink-2); font-family:var(--f-mono); }
+.crumb-sep{ flex:0 0 auto; color:var(--line-2); }
+
+/* ---- h1 にコードを入れた。大きい表示はコード側に残す ---- */
+h1.res-label{ font-size:inherit; font-weight:inherit; margin-top:0; }
+h1.res-label .code{ display:block; }
+h1.res-label .rl-name{
+  display:block; margin-top:12px;
+  font-size:clamp(1.25rem, 4.4vw, 1.875rem); font-weight:700; line-height:1.5;
+}
+html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
+
+/* ---- 診断への導線 ---- */
+.quizcta{
+  margin:44px 0 8px; padding:32px 24px; text-align:center;
+  border:var(--bw) solid var(--line); border-radius:var(--r-box); background:var(--surface);
+}
+.qc-lead{ font-size:var(--fs-xl); font-weight:700; line-height:1.7; }
+.qc-btn{ margin-top:20px; }
+.qc-note{ margin-top:14px; font-size:var(--fs-sm); color:var(--ink-3); }
+
+/* ---- 下部のサイト内リンク。HTMLだけを見たときの導線がここ ----
+   見た目はギャラリーの移動チップ（.gjump a）に合わせた丸い枠。
+   全ページで同じ並び・同じ文言。現在地は塗りつぶす */
+.sitenav{ margin-top:52px; padding-top:26px; border-top:1px solid var(--line-2); }
+.sitenav-h{ font-size:var(--fs-sm); letter-spacing:.1em; color:var(--ink-3); margin-bottom:16px; }
+.sitenav ul{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
+.sitenav a{
+  display:inline-flex; align-items:center;
+  padding:9px 16px; border-radius:var(--r-full);
+  border:var(--bw) solid var(--ink); background:var(--paper);
+  color:var(--ink); text-decoration:none; white-space:nowrap;
+  font-size:var(--fs-md); line-height:1.4;
+  transition:background .12s ease, color .12s ease;
+}
+.sitenav a:hover{ background:var(--surface-2); }
+.sitenav a[aria-current="page"]{ background:var(--ink); color:var(--on-brand); }
+
+/* ---- FAQ ---- */
+.faq{ display:grid; gap:10px; }
+.faq-i{ border:1px solid var(--line-2); border-radius:var(--r); background:var(--surface); }
+.faq-i > summary{
+  cursor:pointer; list-style:none; padding:16px 18px;
+  font-size:var(--fs-lg); font-weight:700; line-height:1.7;
+}
+.faq-i > summary::-webkit-details-marker{ display:none; }
+.faq-i > summary::after{ content:"＋"; float:right; color:var(--ink-3); font-weight:400; }
+.faq-i[open] > summary::after{ content:"−"; }
+.faq-i > .body-text{ padding:0 18px 18px; font-size:var(--fs-lg); }
+
+/* ---- こんな人 / あるある ---- */
+.list.persona li::before{ background:var(--ink-3); width:8px; }
+.list.aruaru li{ font-size:var(--fs-base); }
+.list.aruaru li::before{ content:"✓"; background:none; width:auto; height:auto; top:0; color:var(--ink-3); font-size:var(--fs-sm); }
+
+/* ---- 相性ページ ---- */
+.cmp-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:22px; }
+.cmp-card{ border:1px solid var(--line-2); border-radius:var(--r-card); background:var(--surface); padding:18px; }
+.cmp-head{ display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit; }
+.cmp-head .thumb{ width:56px; height:56px; border-radius:8px; flex:0 0 auto; background:var(--thumb); overflow:hidden; }
+.cmp-head .thumb img{ width:100%; height:100%; object-fit:cover; }
+.cmp-code{ display:block; font-family:var(--f-mono); font-size:var(--fs-base); letter-spacing:.04em; }
+.cmp-lab{ display:block; font-size:var(--fs-sm); color:var(--ink-3); margin-top:3px; line-height:1.5; }
+.cmp-scores{ display:flex; gap:8px; margin-top:16px; }
+.cmp-s{ flex:1; border:1px solid var(--line-2); border-radius:var(--r); padding:10px 8px; text-align:center; }
+.cs-t{ display:block; font-size:var(--fs-xs); color:var(--ink-3); }
+.cs-n{ display:block; font-family:var(--f-mono); font-size:var(--fs-2xl); line-height:1.3; margin-top:2px; }
+.cs-b{ display:block; font-size:var(--fs-xs); color:var(--ink-3); }
+.cmp-axes{ margin-top:14px; display:grid; gap:6px; }
+.cmp-ax{ font-size:var(--fs-md); color:var(--ink-2); }
+.ax-h{
+  display:inline-block; min-width:5.5em; margin-right:8px;
+  font-size:var(--fs-xs); letter-spacing:.08em; color:var(--ink-3);
+}
+.cmp-why{ margin-top:12px; font-size:var(--fs-md); line-height:1.9; color:var(--ink-2); }
+.cmp-more{ display:inline-block; margin-top:12px; font-size:var(--fs-sm); color:var(--ink-3); }
+
+/* ---- 入口ページ：コードの読み方 ---- */
+.codemap{ display:grid; gap:12px; }
+.cm-part{ border:1px solid var(--line-2); border-radius:var(--r-card); padding:18px; background:var(--surface); }
+.cm-c{ font-family:var(--f-mono); font-size:var(--fs-2xl); letter-spacing:.04em; }
+.cm-t{ display:inline-block; margin-left:12px; font-size:var(--fs-md); font-weight:700; }
+.cm-n{ display:block; margin-top:8px; font-size:var(--fs-md); color:var(--ink-2); line-height:1.9; }
+
+/* ---- 入口ページ：6軸の表 ---- */
+.axtable{ overflow-x:auto; margin-top:22px; }
+.axt{ width:100%; border-collapse:collapse; min-width:600px; }
+.axt th, .axt td{ border:1px solid var(--line-2); padding:14px; text-align:left; vertical-align:top; font-size:var(--fs-md); }
+.axt th{ font-size:var(--fs-sm); letter-spacing:.08em; color:var(--ink-3); font-weight:500; }
+.axt-t{ white-space:nowrap; }
+.axt-k{ display:block; margin-top:4px; font-family:var(--f-mono); font-size:var(--fs-sm); color:var(--ink-3); }
+.axt-n{ display:block; margin-top:6px; color:var(--ink-3); line-height:1.8; }
+
+/* ---- 入口ページ：64タイプ一覧 ---- */
+.alltypes{ display:grid; grid-template-columns:repeat(2,1fr); gap:26px 30px; margin-top:24px; }
+.at-h{ display:flex; align-items:baseline; gap:10px; padding-bottom:8px; border-bottom:1px solid var(--line-2); }
+.at-c{ font-family:var(--f-en); font-weight:900; font-size:var(--fs-xl); }
+.at-n{ font-size:var(--fs-md); color:var(--ink-3); }
+.at-list{ list-style:none; margin:10px 0 0; padding:0; display:grid; gap:6px; }
+.at-list a{ display:flex; gap:10px; align-items:baseline; text-decoration:none; color:var(--ink-2); font-size:var(--fs-md); }
+.at-list a:hover{ color:var(--ink); }
+.at-list .mono{ font-family:var(--f-mono); flex:0 0 auto; }
+.at-lab{ color:var(--ink-3); font-size:var(--fs-sm); }
+
+/* ---- 軸ページ：同じ4文字での並べ比べ ---- */
+.axpairs{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; margin-top:24px; }
+.axpair{ border:1px solid var(--line-2); border-radius:var(--r-card); padding:16px; background:var(--surface); }
+.axp-h{ font-size:var(--fs-md); color:var(--ink-3); }
+.axp-h .mono{ font-family:var(--f-mono); color:var(--ink); font-size:var(--fs-base); margin-right:6px; }
+.axp-two{ display:grid; gap:8px; margin-top:12px; }
+.axp-c{ display:block; text-decoration:none; color:var(--ink-2); border:1px solid var(--line-2); border-radius:var(--r); padding:10px 12px; }
+.axp-c:hover{ border-color:var(--ink); color:var(--ink); }
+.axp-c .mono{ font-family:var(--f-mono); font-size:var(--fs-md); }
+.axp-l{ display:block; font-size:var(--fs-sm); color:var(--ink-3); margin-top:3px; }
+
+.group-more{ margin-top:16px; font-size:var(--fs-md); }
+.group-more a{ color:var(--ink-3); }
+
+@media (max-width:760px){
+  .cmp-grid, .alltypes, .axpairs{ grid-template-columns:1fr; }
+  .quizcta{ padding:26px 18px; }
+  .sitenav a{ padding:8px 13px; font-size:var(--fs-sm); }
+}
+
+
+/* 相性カードと64一覧の細部 */
+.cmp-id{ min-width:0; }
+.cmp-ax.up .ax-h{ color:var(--ink-2); }
+.cmp-ax.down .ax-h{ color:var(--ink-3); }
+.cmp-ax.down{ color:var(--ink-3); }
+.at-group{ min-width:0; }
+
+/* 見出しまわりの余白。サイト全体でここに揃える。
+   パンくずから見出しまで  … 34px（個別ページの .res-head と同値）
+   見出しから本文まで      … padding-bottom 28px + margin-bottom 8px
+   セクション側は上余白を持たない（パンくずの padding-top 18px が先頭）。
+   about / pair / friends / history もこの .page-head を使う。
+   独自の head クラスを新しく作らないこと（以前 .about-head / .pair-head /
+   .hist-head の3種類に分かれていて、ページごとに余白が違っていた）。 */
+#hub, #axis, #compat, #list{ padding-bottom:40px; }
+/* 見出しの次が .sec（上下40px）でないページは、そのぶんの間を自分で持つ */
+.page-head.gap{ margin-bottom:30px; }
+.page-head{ margin-top:34px; padding-bottom:28px; margin-bottom:8px; }
+.page-head .title{ margin-top:0; }   /* .title は既定で 14px 持つ。.subtitle と同じ位置に揃える */
+.page-head + .gjump{ margin-top:0; }
+
+/* ---- 本文中のリンク ----
+   このサイトには a の既定色を決める指定が無く、classを持たないリンクが
+   ブラウザ既定の青（#0000EE／ダークでは #9E9EFF）で出ていた。
+   配色は無彩色で組んであるので、青は system の外側になる。ここで決める。
+   class を持つリンク（.crumb a / .sitenav a / .at-list a など）は
+   それぞれの指定が効くので、ここでは本文の器だけを対象にする */
+.body-text a,
+.lede a,
+.g-note a,
+.sec-note a,
+.group-sum a,
+.match-why a,
+.disclaimer a,
+.picker-note a,
+.cm-n a,
+.qc-note a{
+  color:var(--ink);
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-decoration-color:var(--ink-3);
+  text-underline-offset:3px;
+}
+.body-text a:hover,
+.lede a:hover,
+.g-note a:hover,
+.sec-note a:hover,
+.group-sum a:hover,
+.match-why a:hover,
+.disclaimer a:hover,
+.picker-note a:hover,
+.cm-n a:hover,
+.qc-note a:hover{ text-decoration-color:var(--ink); }
+
+/* ---- 相性：用途ごとの順位 ---- */
+.chip .c-score{
+  margin-left:auto; padding-left:12px;
+  font-family:var(--f-mono); font-size:var(--fs-base); color:var(--ink);
+}
+.match-list .chip{ min-width:0; }
+.cmp-s.on{ border-color:var(--ink); border-width:var(--bw); }
+.cmp-s.on .cs-n{ font-weight:700; }
+
+/* 全63タイプの一覧 */
+.fulltable{ margin-top:22px; border:1px solid var(--line-2); border-radius:var(--r); background:var(--surface); }
+.fulltable > summary{
+  cursor:pointer; list-style:none; padding:16px 18px;
+  font-size:var(--fs-lg); font-weight:700;
+}
+.fulltable > summary::-webkit-details-marker{ display:none; }
+.fulltable > summary::after{ content:"＋"; float:right; color:var(--ink-3); font-weight:400; }
+.fulltable[open] > summary::after{ content:"−"; }
+.fulltable > *:not(summary){ padding:0 18px; }
+.fulltable > *:last-child{ padding-bottom:18px; }
+.ft-wrap{ overflow-x:auto; }
+.ft{ width:100%; border-collapse:collapse; min-width:420px; }
+.ft th, .ft td{ border-top:1px solid var(--line-2); padding:9px 8px; text-align:left; font-size:var(--fs-md); }
+.ft th{ font-size:var(--fs-sm); color:var(--ink-3); font-weight:500; border-top:0; }
+.ft td a{ display:flex; gap:10px; align-items:baseline; text-decoration:none; color:var(--ink-2); }
+.ft td a:hover{ color:var(--ink); }
+.ft .mono{ font-family:var(--f-mono); flex:0 0 auto; }
+.ft-lab{ font-size:var(--fs-sm); color:var(--ink-3); }
+.ft-n{ text-align:right !important; white-space:nowrap; }
+.ft-n b{ font-family:var(--f-mono); font-weight:500; }
+.ft-r{ display:inline-block; min-width:3.4em; text-align:right; font-size:var(--fs-xs); color:var(--ink-3); }
+@media (max-width:560px){
+  .ft-lab{ display:none; }
+}
+
+/* 順位のなかに出てくる「自分と同じタイプ」の印 */
+.chip.same{ border-color:var(--ink); }
+.c-self{
+  margin-left:8px; padding:2px 7px; border-radius:var(--r-full);
+  background:var(--surface-2); color:var(--ink-3);
+  font-family:var(--f-body); font-size:var(--fs-xs); letter-spacing:0;
+}

@@ -40,10 +40,30 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="manifest" href="../site.webmanifest">
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "64モンスターズ",
+      "item": "https://64monsters.wonder-bros.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "この診断について",
+      "item": "https://64monsters.wonder-bros.com/about/"
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=07ff724c">
+<link rel="stylesheet" href="../assets/style.css?v=60f7b891">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -57,7 +77,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 <section id="about" class="wrap">
-  <div class="about-head">
+  <nav class="crumb" aria-label="現在地"><a href="../">64モンスターズ</a><span class="crumb-sep" aria-hidden="true">/</span><span aria-current="page">この診断について</span></nav>
+  <div class="page-head">
     <p class="eyebrow">about</p>
     <h1 class="subtitle">この診断について</h1>
     <p class="lede">
@@ -131,10 +152,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a class="btn ghost" href="../">HOME</a>
   </div>
 
+  <nav class="sitenav" aria-label="サイト内リンク">
+    <p class="sitenav-h">サイト内のページ</p>
+    <ul><li><a href="../">ホーム</a></li><li><a href="../quiz/">診断を受ける</a></li><li><a href="../types.html">モンスターギャラリー</a></li><li><a href="../64types/">64タイプ性格診断とは</a></li><li><a href="../axis/ao/">AとOの違い</a></li><li><a href="../axis/hc/">HとCの違い</a></li><li><a href="../pair/">2人の相性</a></li><li><a href="../about/" aria-current="page">この診断について</a></li></ul>
+  </nav>
+
   <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
 </section>
 
-<script src="../assets/types.js?v=2c6264bd"></script>
-<script src="../assets/settings.js?v=d1fc2cfc"></script>
+<script src="../assets/types.js?v=ff983dbf"></script>
+<script src="../assets/settings.js?v=12cff24f"></script>
 </body>
 </html>

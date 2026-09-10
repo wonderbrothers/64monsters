@@ -35,31 +35,89 @@
     return cells;
   }
 
-  /* 相性。基本タイプの相性リストに A/O・H/C の組み合わせルールを掛けて64タイプ表記にする */
-  function matchGroups(code){
-    var BASE = root.BASE_TYPES;
-    var p = code.split("-"), bt = p[0], ao = p[1], hc = p[2], b = BASE[bt];
-    return [
-      { title:"かみ合う相手", list:b.match.best, ao:flip(ao), hc:hc,
-        why:"見ている世界が補い合う組み合わせ。人への構えが同じなので距離の取り方で揉めにくく、自分への確信が違うぶん、迷いのなさと慎重さを互いに預けられます。" },
-      { title:"安心できる相手", list:b.match.good, ao:ao, hc:hc,
-        why:"テンポも間合いも近く、説明のいらない関係になりやすい相手。長く一緒にいても疲れにくい組み合わせです。" },
-      { title:"刺激をくれる相手", list:b.match.learn, ao:ao, hc:flip(hc),
-        why:"価値観の置き所が違うため摩擦は起きますが、自分に足りない視点を最も速く手渡してくれる相手です。" }
-    ];
+  /* ===== 相性 =====
+     以前は BASE_TYPES[].match（best/good/learn）という手書きのリストを土台にしていた。
+     やめた理由: そのリストは4文字レベルの言い伝えで根拠が書けないうえ、
+     このサイト自身の purposeScores と食い違っていた。全452組で測ったところ、
+     「かみ合う相手」はスコア順63件中の中央値25位で、上位10位に入るものが1つも無かった。
+     1番目に置いた群が、自分の計算ではいちばん低い。これは注記で説明できる話ではない。
+
+     いまは purposeScores を唯一の土台にして、用途ごとに順位で並べる。
+     重みづけは設計したものであって測定値ではないが、少なくとも内訳を開いて説明できる。
+     BASE_TYPES[].match は使っていない（types.js のコメント参照）。 */
+
+  var PURPOSE_SHORT = { love:"恋人", work:"仕事", friend:"友人" };
+  var PURPOSE_LEAD  = {
+    love:  "恋人としてかみ合う相手",
+    work:  "仕事のパートナーとして組みやすい相手",
+    friend:"友人として続きやすい相手"
+  };
+
+  /* その用途で何が効くのか。重みの大きい2軸を、PURPOSES の設計そのままに文章化する */
+  function purposeWhy(i){
+    var AXES = root.AXES, P = root.PURPOSES[i];
+    var top = AXES.map(function(x){ return { title:x.title, w:P.w[x.key].w, pref:P.w[x.key].pref }; })
+                  .sort(function(a, b){ return b.w - a.w; }).slice(0, 2);
+    return "この用途では「" + top.map(function(t){
+      return t.title + "が" + (t.pref === "same" ? "同じ" : "違う");
+    }).join("」と「") + "」ことを最も重く見ています。";
   }
 
-  function matchHTML(base, code){
-    var SUB = root.SUBTYPES;
-    return matchGroups(code).map(function(g){
-      var chips = g.list.map(function(t){
-        var c = t + "-" + g.ao + "-" + g.hc;
-        return '<a class="chip" href="' + typeUrl(base, c) + '"><span class="thumb"><img src="' + thumb(base, c) + '" alt="" loading="lazy"></span>' +
-               '<span class="c-txt"><span class="c1">' + c + '</span><span class="c2">' + SUB[c].label + '</span></span></a>';
+  /* 64タイプすべてを、用途ごとに噛み合いの高い順で返す。
+     自分と同じタイプを外さないこと。相手が同じタイプというのはふつうにある組み合わせで、
+     /pair/ では両側に同じコードを選べる。以前ここで自分を除いていたため、
+     同じコード同士を選ぶと順位が見つからず例外になっていた。
+     同点は他2用途の合計、それも同じならコード順（並びを毎回同じにするため） */
+  function rankAll(code){
+    var codes = Object.keys(root.SUBTYPES);
+    var lists = root.PURPOSES.map(function(){ return []; });
+    codes.forEach(function(c){
+      var ps = purposeScores(code, c);
+      var total = ps.reduce(function(a, x){ return a + x.score; }, 0);
+      ps.forEach(function(P, i){
+        lists[i].push({ code:c, score:P.score, band:P.band, rows:P.rows, other:total - P.score });
+      });
+    });
+    lists.forEach(function(list){
+      list.sort(function(a, b){
+        return (b.score - a.score) || (b.other - a.other) || (a.code < b.code ? -1 : 1);
+      });
+    });
+    return lists;
+  }
+
+  /* 2人が、それぞれの用途で64タイプ中の何位にあたるか（/pair/ 用） */
+  function standing(a, b){
+    var lists = rankAll(a);
+    return root.PURPOSES.map(function(P, i){
+      var idx = lists[i].findIndex(function(x){ return x.code === b; });
+      var hit = lists[i][idx];
+      return {
+        key:P.key, title:P.title, short:PURPOSE_SHORT[P.key],
+        rank:idx + 1, of:lists[i].length, score:hit.score, band:hit.band
+      };
+    });
+  }
+
+  function chipHTML(base, code, score, self){
+    var S = root.SUBTYPES;
+    return '<a class="chip' + (self ? " same" : "") + '" href="' + typeUrl(base, code) + '">' +
+      '<span class="thumb"><img src="' + thumb(base, code) + '" alt="" loading="lazy"></span>' +
+      '<span class="c-txt"><span class="c1">' + code + (self ? '<span class="c-self">同じタイプ</span>' : '') + '</span>' +
+      '<span class="c2">' + S[code].label + '</span></span>' +
+      (score == null ? "" : '<span class="c-score">' + score + '</span>') + '</a>';
+  }
+
+  /* 個別ページの「相性」節。用途ごとに上位 n 件 */
+  function topHTML(base, code, n){
+    var lists = rankAll(code);
+    return root.PURPOSES.map(function(P, i){
+      var chips = lists[i].slice(0, n || 5).map(function(x){
+        return chipHTML(base, x.code, x.score, x.code === code);
       }).join("");
-      return '<div class="match-group"><p class="sub-h">' + g.title + '</p>' +
+      return '<div class="match-group"><p class="sub-h">' + PURPOSE_LEAD[P.key] + '</p>' +
              '<div class="match-list">' + chips + '</div>' +
-             '<p class="match-why">' + g.why + '</p></div>';
+             '<p class="match-why">' + purposeWhy(i) + '</p></div>';
     }).join("");
   }
 
@@ -92,22 +150,18 @@
     });
   }
 
-  /* 相性の判定（/pair/ 用）。上の3グループに入っていれば その関係、なければ「並走する相手」 */
+  /* 相性の判定（/pair/ 用）。「どの群か」ではなく「どの用途で何位か」を返す */
   function relation(a, b){
-    var gs = matchGroups(a), bp = b.split("-"), bt = bp[0], ao = bp[1], hc = bp[2];
-    for (var i = 0; i < gs.length; i++){
-      var g = gs[i];
-      if (g.list.indexOf(bt) >= 0 && g.ao === ao && g.hc === hc) return { key:["best","good","learn"][i], title:g.title, why:g.why, exact:true };
-    }
-    for (var j = 0; j < gs.length; j++){
-      if (gs[j].list.indexOf(bt) >= 0) return { key:["best","good","learn"][j], title:gs[j].title, why:gs[j].why, exact:false };
-    }
-    return null;
+    var st = standing(a, b);
+    var best = st.slice().sort(function(x, y){ return x.rank - y.rank; })[0];
+    return { purposes:st, best:best };
   }
 
   root.RENDER = {
     thumb:thumb, typeUrl:typeUrl, pairUrl:pairUrl, flip:flip,
-    matrixHTML:matrixHTML, matchHTML:matchHTML, matchGroups:matchGroups, relation:relation,
+    matrixHTML:matrixHTML, chipHTML:chipHTML, topHTML:topHTML,
+    rankAll:rankAll, standing:standing, relation:relation, purposeWhy:purposeWhy,
+    PURPOSE_SHORT:PURPOSE_SHORT, PURPOSE_LEAD:PURPOSE_LEAD,
     purposeScores:purposeScores, letterMap:letterMap
   };
 })(typeof window !== "undefined" ? window : globalThis);

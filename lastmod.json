@@ -1,0 +1,542 @@
+{
+  "https://64monsters.wonder-bros.com/": {
+    "hash": "7c731077567f",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/pair/": {
+    "hash": "c917ccc7ecd3",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/about/": {
+    "hash": "e6b1041e27bb",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTJ-A-H/": {
+    "hash": "b75f20e26270",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTJ-A-H/compat/": {
+    "hash": "28199ccb16c5",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTJ-A-C/": {
+    "hash": "8338dfbc2236",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTJ-A-C/compat/": {
+    "hash": "7eb99175f567",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTJ-O-H/": {
+    "hash": "7d339d72fe32",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTJ-O-H/compat/": {
+    "hash": "2b5cba8c7f19",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTJ-O-C/": {
+    "hash": "b73675b2c856",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTJ-O-C/compat/": {
+    "hash": "e84551c60a68",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTP-A-H/": {
+    "hash": "53b5990a850b",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTP-A-H/compat/": {
+    "hash": "761314a9f4e7",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTP-A-C/": {
+    "hash": "b6395c269860",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTP-A-C/compat/": {
+    "hash": "175fcd7929d3",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTP-O-H/": {
+    "hash": "749fa12594aa",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTP-O-H/compat/": {
+    "hash": "df5c54070514",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTP-O-C/": {
+    "hash": "673512dd9ae6",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INTP-O-C/compat/": {
+    "hash": "1823c5d091b1",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTJ-A-H/": {
+    "hash": "4f5ededda499",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTJ-A-H/compat/": {
+    "hash": "291f721d3d13",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTJ-A-C/": {
+    "hash": "ed0c88d44795",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTJ-A-C/compat/": {
+    "hash": "d0e17c6da492",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTJ-O-H/": {
+    "hash": "0fd7213a395b",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTJ-O-H/compat/": {
+    "hash": "f22f3b9bc9af",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTJ-O-C/": {
+    "hash": "16286eff353a",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTJ-O-C/compat/": {
+    "hash": "02a48926c658",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTP-A-H/": {
+    "hash": "ebdfc72dc7a9",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTP-A-H/compat/": {
+    "hash": "e8b43e5b848b",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTP-A-C/": {
+    "hash": "dfd0c280a84a",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTP-A-C/compat/": {
+    "hash": "f7c8f0cf42ab",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTP-O-H/": {
+    "hash": "ccc8e744574b",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTP-O-H/compat/": {
+    "hash": "08fcef869ee2",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTP-O-C/": {
+    "hash": "854ffd637fdb",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENTP-O-C/compat/": {
+    "hash": "3e1db3c9d729",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFJ-A-H/": {
+    "hash": "36a881a09d85",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFJ-A-H/compat/": {
+    "hash": "abd4451e6b98",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFJ-A-C/": {
+    "hash": "1bae3fee5254",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFJ-A-C/compat/": {
+    "hash": "6372e1cb84cd",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFJ-O-H/": {
+    "hash": "bac7f08c4e86",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFJ-O-H/compat/": {
+    "hash": "f45fe9e942cf",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFJ-O-C/": {
+    "hash": "fec5d8a1ce56",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFJ-O-C/compat/": {
+    "hash": "6617b5adf59f",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFP-A-H/": {
+    "hash": "bdd5c66119c4",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFP-A-H/compat/": {
+    "hash": "5649efc3a3cc",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFP-A-C/": {
+    "hash": "57be31d42757",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFP-A-C/compat/": {
+    "hash": "e3351a629b0e",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFP-O-H/": {
+    "hash": "ba6941d108b4",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFP-O-H/compat/": {
+    "hash": "e0a0d8f84681",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFP-O-C/": {
+    "hash": "7bdadd391405",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/INFP-O-C/compat/": {
+    "hash": "a88672f355de",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFJ-A-H/": {
+    "hash": "eb8e2a4aea77",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFJ-A-H/compat/": {
+    "hash": "824e3874aca6",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFJ-A-C/": {
+    "hash": "17120265f889",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFJ-A-C/compat/": {
+    "hash": "b6fb55665075",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFJ-O-H/": {
+    "hash": "902584b4d0b1",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFJ-O-H/compat/": {
+    "hash": "920c81a9b67f",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFJ-O-C/": {
+    "hash": "bb1abbd3304c",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFJ-O-C/compat/": {
+    "hash": "c445eae752a2",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFP-A-H/": {
+    "hash": "9c96e7c4c60f",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFP-A-H/compat/": {
+    "hash": "663113ec4791",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFP-A-C/": {
+    "hash": "f3c0ac184c75",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFP-A-C/compat/": {
+    "hash": "5564c2240e1b",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFP-O-H/": {
+    "hash": "5d12afc606cd",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFP-O-H/compat/": {
+    "hash": "2567614850f7",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFP-O-C/": {
+    "hash": "d1fd2c0a524d",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ENFP-O-C/compat/": {
+    "hash": "0a10f91d0143",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTJ-A-H/": {
+    "hash": "c227b7fcee5c",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTJ-A-H/compat/": {
+    "hash": "f27d637baf05",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTJ-A-C/": {
+    "hash": "6350cd53035b",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTJ-A-C/compat/": {
+    "hash": "4edd5cdae2af",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTJ-O-H/": {
+    "hash": "735570b11b40",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTJ-O-H/compat/": {
+    "hash": "870bb0101950",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTJ-O-C/": {
+    "hash": "bb749ee31657",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTJ-O-C/compat/": {
+    "hash": "fc82954459bb",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFJ-A-H/": {
+    "hash": "a01268c26a21",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFJ-A-H/compat/": {
+    "hash": "abc62d2140c0",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFJ-A-C/": {
+    "hash": "11f5e11c9470",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFJ-A-C/compat/": {
+    "hash": "8207249feaaa",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFJ-O-H/": {
+    "hash": "56d98752a4a0",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFJ-O-H/compat/": {
+    "hash": "3db2b0515372",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFJ-O-C/": {
+    "hash": "5e6a18c33c51",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFJ-O-C/compat/": {
+    "hash": "a539cdb90eff",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTJ-A-H/": {
+    "hash": "e52cde9aa1f3",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTJ-A-H/compat/": {
+    "hash": "13958900c451",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTJ-A-C/": {
+    "hash": "e70403da6bb4",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTJ-A-C/compat/": {
+    "hash": "aa754d446d07",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTJ-O-H/": {
+    "hash": "420a013bb133",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTJ-O-H/compat/": {
+    "hash": "8ac8325a8498",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTJ-O-C/": {
+    "hash": "20cc472f7e76",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTJ-O-C/compat/": {
+    "hash": "412acf35d050",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFJ-A-H/": {
+    "hash": "6138a6f008f1",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFJ-A-H/compat/": {
+    "hash": "b3ee19fd22f7",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFJ-A-C/": {
+    "hash": "14d77adb040c",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFJ-A-C/compat/": {
+    "hash": "22a2e588bf78",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFJ-O-H/": {
+    "hash": "77a8c507b7b0",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFJ-O-H/compat/": {
+    "hash": "eaa760063214",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFJ-O-C/": {
+    "hash": "493acb3fc120",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFJ-O-C/compat/": {
+    "hash": "ba95e2bad0bf",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTP-A-H/": {
+    "hash": "fc9745037685",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTP-A-H/compat/": {
+    "hash": "c653509b77fc",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTP-A-C/": {
+    "hash": "9f952064ed9d",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTP-A-C/compat/": {
+    "hash": "b9467ce5e3c3",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTP-O-H/": {
+    "hash": "3a3050c5035a",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTP-O-H/compat/": {
+    "hash": "99433cfa94de",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTP-O-C/": {
+    "hash": "4366619eea4e",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISTP-O-C/compat/": {
+    "hash": "acad27192dc6",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFP-A-H/": {
+    "hash": "ad063adefe1a",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFP-A-H/compat/": {
+    "hash": "70f22f8f6e4c",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFP-A-C/": {
+    "hash": "d2a1ffb3cca5",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFP-A-C/compat/": {
+    "hash": "2773c9726e69",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFP-O-H/": {
+    "hash": "7d7a24fc0ec4",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFP-O-H/compat/": {
+    "hash": "b6cd77454f46",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFP-O-C/": {
+    "hash": "e0aa68f78ac2",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ISFP-O-C/compat/": {
+    "hash": "aae3632b6421",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTP-A-H/": {
+    "hash": "5725ce87b7ca",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTP-A-H/compat/": {
+    "hash": "100b5ecd8e5b",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTP-A-C/": {
+    "hash": "decdc414f127",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTP-A-C/compat/": {
+    "hash": "3f8e5fd874e0",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTP-O-H/": {
+    "hash": "488b362f9196",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTP-O-H/compat/": {
+    "hash": "2959b9060d81",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTP-O-C/": {
+    "hash": "678872fe3761",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESTP-O-C/compat/": {
+    "hash": "f2865eda9ae8",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFP-A-H/": {
+    "hash": "91dead3a592a",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFP-A-H/compat/": {
+    "hash": "43f708eb0baa",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFP-A-C/": {
+    "hash": "9dd4562c45de",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFP-A-C/compat/": {
+    "hash": "ce1727686f4f",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFP-O-H/": {
+    "hash": "7e0639451508",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFP-O-H/compat/": {
+    "hash": "edaaf976eef7",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFP-O-C/": {
+    "hash": "a5a1b6f9583c",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/t/ESFP-O-C/compat/": {
+    "hash": "0f42359e1f28",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/types.html": {
+    "hash": "27e17f7c090e",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/64types/": {
+    "hash": "3ad34ae52081",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/axis/ao/": {
+    "hash": "deb33c2ee2c0",
+    "date": "2026-09-10"
+  },
+  "https://64monsters.wonder-bros.com/axis/hc/": {
+    "hash": "bd0ea33a893d",
+    "date": "2026-09-10"
+  }
+}
