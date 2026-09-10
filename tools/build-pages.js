@@ -113,6 +113,15 @@ ${ldBlocks}
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
 window.SITE_BASE = "${o.base}";
 ${o.pageCode ? `window.PAGE_CODE = "${o.pageCode}";` : ""}
+/* 訪問者の状態を描画前に決める。文言の出し分けはCSSでやるので、ちらつかない。
+   new   … 診断の記録が無い（既定。クローラとJS無効もここ）
+   mine  … このページが、その人の最新の結果
+   other … 記録はあるが、別のタイプのページを見ている */
+(function(){try{
+  var last=JSON.parse(localStorage.getItem("shindan64.v1.last")||"null");
+  var v=(!last||!last.code)?"new":(window.PAGE_CODE&&last.code===window.PAGE_CODE?"mine":"other");
+  document.documentElement.setAttribute("data-visit",v);
+}catch(e){}})();
 </script>
 </head>
 <body>
@@ -164,12 +173,20 @@ function siteNavHTML(base, current){
 </nav>`;
 }
 
-/* 診断への導線。検索から来た人にとっては、これが唯一の入口になる */
+/* 診断への導線。検索から来た人にとっては、これが唯一の入口になる。
+   ただし、もう受けた人に「受けてみると分かります」と言ってはいけない。
+   自分の結果ページでも同じ文言が出ていた（2026-09-10、たいし指摘）。
+   両方の版をHTMLに置いて、CSSが data-visit で選ぶ。 */
 function quizCtaHTML(base, lead){
-  return `<div class="quizcta">
+  return `<div class="quizcta" data-when="new">
     <p class="qc-lead">${esc(lead)}</p>
     <a class="btn qc-btn" href="${base}quiz/">90問の診断を受ける</a>
     <p class="qc-note">全90問・約10分。登録は不要で、回答はブラウザの中だけで採点します。</p>
+  </div>
+  <div class="quizcta" data-when="mine other">
+    <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
+    <a class="btn qc-btn" href="${base}quiz/?restart=1">もう一度受ける</a>
+    <p class="qc-note">受けた回ぶんの記録は <a href="${base}history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
   </div>`;
 }
 
@@ -272,7 +289,8 @@ function typePage(code){
   <div class="sec split">
     <h2>${code} あるある</h2>
     <ul class="list aruaru">${x.aruaru.map(t => "<li>" + esc(t) + "</li>").join("")}</ul>
-    <p class="g-note" style="margin-top:16px">当たっているかどうかは、実際に受けてみるのがいちばん早いです。</p>
+    <p class="g-note" style="margin-top:16px" data-when="new">当たっているかどうかは、実際に受けてみるのがいちばん早いです。</p>
+    <p class="g-note" style="margin-top:16px" data-when="mine other">全部が当たるとは限りません。6軸の組み合わせから見た傾向です。</p>
   </div>`;
 
   const loveSec = !x ? "" : `
@@ -293,7 +311,7 @@ function typePage(code){
   <div class="res-head">
     <div class="hero"><span class="thumb"><img id="rThumb" src="${base}images/thumbs/${code}.webp" alt="${esc(b.name)}（${esc(s.label)}）のキャラクター" width="440" height="440"></span></div>
     <div class="hero-acts">
-      <button class="btn ghost sm" id="shareBtn">結果を画像で保存</button>
+      <button class="btn ghost sm" id="shareBtn">このタイプを画像で保存</button>
       <button class="btn ghost sm" id="saveMyBtn" data-code="${code}">マイタイプに登録</button>
     </div>
     <p class="eyebrow" id="rEyebrow">monster type</p>

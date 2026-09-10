@@ -123,12 +123,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=60f7b891">
+<link rel="stylesheet" href="../../assets/style.css?v=f95fb276">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
 window.SITE_BASE = "../../";
 
+/* 訪問者の状態を描画前に決める。文言の出し分けはCSSでやるので、ちらつかない。
+   new   … 診断の記録が無い（既定。クローラとJS無効もここ）
+   mine  … このページが、その人の最新の結果
+   other … 記録はあるが、別のタイプのページを見ている */
+(function(){try{
+  var last=JSON.parse(localStorage.getItem("shindan64.v1.last")||"null");
+  var v=(!last||!last.code)?"new":(window.PAGE_CODE&&last.code===window.PAGE_CODE?"mine":"other");
+  document.documentElement.setAttribute("data-visit",v);
+}catch(e){}})();
 </script>
 </head>
 <body>
@@ -267,10 +276,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="faq"><details class="faq-i"><summary>AとOは何が違いますか？</summary><p class="body-text">自分への確信の軸です。A（確信）は自分の判断を疑わず、迷いが短い。O（揺らぎ）は決めたあとも考え直し、揺れながら精度を上げる。どちらが優れているという軸ではありません。</p></details><details class="faq-i"><summary>Oであることは弱点ですか？</summary><p class="body-text">Oは「自信がない」という意味ではありません。決めたあとにもう一度確かめる幅を持っている、という意味です。同じ4文字でも、Oのほうが検討を重ねるぶん、出来上がりの精度が高くなる場面は多くあります。逆にAは、迷いが短いぶん、動き出しが速くなります。</p></details><details class="faq-i"><summary>自分がどちらか分かりません</summary><p class="body-text">90問の診断で判定できます。差が3以内のときは「立っていない」として扱い、どちらとも決めつけない形で表示します。</p></details></div>
   </div>
 
-  <div class="quizcta">
+  <div class="quizcta" data-when="new">
     <p class="qc-lead">自分がAとOのどちらかは、90問に答えると出ます。</p>
     <a class="btn qc-btn" href="../../quiz/">90問の診断を受ける</a>
     <p class="qc-note">全90問・約10分。登録は不要で、回答はブラウザの中だけで採点します。</p>
+  </div>
+  <div class="quizcta" data-when="mine other">
+    <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
+    <a class="btn qc-btn" href="../../quiz/?restart=1">もう一度受ける</a>
+    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
   </div>
 
   <p class="disclaimer">MBTI®は The Myers-Briggs Company の登録商標です。64モンスターズは同社および関連団体とは一切関係がなく、公式のMBTI®アセスメントではありません。ここでいう4文字は、一般に広まった16タイプの表記を指しています。</p>
@@ -283,6 +297,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>
 </section>
 <script src="../../assets/types.js?v=ff983dbf"></script>
-<script src="../../assets/settings.js?v=12cff24f"></script>
+<script src="../../assets/settings.js?v=01a6be1f"></script>
 </body>
 </html>

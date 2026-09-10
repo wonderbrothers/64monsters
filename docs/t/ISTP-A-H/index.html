@@ -144,12 +144,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=60f7b891">
+<link rel="stylesheet" href="../../assets/style.css?v=f95fb276">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
 window.SITE_BASE = "../../";
 window.PAGE_CODE = "ISTP-A-H";
+/* 訪問者の状態を描画前に決める。文言の出し分けはCSSでやるので、ちらつかない。
+   new   … 診断の記録が無い（既定。クローラとJS無効もここ）
+   mine  … このページが、その人の最新の結果
+   other … 記録はあるが、別のタイプのページを見ている */
+(function(){try{
+  var last=JSON.parse(localStorage.getItem("shindan64.v1.last")||"null");
+  var v=(!last||!last.code)?"new":(window.PAGE_CODE&&last.code===window.PAGE_CODE?"mine":"other");
+  document.documentElement.setAttribute("data-visit",v);
+}catch(e){}})();
 </script>
 </head>
 <body>
@@ -163,7 +172,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="res-head">
     <div class="hero"><span class="thumb"><img id="rThumb" src="../../images/thumbs/ISTP-A-H.webp" alt="手さばきモンスター（人懐こい手さばきモンスター）のキャラクター" width="440" height="440"></span></div>
     <div class="hero-acts">
-      <button class="btn ghost sm" id="shareBtn">結果を画像で保存</button>
+      <button class="btn ghost sm" id="shareBtn">このタイプを画像で保存</button>
       <button class="btn ghost sm" id="saveMyBtn" data-code="ISTP-A-H">マイタイプに登録</button>
     </div>
     <p class="eyebrow" id="rEyebrow">monster type</p>
@@ -215,7 +224,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="sec split">
     <h2>ISTP-A-H あるある</h2>
     <ul class="list aruaru"><li>教えるのは上手いのに、手順書は書いていない</li><li>説明より先に、実物を持ってくる</li><li>無駄な会議に、いちばん耐えられない</li><li>直したことを、直したと言わない</li><li>誰にでも同じ距離で話す</li></ul>
-    <p class="g-note" style="margin-top:16px">当たっているかどうかは、実際に受けてみるのがいちばん早いです。</p>
+    <p class="g-note" style="margin-top:16px" data-when="new">当たっているかどうかは、実際に受けてみるのがいちばん早いです。</p>
+    <p class="g-note" style="margin-top:16px" data-when="mine other">全部が当たるとは限りません。6軸の組み合わせから見た傾向です。</p>
   </div>
   <div class="sec split">
     <h2>4つのサブタイプの中での位置</h2>
@@ -273,10 +283,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="faq"><details class="faq-i"><summary>ISTP-A-Hとはどんなタイプですか？</summary><p class="body-text">ISTP-A-Hは「人懐こい手さばきモンスター」です。手を動かしながら、原理をつかむ人というISTPの性質に、自分への確信がA（確信）、人への構えがH（信頼）の組み合わせが重なります。手を動かして分かったことを、そのまま人に渡せるタイプ。自分の腕に迷いがなく、相手も疑わないので、専門性がありながら壁を感じさせません。現場と技術のあいだをつなぐ役になりますが、渡した内容が記録に残らず、口頭で消えていくことがあります。</p></details><details class="faq-i"><summary>ISTP-A-Hと相性がいいタイプは？</summary><p class="body-text">用途によって変わります。恋人として噛み合うのはISTP-O-H、INTP-O-H、ESTP-O-H、仕事のパートナーとしてはENFP-O-H、INFP-O-H、ENTP-O-H、友人としてはISFP-O-H、ISTP-O-H、ISFP-A-Hが上位です。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして、64タイプを順位づけしています。同じタイプ同士も相手として数えています。</p></details><details class="faq-i"><summary>ISTP-A-Hの「A」と「H」は何を表していますか？</summary><p class="body-text">Aは自分への確信の軸で、確信＝自分の判断を疑わず、迷いが短いという意味です。Hは人への構えの軸で、信頼＝まず信じて、自分から開いていくという意味です。同じISTPでも、この2文字が変わると現れ方が変わります。</p></details><details class="faq-i"><summary>ISTP-A-Hは「ISTP-AH」や「ISTP AH」と同じですか？</summary><p class="body-text">同じものです。ISTP-A-H・ISTP-AH・ISTP AH・ISTP A H は、いずれも同じ組み合わせを指します。区切り方はサービスや記事によって異なります。</p></details></div>
   </div>
 
-  <div class="quizcta">
+  <div class="quizcta" data-when="new">
     <p class="qc-lead">ISTP-A-H は診断結果の1つです。自分がどのタイプかは、受けてみると分かります。</p>
     <a class="btn qc-btn" href="../../quiz/">90問の診断を受ける</a>
     <p class="qc-note">全90問・約10分。登録は不要で、回答はブラウザの中だけで採点します。</p>
+  </div>
+  <div class="quizcta" data-when="mine other">
+    <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
+    <a class="btn qc-btn" href="../../quiz/?restart=1">もう一度受ける</a>
+    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
   </div>
 
   <p class="disclaimer">
@@ -299,7 +314,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="../../assets/questions.js?v=0b31d093"></script>
 <script src="../../assets/engine.js?v=b962afbb"></script>
 <script src="../../assets/share.js?v=315ad15f"></script>
-<script src="../../assets/type.js?v=6bb9b601"></script>
-<script src="../../assets/settings.js?v=12cff24f"></script>
+<script src="../../assets/type.js?v=31783111"></script>
+<script src="../../assets/settings.js?v=01a6be1f"></script>
 </body>
 </html>

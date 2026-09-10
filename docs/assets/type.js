@@ -168,9 +168,13 @@
     if (window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();
   });
 
-  /* ---------- 一枚絵 ---------- */
+  /* ---------- 一枚絵 ----------
+     ボタンの文言は、自分の結果として開かれたときだけ「結果」と言う。
+     ギャラリーから見に来た人にとっては、その人の結果ではない。 */
+  var SHARE_LABEL = isMyResult ? "結果を画像で保存" : "このタイプを画像で保存";
+  $("shareBtn").textContent = SHARE_LABEL;
   $("shareBtn").addEventListener("click", function(){
-    var btn = this, orig = "結果を画像で保存";
+    var btn = this, orig = SHARE_LABEL;
     btn.disabled = true; btn.textContent = "画像を作っています…";
     window.SHARE.save({
       code: CODE,

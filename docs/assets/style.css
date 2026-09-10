@@ -1906,3 +1906,14 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
   background:var(--surface-2); color:var(--ink-3);
   font-family:var(--f-body); font-size:var(--fs-xs); letter-spacing:0;
 }
+
+/* ---- 診断を受けた人／受けていない人で、文言を出し分ける ----
+   状態は <html data-visit> に、描画前のインラインスクリプトが入れる。
+   属性が無いとき（JS無効・クローラ）は new を出す。文言は両方ともHTMLに
+   あるので、切り替えでちらつかない。
+   new … 記録なし / mine … このページが自分の最新の結果 / other … 別のタイプを見ている */
+[data-when]{ display:none; }
+html:not([data-visit]) [data-when~="new"],
+html[data-visit="new"]   [data-when~="new"],
+html[data-visit="mine"]  [data-when~="mine"],
+html[data-visit="other"] [data-when~="other"]{ display:block; }

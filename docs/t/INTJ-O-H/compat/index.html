@@ -137,12 +137,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../../../assets/style.css?v=60f7b891">
+<link rel="stylesheet" href="../../../assets/style.css?v=f95fb276">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
 window.SITE_BASE = "../../../";
 
+/* 訪問者の状態を描画前に決める。文言の出し分けはCSSでやるので、ちらつかない。
+   new   … 診断の記録が無い（既定。クローラとJS無効もここ）
+   mine  … このページが、その人の最新の結果
+   other … 記録はあるが、別のタイプのページを見ている */
+(function(){try{
+  var last=JSON.parse(localStorage.getItem("shindan64.v1.last")||"null");
+  var v=(!last||!last.code)?"new":(window.PAGE_CODE&&last.code===window.PAGE_CODE?"mine":"other");
+  document.documentElement.setAttribute("data-visit",v);
+}catch(e){}})();
 </script>
 </head>
 <body>
@@ -608,10 +617,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="faq"><details class="faq-i"><summary>INTJ-O-Hと最も相性がいいのはどのタイプですか？</summary><p class="body-text">用途によって変わります。恋人として噛み合うのはINTJ-A-H、ISTJ-A-H、ENTJ-A-H、仕事のパートナーとしてはESFJ-A-H、ISFJ-A-H、ESTJ-A-H、友人としてはINFJ-A-H、INTJ-A-H、INFJ-O-Hが上位です。ひとつの答えにならないのは、同じ相手でも用途ごとに効く軸が違うからです。</p></details><details class="faq-i"><summary>相性のスコアは何を根拠にしていますか？</summary><p class="body-text">測定値ではありません。6つの軸それぞれについて「一致が効くか、違いが効くか」を用途別に重みづけし、追い風になっている軸の重みが全体の何割かを出しています。設計した重みなので、数値だけでなく必ずどの軸が効いたかと一緒に見てください。重みの中身は各カードの「追い風」「向かい風」で開いています。</p></details><details class="faq-i"><summary>INTJ-O-H同士の相性はどうですか？</summary><p class="body-text">INTJ-O-H同士も相手として数えていて、恋人4位・仕事45位・友人5位です。6つの軸がすべて同じになるので、一致が効く用途では上位に来て、違いが効く用途では下がります。同じタイプだから相性がいい、とも悪いとも決めていません。</p></details><details class="faq-i"><summary>相性の悪いタイプはいますか？</summary><p class="body-text">順位の下のほうに来るタイプはありますが、悪いという扱いはしていません。噛み合いにくい相手は、価値観の置き所が違うぶん、自分に足りない視点を最も速く手渡してくれる相手でもあります。全64タイプの順位は一覧で開けます。</p></details></div>
   </div>
 
-  <div class="quizcta">
+  <div class="quizcta" data-when="new">
     <p class="qc-lead">相手のコードが分かれば、2人ぶんの内訳をその場で見られます。</p>
     <a class="btn qc-btn" href="../../../quiz/">90問の診断を受ける</a>
     <p class="qc-note">全90問・約10分。登録は不要で、回答はブラウザの中だけで採点します。</p>
+  </div>
+  <div class="quizcta" data-when="mine other">
+    <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
+    <a class="btn qc-btn" href="../../../quiz/?restart=1">もう一度受ける</a>
+    <p class="qc-note">受けた回ぶんの記録は <a href="../../../history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
   </div>
 
   <p class="disclaimer">相性の数値は、6軸の重みづけから計算した目安です。人の関係は、タイプだけで決まるものではありません。</p>
@@ -626,6 +640,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script src="../../../assets/types.js?v=ff983dbf"></script>
 <script src="../../../assets/render.js?v=a2a84c6d"></script>
-<script src="../../../assets/settings.js?v=12cff24f"></script>
+<script src="../../../assets/settings.js?v=01a6be1f"></script>
 </body>
 </html>
