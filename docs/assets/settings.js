@@ -22,7 +22,7 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.2.1";
-  var BUILD   = "29c5a1b";
+  var BUILD   = "fc8daca";
   var BUILT   = "2026-09-10";
 
   var MYKEY = KEY + ".mytype";
@@ -107,7 +107,14 @@
     if (!copy || !copy.parentNode) return;
     var f = document.createElement("div");
     f.className = "site-foot";
-    f.innerHTML = '<a class="sh-logo" href="' + HOME + '" aria-label="64モンスターズ ホーム">' + LOGO + '</a>';
+    f.innerHTML =
+      '<a class="sh-logo" href="' + HOME + '" aria-label="64モンスターズ ホーム">' + LOGO + '</a>' +
+      '<span class="foot-sep" aria-hidden="true"></span>' +
+      '<a class="wb-logo" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer"' +
+        ' aria-label="株式会社ワンダーブラザース（別のタブで開きます）">' +
+        '<img class="wb wb-light" src="' + B + 'assets/wb-logo.svg?v=1a3fabf9" alt="" width="176" height="30">' +
+        '<img class="wb wb-dark" src="' + B + 'assets/wb-logo-dark.svg?v=39ef6f45" alt="" width="176" height="30">' +
+      '</a>';
     copy.parentNode.insertBefore(f, copy);
   })();
 

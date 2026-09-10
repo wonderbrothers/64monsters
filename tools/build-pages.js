@@ -193,7 +193,7 @@ function quizCtaHTML(base, lead){
 function footHTML(base, current){
   return `${siteNavHTML(base, current)}
   <p class="notice-link"><a href="${base}about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
-  <p class="copy">© 2026 <a class="copy-link" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">WONDER BROTHERS INC.</a> All rights reserved.</p>`;
+  <p class="copy">© 2026 WONDER BROTHERS INC. All rights reserved.</p>`;
 }
 
 function scripts(base, list){
