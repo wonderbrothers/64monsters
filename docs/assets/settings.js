@@ -22,7 +22,7 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.2.1";
-  var BUILD   = "0ae0e2a";
+  var BUILD   = "26819f0";
   var BUILT   = "2026-09-10";
 
   var MYKEY = KEY + ".mytype";
@@ -73,12 +73,14 @@
   var HIST = B + "history/";
   var FRIENDS = B + "friends/";
   var ABOUT = B + "about/";
+  var PAIR = B + "pair/";
   /* いま開いているのがギャラリーなら、リンクに現在地を示す */
   var onGallery = /types\.html$/.test(location.pathname);
   var onQuiz = /\/quiz\/?$/.test(location.pathname);
   var onHist = /\/history\/?$/.test(location.pathname);
   var onFriends = /\/friends\/?$/.test(location.pathname);
   var onAbout = /\/about\/?$/.test(location.pathname);
+  var onPair = /\/pair\/?$/.test(location.pathname);
 
   /* ---------- ヘッダー ---------- */
   var wrapCls = document.querySelector(".wrap.wide") ? "wrap wide" : "wrap";
@@ -167,6 +169,7 @@
         '<span class="drawer-logo">' + LOGO + '</span>' +
         '<button type="button" class="modal-x" data-dclose aria-label="メニューを閉じる">×</button>' +
       '</div>' +
+      '<div class="drawer-sec hidden" id="drawerMySec"><p class="drawer-h">My Type</p><div id="drawerMy"></div></div>' +
       '<nav class="drawer-nav" aria-label="サイト内">' +
         '<a href="' + QUIZ + '"' + (onQuiz ? ' aria-current="page"' : '') + '>' +
           '<span>90問の診断を受ける</span>' + SVG_CHEV + '</a>' +
@@ -176,25 +179,30 @@
           '<span>ヒストリー</span>' + SVG_CHEV + '</a>' +
         '<a href="' + FRIENDS + '"' + (onFriends ? ' aria-current="page"' : '') + '>' +
           '<span>Myフレンド</span>' + SVG_CHEV + '</a>' +
+        '<a href="' + PAIR + '"' + (onPair ? ' aria-current="page"' : '') + '>' +
+          '<span>2人の相性</span>' + SVG_CHEV + '</a>' +
         '<a href="' + ABOUT + '"' + (onAbout ? ' aria-current="page"' : '') + '>' +
           '<span>この診断について</span>' + SVG_CHEV + '</a>' +
       '</nav>' +
-      '<div class="drawer-sec"><p class="drawer-h">My Type</p><div id="drawerMy"></div></div>' +
       '<div class="drawer-sec"><p class="drawer-h">表示設定</p><div id="drawerBody"></div></div>' +
     '</aside>';
   document.body.appendChild(drawer);
 
   /* ---------- マイタイプ ---------- */
+  /* 未登録のときは節ごと隠して、ナビを先頭にする。
+     空の枠と「まだ登録されていません」を最初に見せても、初めての人には邪魔なだけなので。 */
   function renderMy(){
     var box = drawer.querySelector("#drawerMy");
+    var sec = drawer.querySelector("#drawerMySec");
     var code = null;
     try { code = localStorage.getItem(MYKEY); } catch(e){}
     var SUB = window.SUBTYPES;
     if (!code || !SUB || !SUB[code]){
-      box.innerHTML =
-        '<p class="drawer-empty">まだ登録されていません。診断を受けるか、結果ページで「マイタイプに登録」を押すとここに出ます。</p>';
+      sec.classList.add("hidden");
+      box.innerHTML = "";
       return;
     }
+    sec.classList.remove("hidden");
     box.innerHTML =
       '<a class="drawer-my" href="' + B + 't/' + code + '/">' +
         '<span class="thumb"><img src="' + B + 'images/thumbs/' + code + '.webp" alt="" loading="lazy"></span>' +
