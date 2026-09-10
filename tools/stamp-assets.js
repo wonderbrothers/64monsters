@@ -97,17 +97,44 @@ function today(){
   return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate());
 }
 
+/* engine.js の QV（設問の並びの版）と CODE_VER（鑑定コードの版）を読む。
+   この2つは「過去の結果とそのまま比べられるか」を決めている値なので、
+   動かしたのにメジャーを上げていないビルドは通さない（README「版の付け方」）。 */
+function engineVersions(){
+  const src = fs.readFileSync(path.join(DOCS, "assets/engine.js"), "utf8");
+  const qv = (src.match(/var\s+QV\s*=\s*(\d+)/) || [])[1];
+  const cv = (src.match(/var\s+CODE_VER\s*=\s*"([^"]*)"/) || [])[1];
+  return { qv: qv, codeVer: cv };
+}
+const majorOf = v => Number(String(v || "0").split(".")[0]) || 0;
+
 function writeVersion(){
   const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
   const hash = contentHash();
   let prev = {};
   try { prev = JSON.parse(fs.readFileSync(STATE, "utf8")); } catch(e){}
 
+  /* ---- 過去と比べられなくなる変更の見張り ---- */
+  const ev = engineVersions();
+  if (prev.qv !== undefined && (prev.qv !== ev.qv || prev.codeVer !== ev.codeVer)){
+    if (majorOf(pkg.version) <= majorOf(prev.version)){
+      const what = [];
+      if (prev.qv !== ev.qv) what.push(`QV ${prev.qv} → ${ev.qv}`);
+      if (prev.codeVer !== ev.codeVer) what.push(`CODE_VER ${prev.codeVer} → ${ev.codeVer}`);
+      throw new Error(
+        `版を上げずにビルドしようとしています。\n` +
+        `  変わったもの: ${what.join(" / ")}\n` +
+        `  いまの版: ${pkg.version}（${prev.version} から据え置き）\n` +
+        `  QV と CODE_VER は「過去の結果とそのまま比べられるか」を決める値です。\n` +
+        `  README「版の付け方」のとおり、package.json のメジャーを上げてください（例 ${majorOf(prev.version) + 1}.0.0）。`);
+    }
+  }
+
   const changed = prev.hash !== hash || prev.version !== pkg.version;
   const updated = changed ? today() : prev.updated;
 
   if (changed) fs.writeFileSync(STATE, JSON.stringify(
-    { version: pkg.version, updated: updated, hash: hash }, null, 2) + "\n");
+    { version: pkg.version, updated: updated, hash: hash, qv: ev.qv, codeVer: ev.codeVer }, null, 2) + "\n");
 
   const file = path.join(DOCS, "assets/settings.js");
   const before = fs.readFileSync(file, "utf8");

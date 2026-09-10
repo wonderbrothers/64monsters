@@ -1274,7 +1274,7 @@ h1,h2,h3{ font-weight:900; letter-spacing:.01em; }
 
 /* ---- ヘッダー ---- */
 :root{ --head-h:64px; }
-.sh-logo .logo{ height:24px; }
+.sh-logo .logo{ height:22px; }
 .sh-nav{ gap:8px; }
 .sh-link{
   display:block; padding:6px 10px; border-radius:10px; text-align:left; color:var(--ink);
@@ -1330,7 +1330,7 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
   font-size:var(--fs-xs); font-weight:700; letter-spacing:.14em; color:var(--ink-3);
 }
 .meta div + div{ margin-left:16px; }
-.meta div span{ font-family:var(--f-body); font-weight:900; font-size:var(--fs-xl); color:var(--ink); letter-spacing:0; margin-top:2px; line-height:1.25; }
+.meta div span{ font-family:var(--f-body); font-weight:600; font-size:var(--fs-xl); color:var(--ink); letter-spacing:0; margin-top:2px; line-height:1.25; }
 /* 数字だけ英字書体で大きく。単位の和文はそのぶん小さくして、数を主役にする */
 .meta div span .n{ font-family:var(--f-en); font-weight:900; font-size:1.66em; letter-spacing:-.01em; line-height:1; }
 .fv-cta{ margin-top:22px; }
@@ -1531,14 +1531,14 @@ a.cell.on:hover{ background:var(--ink); border-color:var(--ink); }
 .hist-clear.armed, .fr-del.armed, .token-msg.bad{ color:var(--danger); }
 
 /* ---- 設定・モーダル・ドロアー ---- */
-.switch{ border-width:var(--bw); border-color:var(--ink); background:var(--surface-2); }
+.switch{ border-width:var(--bw); border-color:var(--ink); background:var(--paper); }
 .switch.on{ background:var(--ink); border-color:var(--ink); }
 .switch .knob{ background:var(--ink); }
 .switch.on .knob{ background:var(--on-brand); }
 .modal-back, .drawer-back{ background:rgba(17,17,17,.55); }
 html[data-theme="dark"] .modal-back, html[data-theme="dark"] .drawer-back{ background:rgba(0,0,0,.66); }
 .drawer-panel{ border-right:var(--bw) solid var(--ink); }
-.drawer-logo .logo{ height:26px; }
+.drawer-logo .logo{ height:22px; }
 .set-h{ font-weight:900; }
 :focus-visible{ outline:3px solid var(--ink); outline-offset:3px; }
 
