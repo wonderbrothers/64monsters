@@ -1343,10 +1343,11 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
   .fv-art{ max-width:none; }
   /* 2カラムでは右カラムの幅で決まるので、伸び方をゆるめる */
   .fv-copy .subtitle{ font-size:clamp(2.25rem, 4.2vw, 2.75rem); }
-  /* 2カラムのときは左右の下端を揃える。右カラムは
-     「見出し＋概要＋数値」と「ボタン＋注記」の2かたまりとして扱い、
-     余った高さは全部そのあいだの余白に送る（行間は均一のまま） */
+  /* 2カラムのときの高さ合わせ。右カラムは「見出し＋概要＋数値」と
+     「ボタン＋注記」の2かたまりとして扱い、余った高さはそのあいだの余白に送る。
+     図版（横長）のほうが背が低いので、図版は縦の中央に置く */
   .fv{ align-items:stretch; }
+  .fv-art{ align-self:center; }
   .fv-copy{ display:flex; flex-direction:column; }
   .fv-copy .fv-cta{ margin-top:auto; padding-top:22px; }
 }
@@ -1649,9 +1650,9 @@ html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,
 .tgrid{ margin-top:24px; }
 
 /* Hero の英字図版は、モンスターが左から歩いてくるぶんだけ
-   キャンバスを左に 135（＝元の幅 499 の 27.054%）広げてある。
+   キャンバスを左に 135（＝元の幅 500 の 27%）広げてある。
    その広げたぶんをマイナスマージンで引き戻すので、文字の位置は変わらない。 */
-.fv-art img{ width:127.054%; max-width:none; margin-left:-27.054%; }
+.fv-art img{ width:127%; max-width:none; margin-left:-27%; }
 /* はみ出したぶんで横スクロールが出ないようにする。
    overflow:hidden と違って clip はスクロール枠を作らないので、
    ヘッダーやギャラリーのチップの position:sticky が効いたままになる。 */
