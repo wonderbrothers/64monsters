@@ -720,7 +720,7 @@ function allTypesTableHTML(base){
 function hubPage(){
   const base = "../", url = ORIGIN + "/64types/";
   const title = `64タイプ性格診断とは？A/O・H/Cの意味とコードの読み方｜${SITE}`;
-  const desc = "MBTIの4文字（16タイプ）に、自分への確信（A / O）と人への構え（H / C）の2軸を足した64タイプ。INTJ-O-Hのようなコードの読み方、6つの軸の意味、64タイプの全一覧をまとめています。";
+  const desc = "広く知られている4文字の16タイプに、自分への確信（A / O）と人への構え（H / C）の2軸を足した64タイプ。INTJ-O-Hのようなコードの読み方、6つの軸の意味、64タイプの全一覧をまとめています。";
   const crumbs = [
     { name: SITE, href: base, abs: ORIGIN + "/" },
     { name: "64タイプ性格診断とは", href: url, abs: url }
@@ -753,7 +753,7 @@ function hubPage(){
   <div class="page-head">
     <p class="eyebrow">about 64 types</p>
     <h1 class="subtitle">64タイプ性格診断とは</h1>
-    <p class="lede">MBTIとして広く知られている4文字の16タイプに、<b>自分への確信（A / O）</b>と<b>人への構え（H / C）</b>の2つの軸を足したものです。16 × 2 × 2 で64通りになります。<code class="mono">INTJ-O-H</code> のように書きます。</p>
+    <p class="lede">広く知られている4文字の16タイプに、<b>自分への確信（A / O）</b>と<b>人への構え（H / C）</b>の2つの軸を足したものです。16 × 2 × 2 で64通りになります。<code class="mono">INTJ-O-H</code> のように書きます。</p>
   </div>
 
   <div class="sec split">

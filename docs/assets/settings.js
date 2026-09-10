@@ -22,7 +22,7 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.2.1";
-  var BUILD   = "fc8daca";
+  var BUILD   = "bc2ec34";
   var BUILT   = "2026-09-10";
 
   var MYKEY = KEY + ".mytype";

@@ -1579,11 +1579,13 @@ html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,
 /* 入力欄のプレースホルダ */
 .token-row input::placeholder, .fr-form input::placeholder{ color:var(--ink-3); opacity:1; }
 
-/* 広い画面では「ALL 64 MONSTERS」を見出しの行の右端に置く */
+/* 広い画面では、セクションのリンクを見出しの行（工程番号の行）の右端に置く。
+   見出しが下をくぐらないように、リンクのぶんだけ右に余白を取る */
 @media (min-width:900px){
-  .band-alt .wrap{ position:relative; }
-  .band-alt .more{ position:absolute; right:0; top:0; margin-top:0; }
+  .band-alt .wrap, .band-axes .wrap{ position:relative; }
+  .band-alt .more, .band-axes .more{ position:absolute; right:0; top:0; margin-top:0; }
   .band-alt .sec-title{ padding-right:220px; }
+  .band-axes .sec-title{ padding-right:300px; }
 }
 
 /* ヒーローの直後の帯には上罫線を引かない（FVの下に線が1本出てしまう） */
