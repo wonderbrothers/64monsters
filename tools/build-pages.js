@@ -190,8 +190,20 @@ function quizCtaHTML(base, lead){
   </div>`;
 }
 
+/* 商標の打消し表示。権利者は Myers & Briggs Foundation, Inc.（日本の登録第5292740号の
+   名義は MBTI Trust, Inc.）であって、The Myers-Briggs Company は独占出版者。間違えないこと。
+   4文字コードを見せるページには全部出す（footHTML 経由）。ただし title / description /
+   h1 / JSON-LD / alt / OGP には入れない。入れると記述的な打消しではなく、
+   検索誘引のための商標的使用と見られる余地が出る。 */
+const TM_NOTE = `MBTI®は Myers & Briggs Foundation, Inc. の米国およびその他の国における商標または登録商標です（日本での登録名義：MBTI Trust, Inc.）。64モンスターズは同財団および関連団体・関連会社とは一切関係がなく、公式のMBTI®アセスメントではありません。ここでいう4文字は、一般に広まった16タイプの表記を指しています。`;
+
+function tmNoteHTML(){
+  return `<p class="disclaimer tm-note">${esc(TM_NOTE)}</p>`;
+}
+
 function footHTML(base, current){
-  return `${siteNavHTML(base, current)}
+  return `${tmNoteHTML()}
+  ${siteNavHTML(base, current)}
   <p class="notice-link"><a href="${base}about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
   <p class="copy">© 2026 WONDER BROTHERS INC. All rights reserved.</p>`;
 }
@@ -200,7 +212,9 @@ function scripts(base, list){
   return list.map(f => `<script src="${base}assets/${f}"></script>`).join("\n");
 }
 
-/* 可視のFAQ。ここに出ている文言と JSON-LD を必ず一致させる */
+/* 可視のFAQ。ここに出ている文言と JSON-LD を必ず一致させる。
+   例外は `ld:false` を付けた項目だけで、これは可視には出すが FAQPage には入れない。
+   商標の打消しは読みに来た人に見せるもので、検索エンジンに差し出すものではない。 */
 function faqHTML(items){
   return `<div class="sec split">
     <h2>よくある質問</h2>
@@ -211,7 +225,7 @@ function faqLD(items){
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: items.map(q => ({
+    mainEntity: items.filter(q => q.ld !== false).map(q => ({
       "@type": "Question", name: q.q,
       acceptedAnswer: { "@type": "Answer", text: q.a }
     }))
@@ -694,8 +708,6 @@ ${scripts(base, ["questions.js", "types.js", "settings.js"])}
    来られなかった。64枚への内部リンクもここに集める。
    ============================================================ */
 
-const TM_NOTE = `MBTI®は The Myers-Briggs Company の登録商標です。64モンスターズは同社および関連団体とは一切関係がなく、公式のMBTI®アセスメントではありません。ここでいう4文字は、一般に広まった16タイプの表記を指しています。`;
-
 function axisTableHTML(){
   return `<div class="axtable"><table class="axt">
     <thead><tr><th>軸</th><th>一方の極</th><th>もう一方の極</th></tr></thead>
@@ -736,8 +748,10 @@ function hubPage(){
       a: "同じものです。INTJ-O-H・INTJ-OH・INTJ OH・INTJ O H は、いずれも同じ組み合わせを指します。区切り方はサービスや記事によって異なります。" },
     { q: "他のサイトで見た64タイプと文字が違います",
       a: "64タイプを名乗る診断は複数あり、追加の2軸の記号が異なる場合があります。A / T と C / S を使うものもあります。64モンスターズは A / O と H / C を使っています。記号が違うものどうしの結果は、そのままでは対応しません。" },
-    { q: "MBTIの公式診断ですか？",
-      a: TM_NOTE }
+    /* 商標は常に形容詞として、適切な名詞（アセスメント）を伴わせて使う。公式ガイドラインの指定。
+       ld:false — 可視のFAQには出すが、FAQPage の構造化データには入れない */
+    { q: "MBTI®のアセスメントと関係がありますか？",
+      a: TM_NOTE, ld: false }
   ];
   const ldPage = {
     "@context": "https://schema.org", "@type": "WebPage",
@@ -794,8 +808,6 @@ function hubPage(){
   ${faqHTML(faqs)}
 
   ${quizCtaHTML(base, "自分のコードが分からないときは、90問に答えると出ます。")}
-
-  <p class="disclaimer">${esc(TM_NOTE)}</p>
 
   ${footHTML(base, "hub")}
 </section>
@@ -903,8 +915,6 @@ function axisPage(kind){
 
   ${quizCtaHTML(base, `自分が${L1.l}と${L2.l}のどちらかは、90問に答えると出ます。`)}
 
-  <p class="disclaimer">${esc(TM_NOTE)}</p>
-
   ${footHTML(base, A.slug)}
 </section>
 ${scripts(base, ["types.js", "settings.js"])}
@@ -965,6 +975,32 @@ for (const h of HAND_PAGES){
 }
 console.log(`手書きページのサイト内リンクを同期しました: ${HAND_PAGES.length} 枚（書き換え ${synced} 枚）`);
 
+/* ---- 手書きページの商標注記も、TM_NOTE から流し込む ----
+   4文字コードを見せるページには全部出す。手書きの5枚は生成物ではないので、
+   ここで <p class="disclaimer tm-note"> を上書きし、無ければ sitenav の直前に足す。
+   文言の二重管理をなくすため、手でこの段落を書き換えないこと。 */
+{
+  const re = /^([ \t]*)<p class="disclaimer tm-note">[\s\S]*?<\/p>[ \t]*$/m;
+  let put = 0;
+  for (const h of HAND_PAGES){
+    const file = path.join(DOCS, h.rel);
+    if (!fs.existsSync(file)) continue;
+    const before = fs.readFileSync(file, "utf8");
+    let after;
+    const m = before.match(re);
+    if (m){
+      after = before.replace(re, m[1] + tmNoteHTML());
+    } else {
+      const nav = /^([ \t]*)<nav class="sitenav"/m;
+      const n = before.match(nav);
+      if (!n){ console.warn(`  ! ${h.rel} に商標注記を入れる場所がありません`); continue; }
+      after = before.replace(nav, n[1] + tmNoteHTML() + "\n" + n[1] + '<nav class="sitenav"');
+    }
+    if (after !== before){ fs.writeFileSync(file, after); put++; }
+  }
+  console.log(`手書きページの商標注記を同期しました: ${HAND_PAGES.length} 枚（書き換え ${put} 枚）`);
+}
+
 /* ---- 共通パーツの欠けを、ビルドのたびに知らせる ----
    パンくず・見出しブロック・サイト内リンクは、手で足すページがあるぶん抜けやすい。
    実際に about / pair / friends に抜けがあった。黙って通さない。 */
@@ -985,10 +1021,11 @@ console.log(`手書きページのサイト内リンクを同期しました: ${
     if (!noCrumb.has(rel) && !html.includes('class="crumb"')) lack.push("パンくず");
     if (!/class="page-head|class="res-head|class="fv-copy/.test(html)) lack.push("見出しブロック");
     if (!html.includes('class="sitenav"')) lack.push("サイト内リンク");
+    if (!html.includes('class="disclaimer tm-note"')) lack.push("商標注記");
     if (lack.length) warn.push(`  ! ${rel} … ${lack.join(" / ")} が無い`);
   }
   if (warn.length){ console.warn("共通パーツの欠け:"); warn.forEach(w => console.warn(w)); }
-  else console.log("共通パーツ（パンくず・見出し・サイト内リンク）の欠けはありません");
+  else console.log("共通パーツ（パンくず・見出し・サイト内リンク・商標注記）の欠けはありません");
 }
 
 /* ---- sitemap の lastmod ----

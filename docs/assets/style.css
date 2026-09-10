@@ -279,6 +279,11 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 /* 直前が .sec のときは、その下罫線と2本並ぶので自前の上罫線は引かない
    （結果ページ下部のボタン群を外して、.sec と隣り合うようになった） */
 .sec + .disclaimer{ padding-top:0; border-top:0; }
+/* 注意書きが2つ並ぶとき（結果ページの「回答時点の自己認識」＋商標注記）は、
+   2枚目の罫線を出さずに1つの塊として見せる。3本の罫線が重なるのを避ける */
+.disclaimer + .disclaimer{ margin-top:14px; padding-top:0; border-top:0; }
+/* 商標の打消し表示。読めればよいので、本文よりさらに落とす */
+.disclaimer.tm-note{ color:var(--ink-3); }
 
 /* ---------- 注意書きへのリンク（本体は /about/） ---------- */
 .notice-link{

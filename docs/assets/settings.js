@@ -21,8 +21,8 @@
      BUILD は docs/ の中身のハッシュ。問い合わせを受けたとき、
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
-  var VERSION = "1.2.1";
-  var BUILD   = "26819f0";
+  var VERSION = "1.3.0";
+  var BUILD   = "f4fccdb";
   var BUILT   = "2026-09-10";
 
   var MYKEY = KEY + ".mytype";
