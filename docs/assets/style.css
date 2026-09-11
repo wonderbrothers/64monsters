@@ -303,6 +303,10 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 /* /about/ */
 #about{ padding:0 0 40px; }
 #about .sec .list{ margin-top:14px; }
+/* 規約・ポリシーの本文は、箇条書きの前後にも本文と同じ間隔を置く */
+#privacy .sec .list, #terms .sec .list{ margin-top:14px; }
+#privacy .sec .list + .body-text, #terms .sec .list + .body-text{ margin-top:14px; }
+#privacy .sec .list li, #terms .sec .list li{ font-size:var(--fs-base); color:var(--ink-2); }
 #about .sec .list li{ font-size:var(--fs-base); color:var(--ink-2); }
 #about .body-text + .body-text{ margin-top:16px; }
 #about .list + .body-text{ margin-top:16px; }
@@ -953,6 +957,17 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
   text-decoration:underline; text-underline-offset:3px;
 }
 .drawer-sub:hover{ color:var(--ink); }
+/* 規約類。読む頻度が低いので、本体のナビより控えめに置く */
+.drawer-legal{
+  display:flex; flex-wrap:wrap; gap:6px 18px;
+  padding:12px 12px 14px; border-bottom:1px solid var(--line-2);
+}
+.drawer-legal a{
+  font-size:var(--fs-sm); color:var(--ink-3);
+  text-decoration:underline; text-underline-offset:3px;
+}
+.drawer-legal a:hover{ color:var(--ink); }
+.drawer-legal a[aria-current="page"]{ color:var(--ink); }
 /* ドロアーの中では、設定の1行目に余分な上余白をつけない */
 .drawer-sec .set-row:first-child{ padding-top:0; }
 .drawer-sec .set-row:last-child{ border-bottom:0; }

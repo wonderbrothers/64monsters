@@ -22,8 +22,8 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.3.0";
-  var BUILD   = "f4fccdb";
-  var BUILT   = "2026-09-10";
+  var BUILD   = "0ac9e2f";
+  var BUILT   = "2026-09-11";
 
   var MYKEY = KEY + ".mytype";
   var MYOFF = KEY + ".myoff";      /* 自分で解除した印 */
@@ -74,6 +74,8 @@
   var FRIENDS = B + "friends/";
   var ABOUT = B + "about/";
   var PAIR = B + "pair/";
+  var PRIVACY = B + "privacy/";
+  var TERMS = B + "terms/";
   /* いま開いているのがギャラリーなら、リンクに現在地を示す */
   var onGallery = /types\.html$/.test(location.pathname);
   var onQuiz = /\/quiz\/?$/.test(location.pathname);
@@ -81,6 +83,8 @@
   var onFriends = /\/friends\/?$/.test(location.pathname);
   var onAbout = /\/about\/?$/.test(location.pathname);
   var onPair = /\/pair\/?$/.test(location.pathname);
+  var onPrivacy = /\/privacy\/?$/.test(location.pathname);
+  var onTerms = /\/terms\/?$/.test(location.pathname);
 
   /* ---------- ヘッダー ---------- */
   var wrapCls = document.querySelector(".wrap.wide") ? "wrap wide" : "wrap";
@@ -183,6 +187,11 @@
           '<span>2人の相性</span>' + SVG_CHEV + '</a>' +
         '<a href="' + ABOUT + '"' + (onAbout ? ' aria-current="page"' : '') + '>' +
           '<span>この診断について</span>' + SVG_CHEV + '</a>' +
+      '</nav>' +
+      /* 規約類は読む頻度が低いので、本体のナビとは分けて小さく置く */
+      '<nav class="drawer-legal" aria-label="規約">' +
+        '<a href="' + PRIVACY + '"' + (onPrivacy ? ' aria-current="page"' : '') + '>プライバシーポリシー</a>' +
+        '<a href="' + TERMS + '"' + (onTerms ? ' aria-current="page"' : '') + '>利用規約</a>' +
       '</nav>' +
       '<div class="drawer-sec"><p class="drawer-h">表示設定</p><div id="drawerBody"></div></div>' +
     '</aside>';

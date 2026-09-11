@@ -157,7 +157,9 @@ const SITE_LINKS = [
   ["ao",      "axis/ao/",     "AとOの違い"],
   ["hc",      "axis/hc/",     "HとCの違い"],
   ["pair",    "pair/",        "2人の相性"],
-  ["about",   "about/",       "この診断について"]
+  ["about",   "about/",       "この診断について"],
+  ["privacy", "privacy/",     "プライバシーポリシー"],
+  ["terms",   "terms/",       "利用規約"]
 ];
 
 function siteNavHTML(base, current){
@@ -190,21 +192,29 @@ function quizCtaHTML(base, lead){
   </div>`;
 }
 
-/* 商標の打消し表示。権利者は Myers & Briggs Foundation, Inc.（日本の登録第5292740号の
-   名義は MBTI Trust, Inc.）であって、The Myers-Briggs Company は独占出版者。間違えないこと。
-   4文字コードを見せるページには全部出す（footHTML 経由）。ただし title / description /
-   h1 / JSON-LD / alt / OGP には入れない。入れると記述的な打消しではなく、
-   検索誘引のための商標的使用と見られる余地が出る。 */
-const TM_NOTE = `MBTI®は Myers & Briggs Foundation, Inc. の米国およびその他の国における商標または登録商標です（日本での登録名義：MBTI Trust, Inc.）。64モンスターズは同財団および関連団体・関連会社とは一切関係がなく、公式のMBTI®アセスメントではありません。ここでいう4文字は、一般に広まった16タイプの表記を指しています。`;
+/* 独自サービスであることの共通注記。4文字コードを見せるページ（＝ほぼ全ページ）に出す。
+   ここに MBTI® という語は入れない。関係を否定するために商標名をサイト中へ撒くと、
+   記述的な打消しではなく検索誘引のための商標的使用と見られる余地が出るし、
+   独立したサービスとしても見えにくくなる。
+   MBTI® に触れるのは /about/ と /64types/ のFAQだけ。そこで TM_NOTE を出す。 */
+const OWN_NOTE = `64モンスターズは独自設計の性格診断です。表示される INTJ などのコードは、独自の設問と採点による結果を表すもので、ほかの性格検査による判定を示すものではありません。`;
+
+/* MBTI® の打消し表示。言及するページだけに置く。
+   商標は形容詞として、適切な名詞（アセスメント）を伴わせて使う。
+   title / description / h1 / JSON-LD / alt / OGP には入れない。 */
+const TM_NOTE = `MBTI®は Myers & Briggs Foundation の商標または登録商標です。64モンスターズは同財団、日本MBTI協会その他のMBTI®関連団体とは関係・提携・承認等の関係がなく、公式のMBTI®アセスメントではありません。このサイトで表示される INTJ などのコードは、64モンスターズ独自の設問と採点による結果です。`;
 
 function tmNoteHTML(){
   return `<p class="disclaimer tm-note">${esc(TM_NOTE)}</p>`;
 }
 
+function ownNoteHTML(base){
+  return `<p class="disclaimer own-note">${esc(OWN_NOTE)} <a href="${base}about/">この診断について</a></p>`;
+}
+
 function footHTML(base, current){
-  return `${tmNoteHTML()}
+  return `${ownNoteHTML(base)}
   ${siteNavHTML(base, current)}
-  <p class="notice-link"><a href="${base}about/">この診断についての注意（回答の扱い・外部への通信・権利）</a></p>
   <p class="copy">© 2026 WONDER BROTHERS INC. All rights reserved.</p>`;
 }
 
@@ -268,8 +278,8 @@ function typePage(code){
   const x = EXTRA[code];
 
   /* A: 検索意図の語を先頭に置く。造語のモンスター名は後ろへ回す */
-  const title = `${code}とは？特徴・相性・向いている仕事｜${SITE}`;
-  const desc  = clip(`${code}（${code.replace(/-/g, "")}）は「${s.label}」。${b.tagline}${bt}に、${ao}＝${aoName(ao)}と${hc}＝${hcName(hc)}が重なるタイプです。特徴、強みと落とし穴、相性のいいタイプ、向いている仕事をまとめました。`, 122);
+  const title = `${code}とは？特徴・相性・力を発揮しやすい仕事｜${SITE}`;
+  const desc  = clip(`${code}（${code.replace(/-/g, "")}）は「${s.label}」。${b.tagline}${bt}に、${ao}＝${aoName(ao)}と${hc}＝${hcName(hc)}が重なるタイプです。特徴、強みと落とし穴、かみ合いやすいタイプ、力を発揮しやすい仕事をまとめました。`, 122);
   const url   = `${ORIGIN}/t/${code}/`;
   const ogimg = `${ORIGIN}/images/ogp/${code}.jpg`;
 
@@ -364,6 +374,7 @@ function typePage(code){
   <div class="sec split">
     <h2>${code} とは</h2>
     <p class="body-text"><b>${code}</b>（${bt}-${ao}${hc}／${bt} ${ao}${hc} とも書かれます）は、<a href="${base}64types/">64タイプ性格診断</a>のうちの1つです。${bt}の4文字に、自分への確信を表す<a href="${base}axis/ao/">${ao}（${aoName(ao)}）</a>と、人への構えを表す<a href="${base}axis/hc/">${hc}（${hcName(hc)}）</a>が重なります。64モンスターズでは「${esc(s.label)}」と呼んでいます。</p>
+    <p class="g-note">この <code class="mono">${bt}</code> という4文字は、64モンスターズ独自の設問と採点による結果を表すものです。ほかの性格検査による判定を示すものではありません。<a href="${base}64types/">コードの読み方</a></p>
     <p class="body-text">${esc(b.summary)}</p>
     <p class="body-text">${esc(s.desc)}</p>
   </div>
@@ -392,10 +403,11 @@ ${aruaruSec}
   </div>
 ${loveSec}
   <div class="sec split">
-    <h2>仕事での適性</h2>
+    <h2>仕事で力を発揮しやすいところ</h2>
+    <p class="sec-note">このタイプに多く見られる傾向です。向き不向きを決めるものではありません。</p>
     <div class="cols">
-      <div><p class="sub-h">力を発揮する環境</p><p class="body-text">${esc(b.work.env)}</p></div>
-      <div><p class="sub-h">向いている役割</p><p class="body-text">${esc(b.work.role)}</p></div>
+      <div><p class="sub-h">力を発揮しやすい環境</p><p class="body-text">${esc(b.work.env)}</p></div>
+      <div><p class="sub-h">担いやすい役割</p><p class="body-text">${esc(b.work.role)}</p></div>
     </div>
     <p class="body-text" style="margin-top:22px">${esc(s.work)}</p>
     <div class="jobs">${b.work.jobs.map(t => "<span>" + esc(t) + "</span>").join("")}</div>
@@ -403,7 +415,7 @@ ${loveSec}
 
   <div class="sec split">
     <h2>相性</h2>
-    <p class="sec-note">恋人・仕事・友人で、噛み合う相手は変わります。6軸の重みづけから計算した順位です。数字は測定値ではありません。</p>
+    <p class="sec-note">恋人・仕事・友人で、噛み合う相手は変わります。6軸の重みづけから計算した参考値で、測定した数値ではありません。実際の人間関係や将来の関係を判定・保証するものでもありません。</p>
     <div>${R.topHTML(base, code, 5)}</div>
     <div class="pair-cta">
       <p class="pair-cta-txt">用途別のスコアと、どの軸が効いているかまで見るなら。</p>
@@ -580,7 +592,7 @@ ${scripts(base, ["types.js", "render.js", "settings.js"])}
 function galleryPage(){
   const base = "", url = ORIGIN + "/types.html";
   const title = `64タイプ一覧｜モンスターギャラリー｜${SITE}`;
-  const desc = "64タイプ性格診断の全64タイプ一覧。基本16タイプ×自分への確信（A / O）×人への構え（H / C）の64通りを、キャラクターと解説つきで並べています。";
+  const desc = "64モンスターズの全64タイプ一覧。4文字のコード×自分への確信（A / O）×人への構え（H / C）の64通りを、キャラクターと解説つきで並べています。";
   const crumbs = [
     { name: SITE, href: base || "./", abs: ORIGIN + "/" },
     { name: "モンスターギャラリー", href: url, abs: url }
@@ -623,7 +635,7 @@ function galleryPage(){
   <div class="page-head">
     <p class="eyebrow">index</p>
     <h1 class="title" style="font-size:clamp(1.875rem, 5vw, 2.625rem)">モンスターギャラリー</h1>
-    <p class="lede">基本16タイプ × 自分への確信（A / O）× 人への構え（H / C）で64通り。カードを開くと、そのタイプの解説が読めます。コードの読み方は <a href="64types/">64タイプ性格診断とは</a> にまとめています。</p>
+    <p class="lede">4文字のコード × 自分への確信（A / O）× 人への構え（H / C）で64通り。カードを開くと、そのタイプの解説が読めます。コードの読み方は <a href="64types/">64タイプ性格診断とは</a> にまとめています。</p>
   </div>
   <nav class="gjump" id="gjump" aria-label="基本タイプへ移動">${jump}</nav>
   <div id="groups">
@@ -732,14 +744,14 @@ function allTypesTableHTML(base){
 function hubPage(){
   const base = "../", url = ORIGIN + "/64types/";
   const title = `64タイプ性格診断とは？A/O・H/Cの意味とコードの読み方｜${SITE}`;
-  const desc = "広く知られている4文字の16タイプに、自分への確信（A / O）と人への構え（H / C）の2軸を足した64タイプ。INTJ-O-Hのようなコードの読み方、6つの軸の意味、64タイプの全一覧をまとめています。";
+  const desc = "90問の回答から6つの軸を算出し、いまの自己認識を64タイプとして表す独自の性格診断。INTJ-O-Hのようなコードの読み方、6つの軸の意味、64タイプの全一覧をまとめています。";
   const crumbs = [
     { name: SITE, href: base, abs: ORIGIN + "/" },
     { name: "64タイプ性格診断とは", href: url, abs: url }
   ];
   const faqs = [
     { q: "64タイプ性格診断とは何ですか？",
-      a: "広く知られている4文字の16タイプに、自分への確信を表すA / Oと、人への構えを表すH / Cの2つの軸を足したものです。16 × 2 × 2 で64通りになります。" },
+      a: "90問への回答から6つの軸を算出し、64通りのタイプとして表すものです。E / I・S / N・T / F・P / J の4組の記号に、自分への確信を表すA / Oと、人への構えを表すH / Cを独自に加えた6軸で、16 × 2 × 2 で64通りになります。各記号の意味、設問、採点方法、結果の解釈はいずれも64モンスターズ独自のものです。" },
     { q: "A と O は何を表していますか？",
       a: "自分への確信の軸です。A（確信）は自分の判断を疑わず、迷いが短いこと。O（揺らぎ）は決めたあとも考え直し、揺れながら精度を上げることを表します。Oは自信がないという意味ではありません。" },
     { q: "H と C は何を表していますか？",
@@ -767,13 +779,13 @@ function hubPage(){
   <div class="page-head">
     <p class="eyebrow">about 64 types</p>
     <h1 class="subtitle">64タイプ性格診断とは</h1>
-    <p class="lede">広く知られている4文字の16タイプに、<b>自分への確信（A / O）</b>と<b>人への構え（H / C）</b>の2つの軸を足したものです。16 × 2 × 2 で64通りになります。<code class="mono">INTJ-O-H</code> のように書きます。</p>
+    <p class="lede">90問への回答から6つの軸を算出し、いまの自己認識を64通りのタイプとして表すものです。<code class="mono">INTJ-O-H</code> のように、E / I・S / N・T / F・P / J の4組の記号に、<b>自分への確信（A / O）</b>と<b>人への構え（H / C）</b>を加えて書きます。<b>各記号の意味・設問・採点方法・結果の解釈は、すべて64モンスターズ独自のものです。</b></p>
   </div>
 
   <div class="sec split">
     <h2>コードの読み方</h2>
     <div class="codemap">
-      <div class="cm-part"><span class="cm-c mono">INTJ</span><span class="cm-t">基本の4文字</span><span class="cm-n">エネルギーの向き・情報の受け取り方・判断の基準・外界への構え。16タイプと同じ4軸です。</span></div>
+      <div class="cm-part"><span class="cm-c mono">INTJ</span><span class="cm-t">4組の記号</span><span class="cm-n">エネルギーの向き・情報の受け取り方・判断の基準・外界への構え。一般に知られている記号体系と同じアルファベットを使いますが、各記号の定義と判定方法は64モンスターズ独自のものです。</span></div>
       <div class="cm-part"><span class="cm-c mono">O</span><span class="cm-t">自分への確信</span><span class="cm-n">A（確信）か O（揺らぎ）。決めたあとに戻ってくるかどうかの軸です。<a href="${base}axis/ao/">くわしく</a></span></div>
       <div class="cm-part"><span class="cm-c mono">H</span><span class="cm-t">人への構え</span><span class="cm-n">H（信頼）か C（慎重）。人にまず開くか、見きわめてから近づくかの軸です。<a href="${base}axis/hc/">くわしく</a></span></div>
     </div>
@@ -781,7 +793,7 @@ function hubPage(){
 
   <div class="sec split">
     <h2>6つの軸</h2>
-    <p class="body-text">64モンスターズは、次の6つの軸で判定しています。上の4つが16タイプと共通、下の2つが64タイプで足される軸です。</p>
+    <p class="body-text">64モンスターズは、次の6つの軸で判定しています。上の4つは E / I・S / N・T / F・P / J の記号で表す軸、下の2つは64モンスターズが独自に加えた軸です。いずれも定義と設問、採点方法は独自のものです。</p>
     ${axisTableHTML()}
     <p class="g-note" style="margin-top:16px">それぞれ満点30に対する寄りで測り、差が3以内のときは「立っていない」として扱います。</p>
   </div>
@@ -793,14 +805,14 @@ function hubPage(){
   </div>
 
   <div class="sec split">
-    <h2>16タイプとの違い</h2>
-    <p class="body-text">4文字だけでは、同じ<code class="mono">INTJ</code>でも現れ方がまるで違う人が同じ箱に入ります。決めたあとに戻ってくるかどうか、人にまず開くかどうか。この2つは、日々の振る舞いにはっきり出るのに、4文字では区別されません。64タイプは、そこを2軸ぶん細かくしたものです。</p>
+    <h2>4文字だけでは分かれないところ</h2>
+    <p class="body-text">4文字だけでは、同じ<code class="mono">INTJ</code>でも現れ方がまるで違う人が同じ箱に入ります。決めたあとに戻ってくるかどうか、人にまず開くかどうか。この2つは、日々の振る舞いにはっきり出るのに、4文字では区別されません。64モンスターズは、この2つを独自の軸として立てて見ています。</p>
     <p class="body-text">たとえば <a href="${base}t/INTJ-A-H/">INTJ-A-H</a> と <a href="${base}t/INTJ-O-C/">INTJ-O-C</a> は、同じ INTJ でも、旗を掲げて人を巻き込む人と、ひとりで深く潜っていく人に分かれます。<a href="${base}t/INTJ-A-H/">4タイプの違いを並べて見る</a>のがいちばん早いです。</p>
   </div>
 
   <div class="sec split">
     <h2>64タイプの一覧</h2>
-    <p class="body-text">基本16タイプごとに、A / O × H / C の4通りを並べています。</p>
+    <p class="body-text">4文字の組み合わせごとに、A / O × H / C の4通りを並べています。</p>
     ${allTypesTableHTML(base)}
     <p class="g-note" style="margin-top:20px">キャラクターつきで見るなら <a href="${base}types.html">モンスターギャラリー</a> へ。</p>
   </div>
@@ -935,6 +947,186 @@ function write(rel, html){
 
 const pages = [];   /* { rel, loc, pri, html } */
 
+
+/* ============================================================
+   プライバシーポリシー  /privacy/
+   ------------------------------------------------------------
+   ここで必ず分けて書くこと。
+     A 90問の回答・ヒストリー・マイフレンド … 端末のブラウザの中だけ
+     B アクセス解析 … Cookie 等の識別子と閲覧情報が Google へ渡る
+   「回答は送っていません」だけだと、B も無いように読める。
+   結果ページのURLにタイプが入っている以上、「結果は一切外部に出ない」とは書けない。
+   ============================================================ */
+function privacyPage(){
+  const base = "../", url = ORIGIN + "/privacy/";
+  const title = `プライバシーポリシー｜${SITE}`;
+  const desc = "90問の回答とヒストリーはブラウザの中にだけ保存し、サーバーへは送信していません。一方でアクセス解析のためCookie等の情報がGoogleへ送信されます。その違いと、オプトアウトの方法をまとめています。";
+  const crumbs = [
+    { name: SITE, href: base, abs: ORIGIN + "/" },
+    { name: "プライバシーポリシー", href: url, abs: url }
+  ];
+  const ldPage = {
+    "@context": "https://schema.org", "@type": "WebPage",
+    name: title, url, inLanguage: "ja", description: desc,
+    isPartOf: { "@type": "WebSite", name: SITE, url: ORIGIN + "/" },
+    publisher: { "@type": "Organization", name: PUBLISHER, url: "https://wonder-bros.com" }
+  };
+
+  return headHTML({ title, desc, url, base, ogimg: ORIGIN + "/images/ogp.png",
+                    ld: [ldPage, crumbLD(crumbs)] }) +
+`<section id="privacy" class="wrap">
+  ${crumbHTML(crumbs)}
+  <div class="page-head">
+    <p class="eyebrow">privacy</p>
+    <h1 class="subtitle">プライバシーポリシー</h1>
+    <p class="lede">何をこの端末の中だけに置いていて、何が外に出ているのか。ここを混ぜずに書きます。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>90問の回答と、この端末に残るもの</h2>
+    <p class="body-text"><b>90問への回答内容と診断履歴は、当サービスのサーバーへ送信・保存していません。</b>採点もお使いのブラウザの中だけで行っています。「保存して中断」した回答、マイタイプの登録、ヒストリー、<a href="${base}friends/">Myフレンド</a>に登録した名前とコード、表示設定も同じで、すべてブラウザ内（localStorage）にのみ保存しています。</p>
+    <p class="body-text">フレンドの名前は、あなたがご自分で付けたものです。鑑定コードそのものに名前は入っていません。他の方の情報をお預かりすることになるため、本名である必要はありませんし、共有の端末では登録を控えることをおすすめします。こちらから相手に知らせることはありませんし、こちらにも届きません。</p>
+    <p class="body-text">端末の中にしか無いので、次の場合には失われます。</p>
+    <ul class="list">
+      <li>ブラウザのデータ（サイトデータ・履歴）を消したとき</li>
+      <li>プライベートモードで受けたとき（そのウィンドウを閉じた時点で消えます）</li>
+      <li>別の端末・別のブラウザで開いたとき（そちらには引き継がれません）</li>
+      <li>Safari（iPhone・iPad・Mac）で、7日間このサイトを開かなかったとき</li>
+    </ul>
+    <p class="body-text">最後のものは補足が必要です。Safari には、ブラウザを使った日数で7日のあいだ、そのサイトに対する操作が一度もないと、サイトが保存したデータをすべて削除するという仕様があります。こちらで防ぐ方法はありません。Chrome や Firefox にこの動作はありません。記録を長く残したい場合は、<a href="${base}history/">ヒストリー</a>のページから JSONで書き出して手元に保存してください。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>アクセス解析（Google アナリティクス）</h2>
+    <p class="body-text">一方で、利用状況の把握とサービス改善のために <b>Google アナリティクス</b>（Google タグ マネージャー経由）を利用しています。これに伴い、<b>Cookie 等の識別子、閲覧したページ、利用日時、ブラウザ・OS・端末の情報、おおよその地域情報などが Google へ送信される場合があります。</b>これらの情報は Google のプライバシーポリシー等に基づいて処理されます。</p>
+    <p class="body-text">送信を望まない場合は、ブラウザで Cookie を無効にするか、Google が提供する<a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">オプトアウト アドオン</a>をご利用ください。いずれの場合も、このサイトの機能はそのままお使いいただけます。Google の取り扱いについては<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google のプライバシーポリシー</a>をご確認ください。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>結果ページのURLについて</h2>
+    <p class="body-text">結果ページのURLにはタイプが含まれます（例：<code class="mono">/t/ENTP-A-H/</code>）。閲覧されたページとして記録されるため、<b>どのタイプのページが表示されたかは、アクセス解析の集計に含まれます。</b>個々の設問への回答そのものは送信していません。「診断結果は一切外部に出ない」とは言えないので、ここは正確に書いておきます。</p>
+    <p class="body-text">設問ページ（<code class="mono">/quiz/</code>）とヒストリー（<code class="mono">/history/</code>）は検索エンジンには載せていません。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>そのほかの外部サービス</h2>
+    <p class="body-text">Webフォント（Google Fonts）を読み込んでいます。読み込みの際に、IPアドレスやブラウザの情報が Google へ送信される場合があります。広告のタグは入れていません。</p>
+    <p class="body-text">サイト内から外部のサイトへリンクしている場合、リンク先での情報の取り扱いは各サイトのポリシーによります。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>お問い合わせ</h2>
+    <p class="body-text">本サイトは<a href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">株式会社ワンダーブラザース</a>が運営しています。本ポリシーに関するお問い合わせは、同社のサイトからご連絡ください。</p>
+    <p class="body-text">内容は必要に応じて見直します。更新した場合は、このページに反映します。</p>
+  </div>
+
+  ${footHTML(base, "privacy")}
+</section>
+
+${scripts(base, ["types.js", "render.js", "settings.js"])}
+</body>
+</html>
+`;
+}
+
+/* ============================================================
+   利用規約  /terms/
+   ------------------------------------------------------------
+   法律文書らしく威圧的に書かない。ただし、守りたいものははっきりさせる。
+   守るのは「具体的な表現物」であって、性格類型という考え方そのものではない。
+   ============================================================ */
+function termsPage(){
+  const base = "../", url = ORIGIN + "/terms/";
+  const title = `利用規約｜${SITE}`;
+  const desc = "64モンスターズの利用条件、禁止事項、著作権の扱い、診断結果についての免責、責任の範囲などをまとめています。";
+  const crumbs = [
+    { name: SITE, href: base, abs: ORIGIN + "/" },
+    { name: "利用規約", href: url, abs: url }
+  ];
+  const ldPage = {
+    "@context": "https://schema.org", "@type": "WebPage",
+    name: title, url, inLanguage: "ja", description: desc,
+    isPartOf: { "@type": "WebSite", name: SITE, url: ORIGIN + "/" },
+    publisher: { "@type": "Organization", name: PUBLISHER, url: "https://wonder-bros.com" }
+  };
+
+  return headHTML({ title, desc, url, base, ogimg: ORIGIN + "/images/ogp.png",
+                    ld: [ldPage, crumbLD(crumbs)] }) +
+`<section id="terms" class="wrap">
+  ${crumbHTML(crumbs)}
+  <div class="page-head">
+    <p class="eyebrow">terms</p>
+    <h1 class="subtitle">利用規約</h1>
+    <p class="lede">64モンスターズ（以下「本サービス」）をお使いいただくうえでの約束ごとです。株式会社ワンダーブラザース（以下「当社」）が定めます。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>本サービスの目的</h2>
+    <p class="body-text">本サービスは、90問への回答から6つの軸を算出し、回答した時点での自己認識を64タイプのキャラクターとして表すものです。娯楽および自己理解の手がかりとしてお使いください。心理検査でも、医学的・心理学的な診断でもありません。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>利用条件</h2>
+    <p class="body-text">登録は不要です。どなたでも無料でお使いいただけます。通信料金はご利用者の負担となります。未成年の方は、保護者の方の了解を得てご利用ください。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>禁止事項</h2>
+    <p class="body-text">次のことはご遠慮ください。</p>
+    <ul class="list">
+      <li>設問文・タイプ名・解説文・キャラクター画像・診断ロジックの、無断での転載、複製、再配布、改変、公衆送信</li>
+      <li>本サービスまたはその一部を用いたサービスの提供（商用・非商用を問いません）</li>
+      <li>機械的な手段による大量取得（スクレイピング、クローラによる過度なアクセス等）</li>
+      <li>AI・機械学習の学習データとしての無断利用</li>
+      <li>本サービスの運営を妨げる行為、サーバーやネットワークに過度の負荷をかける行為</li>
+      <li>法令または公序良俗に反する行為</li>
+    </ul>
+    <p class="body-text">診断を受けてご自身の結果を共有すること、出典を明示した引用は自由です。それを超えて利用したい場合は、<a href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer">当社</a>まで事前にご連絡ください。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>権利について</h2>
+    <p class="body-text">本サービスの設問文、タイプ名、解説文、キャラクターおよびその画像、イラスト、デザイン、プログラム、サービス名称・ロゴは、当社に帰属します。オープンソースではありません。サイトが動作するためにソースを読める形で配信していますが、著作権を放棄したものではありません。</p>
+    <p class="body-text">当社が権利を主張するのは、これら具体的な表現物とプログラムについてです。性格を軸で捉えるという考え方そのものや、一般に使われている記号体系について、独占を主張するものではありません。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>診断結果について</h2>
+    <p class="body-text">結果は、回答した時点での自己認識を整理したものです。人の性格は状況や時期によって変わります。確定した人格判定ではありません。</p>
+    <p class="body-text">相性のスコアは、当社が設計した重みづけによる参考値です。測定した数値ではなく、実際の人間関係、恋愛関係、将来の関係性を判定または保証するものではありません。</p>
+    <p class="body-text">採用選考や人事評価など、人の採否や重要な意思決定には使用しないでください。そのための妥当性の検証を行っていません。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>サービスの変更・停止</h2>
+    <p class="body-text">内容の変更、追加、停止を、事前の予告なく行う場合があります。設問や採点方法が変わった場合、それ以前に受けた結果とそのまま比べることはできません。版の見分け方はページ下部の <code class="mono">v</code> ではじまる行に出しています。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>責任の範囲</h2>
+    <p class="body-text">本サービスの利用または利用できなかったことによって生じた損害について、当社の故意または重過失による場合を除き、責任を負いかねます。診断結果は保存していないため、端末側でデータが失われた場合の復旧もできません。必要な記録は<a href="${base}history/">ヒストリー</a>から書き出して保存してください。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>規約の変更</h2>
+    <p class="body-text">必要に応じてこの規約を変更することがあります。変更後の規約は、このページに掲載した時点から適用します。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>準拠法と管轄</h2>
+    <p class="body-text">本規約は日本法に準拠します。本サービスに関して紛争が生じた場合は、当社の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とします。</p>
+  </div>
+
+  ${footHTML(base, "terms")}
+</section>
+
+${scripts(base, ["types.js", "render.js", "settings.js"])}
+</body>
+</html>
+`;
+}
+
+
 for (const code of CODES){
   pages.push({ rel: `t/${code}/index.html`,        loc: `${ORIGIN}/t/${code}/`,        pri: "0.7", html: typePage(code) });
   pages.push({ rel: `t/${code}/compat/index.html`, loc: `${ORIGIN}/t/${code}/compat/`, pri: "0.6", html: compatPage(code) });
@@ -943,6 +1135,8 @@ pages.push({ rel: "types.html",         loc: `${ORIGIN}/types.html`,  pri: "0.9"
 pages.push({ rel: "64types/index.html", loc: `${ORIGIN}/64types/`,    pri: "0.9", html: hubPage() });
 pages.push({ rel: "axis/ao/index.html", loc: `${ORIGIN}/axis/ao/`,    pri: "0.8", html: axisPage("AO") });
 pages.push({ rel: "axis/hc/index.html", loc: `${ORIGIN}/axis/hc/`,    pri: "0.8", html: axisPage("HC") });
+pages.push({ rel: "privacy/index.html", loc: `${ORIGIN}/privacy/`,    pri: "0.3", html: privacyPage() });
+pages.push({ rel: "terms/index.html",   loc: `${ORIGIN}/terms/`,      pri: "0.3", html: termsPage() });
 
 for (const p of pages) write(p.rel, p.html);
 console.log(`ページを生成しました: ${pages.length} 枚`);
@@ -975,12 +1169,13 @@ for (const h of HAND_PAGES){
 }
 console.log(`手書きページのサイト内リンクを同期しました: ${HAND_PAGES.length} 枚（書き換え ${synced} 枚）`);
 
-/* ---- 手書きページの商標注記も、TM_NOTE から流し込む ----
+/* ---- 手書きページの共通注記も、OWN_NOTE から流し込む ----
    4文字コードを見せるページには全部出す。手書きの5枚は生成物ではないので、
-   ここで <p class="disclaimer tm-note"> を上書きし、無ければ sitenav の直前に足す。
-   文言の二重管理をなくすため、手でこの段落を書き換えないこと。 */
+   ここで <p class="disclaimer own-note"> を上書きし、無ければ sitenav の直前に足す。
+   文言の二重管理をなくすため、手でこの段落を書き換えないこと。
+   MBTI® の打消し（TM_NOTE）はここには流さない。言及するページだけに置く。 */
 {
-  const re = /^([ \t]*)<p class="disclaimer tm-note">[\s\S]*?<\/p>[ \t]*$/m;
+  const re = /^([ \t]*)<p class="disclaimer (?:tm|own)-note">[\s\S]*?<\/p>[ \t]*$/m;
   let put = 0;
   for (const h of HAND_PAGES){
     const file = path.join(DOCS, h.rel);
@@ -989,16 +1184,16 @@ console.log(`手書きページのサイト内リンクを同期しました: ${
     let after;
     const m = before.match(re);
     if (m){
-      after = before.replace(re, m[1] + tmNoteHTML());
+      after = before.replace(re, m[1] + ownNoteHTML(h.base));
     } else {
       const nav = /^([ \t]*)<nav class="sitenav"/m;
       const n = before.match(nav);
-      if (!n){ console.warn(`  ! ${h.rel} に商標注記を入れる場所がありません`); continue; }
-      after = before.replace(nav, n[1] + tmNoteHTML() + "\n" + n[1] + '<nav class="sitenav"');
+      if (!n){ console.warn(`  ! ${h.rel} に共通注記を入れる場所がありません`); continue; }
+      after = before.replace(nav, n[1] + ownNoteHTML(h.base) + "\n" + n[1] + '<nav class="sitenav"');
     }
     if (after !== before){ fs.writeFileSync(file, after); put++; }
   }
-  console.log(`手書きページの商標注記を同期しました: ${HAND_PAGES.length} 枚（書き換え ${put} 枚）`);
+  console.log(`手書きページの共通注記を同期しました: ${HAND_PAGES.length} 枚（書き換え ${put} 枚）`);
 }
 
 /* ---- 共通パーツの欠けを、ビルドのたびに知らせる ----
@@ -1021,11 +1216,11 @@ console.log(`手書きページのサイト内リンクを同期しました: ${
     if (!noCrumb.has(rel) && !html.includes('class="crumb"')) lack.push("パンくず");
     if (!/class="page-head|class="res-head|class="fv-copy/.test(html)) lack.push("見出しブロック");
     if (!html.includes('class="sitenav"')) lack.push("サイト内リンク");
-    if (!html.includes('class="disclaimer tm-note"')) lack.push("商標注記");
+    if (!html.includes('class="disclaimer own-note"')) lack.push("独自性の注記");
     if (lack.length) warn.push(`  ! ${rel} … ${lack.join(" / ")} が無い`);
   }
   if (warn.length){ console.warn("共通パーツの欠け:"); warn.forEach(w => console.warn(w)); }
-  else console.log("共通パーツ（パンくず・見出し・サイト内リンク・商標注記）の欠けはありません");
+  else console.log("共通パーツ（パンくず・見出し・サイト内リンク・独自性の注記）の欠けはありません");
 }
 
 /* ---- sitemap の lastmod ----
