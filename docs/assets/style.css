@@ -1169,6 +1169,9 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
   .token-row{ flex-direction:column; }
   .token-row .token, .token-row input{ flex:0 0 auto; width:100%; }
   .token-row .btn{ width:100%; }
+  /* 幅いっぱいの枠に短い文字列が左端で浮くので中央に寄せる。
+     枠より長いときに左端が切れないよう safe を付ける（非対応ブラウザは左寄せのまま） */
+  .token-row .token{ justify-content:safe center; }
 }
 
 /* ===== Myフレンド（/friends/） =====
@@ -1218,6 +1221,22 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 }
 
 /* 削除 */
+/* 1件ずつ削除：表の上の切り替えと、行の中のボタン */
+.hist-edit{ display:flex; justify-content:flex-end; margin-bottom:8px; }
+.hist-editbtn{
+  font-size:var(--fs-sm); color:var(--ink-3); background:none; border:0; padding:4px 0;
+  text-decoration:underline; text-underline-offset:3px; cursor:pointer;
+}
+.hist-editbtn:hover{ color:var(--ink); }
+.hist-editbtn.on{ color:var(--ink); font-weight:500; }
+.histtable td.hd-cell{ padding-left:0; }
+.hist-del{
+  font-size:var(--fs-xs); color:var(--ink-3); background:none; cursor:pointer;
+  border:1px solid var(--line); border-radius:var(--r-full); padding:4px 12px; white-space:nowrap;
+}
+.hist-del:hover{ color:var(--ink); border-color:var(--ink-3); }
+.hist-del.armed{ color:var(--shu); border-color:var(--shu); font-weight:500; }
+
 .hist-danger{ margin-top:22px; text-align:center; }
 .hist-clear{
   font-size:var(--fs-sm); color:var(--ink-3); background:none; border:0; padding:4px 0;
@@ -1316,7 +1335,7 @@ h1,h2,h3{ font-weight:900; letter-spacing:.01em; }
 .site-foot{ display:flex; align-items:center; gap:16px; }
 .site-foot .sh-logo{ margin-right:0; }
 .site-foot .foot-sep{ flex:0 0 auto; width:1px; height:20px; background:var(--line-2); }
-.site-foot .wb-logo{ display:block; line-height:0; text-decoration:none; }
+.site-foot .wb-logo{ display:block; line-height:0; text-decoration:none; color:var(--ink); }
 .site-foot .wb-logo:hover{ opacity:.7; }
 .site-foot .wb{ display:block; height:24px; width:auto; }
 .site-foot .wb-dark{ display:none; }
@@ -1353,6 +1372,9 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 /* 改行位置は HTML の br で固定してある。行が2本なので、スマホでも
    1行の長いほう「64通りの性格診断。」が入るぎりぎりまで大きくできる */
 .fv-copy .lede{ margin-top:26px; max-width:none; }
+/* FVの列そのものが行長を決めているので、中の本文に行長の上限は要らない。
+   ここだけ 46em で止まると、CTAより手前で切れて列がそろわなく見える */
+.fv-copy .pre-note{ max-width:none; }
 .meta{ gap:0; display:grid; grid-template-columns:repeat(3,1fr); margin-top:32px; }
 .meta div{
   padding-top:12px; border-top:var(--bw) solid var(--ink);
@@ -1512,7 +1534,19 @@ a.cell.on:hover{ background:var(--ink); border-color:var(--ink); }
 .chip .c2{ font-size:var(--fs-sm); }
 .chip{ padding:8px 6px 8px 8px; }
 .chip .thumb{ border-radius:var(--r-full); }
-.jobs span{ border-radius:var(--r-full); padding:8px 16px; color:var(--ink); font-weight:700; }
+/* ---- バッジ（押せない）とボタン・リンク（押せる）を見分けられるようにする ----
+   このサイトでは「丸い枠線のピル」を押せるものの形として使っている
+   （.btn / .sitenav a / .gjump a / .fr-btn）。押せないただの見出し語まで
+   同じ形にすると、押せると思わせてしまう。
+   押せないものは枠線を外し、薄い面を敷いて置く。形ではなく地で示す。
+   （相性カードの「自分」印 .c-self が、もともとこの作りになっている） */
+.jobs span{
+  border:0; border-radius:var(--r-full); padding:8px 16px;
+  background:var(--surface-2); color:var(--ink-2); font-weight:500;
+}
+/* 相性の「同じ／違う」と .ps-state はそのまま。押せない印だが、
+   塗り（同じ）と線（違う）の対で意味を持たせてあるし、
+   .ps-state は開閉できる行の中にあるので、線があっても誤解にならない。 */
 .list li{ color:var(--ink); }
 .list li::before{ background:var(--ink); }
 .list.plus li::before, .list.minus li::before{ background:var(--ink); }
@@ -1558,6 +1592,7 @@ a.cell.on:hover{ background:var(--ink); border-color:var(--ink); }
 .token-row input, .fr-form input{ border-radius:var(--r-btn); padding-top:14px; padding-bottom:14px; }
 .token-row input:focus, .fr-form input:focus{ border-color:var(--ink); }
 .hist-clear.armed, .fr-del.armed, .token-msg.bad{ color:var(--danger); }
+.hist-del.armed{ color:var(--danger); border-color:var(--danger); }
 
 /* ---- 設定・モーダル・ドロアー ---- */
 .switch{ border-width:var(--bw); border-color:var(--ink); background:var(--paper); }
@@ -1730,6 +1765,42 @@ h1.res-label .rl-name{
 }
 html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 
+/* ---- まだ出ていないもの（診断前のタイプページ）----
+   中身の代わりに空の枠を見せる。空いていることが分かればいいので、
+   本物より一段薄く、数値の代わりにダッシュを置く。 */
+.locked{
+  margin:36px 0 8px; padding:28px 26px;
+  border:var(--bw) solid var(--line); border-radius:var(--r-box); background:var(--surface);
+}
+.lk-h{ font-size:var(--fs-lg); font-weight:700; line-height:1.6; }
+.lk-grid{ display:grid; grid-template-columns:1fr 1fr; gap:30px 36px; margin-top:22px; align-items:start; }
+.lk-t{ font-size:var(--fs-md); font-weight:700; letter-spacing:.04em; }
+.lk-n{ margin-top:14px; font-size:var(--fs-sm); line-height:1.8; color:var(--ink-3); }
+.lk-gauges{ display:grid; gap:9px; margin-top:14px; }
+.lk-row{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; }
+.lk-ax{ font-size:var(--fs-sm); color:var(--ink-3); }
+.lk-l{ font-family:var(--f-mono); font-size:var(--fs-sm); color:var(--ink-3); white-space:nowrap; }
+.lk-track{ height:8px; border:1px dashed var(--line); border-radius:2px; }
+.lk-token{
+  margin-top:14px; color:var(--ink-3); background:transparent;
+  border-style:dashed; justify-content:safe center; user-select:none;
+}
+.lk-foot{ display:flex; align-items:center; gap:18px; margin-top:26px; }
+.lk-btn{ flex:0 0 auto; }
+.lk-note{ font-size:var(--fs-sm); line-height:1.8; color:var(--ink-3); }
+@media (max-width:760px){
+  .locked{ padding:24px 18px; }
+  .lk-grid{ grid-template-columns:1fr; gap:26px; }
+  .lk-foot{ display:block; }
+  .lk-btn{ display:flex; width:100%; }
+  .lk-note{ margin-top:12px; }
+}
+
+/* ---- モーダルの下部ボタン（登録直後の一言など）---- */
+.modal-acts{ display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+.modal-acts .btn{ flex:1 1 auto; justify-content:center; padding:13px 20px; font-size:var(--fs-md); }
+.modal-body .body-text + .g-note{ margin-top:12px; }
+
 /* ---- 診断への導線 ---- */
 .quizcta{
   margin:44px 0 8px; padding:32px 24px; text-align:center;
@@ -1738,6 +1809,10 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .qc-lead{ font-size:var(--fs-xl); font-weight:700; line-height:1.7; }
 .qc-btn{ margin-top:20px; }
 .qc-note{ margin-top:14px; font-size:var(--fs-sm); color:var(--ink-3); }
+/* 幅の狭い端末では、押せる面積を枠いっぱいまで広げる */
+@media (max-width:560px){
+  .qc-btn{ display:flex; width:100%; }
+}
 
 /* ---- 下部のサイト内リンク。HTMLだけを見たときの導線がここ ----
    見た目はギャラリーの移動チップ（.gjump a）に合わせた丸い枠。
@@ -1879,6 +1954,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .disclaimer a,
 .picker-note a,
 .cm-n a,
+.lk-n a,
 .qc-note a{
   color:var(--ink);
   text-decoration:underline;
@@ -1895,7 +1971,17 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .disclaimer a:hover,
 .picker-note a:hover,
 .cm-n a:hover,
+.lk-n a:hover,
 .qc-note a:hover{ text-decoration-color:var(--ink); }
+/* 濃い帯の上の本文リンク。地色が反転するので、色は本文から受け継ぐ */
+.how-d a{
+  color:inherit;
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-decoration-color:currentColor;
+  text-underline-offset:3px;
+}
+.how-d a:hover{ opacity:1; }
 
 /* ---- 相性：用途ごとの順位 ---- */
 /* スコアは黒い丸に白抜きで、カードの右端に置く。

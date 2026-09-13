@@ -101,14 +101,22 @@
     }).join("");
   }
 
-  /* ---------- 記録の表（新しい順） ---------- */
+  /* ---------- 記録の表（新しい順） ----------
+     削除の列は、ふだんは出さない。読むための表に消すボタンが並んでいると
+     押し間違いが起きるし、見た目も落ち着かない。「記録を選んで削除」を
+     押しているあいだだけ、いちばん左（＝横スクロールしなくても届く側）に出す。 */
+  var editing = false;
   function renderTable(h){
     var rows = h.slice().reverse();
-    var head = '<thead><tr><th>日時</th><th>コード</th>' +
+    var head = '<thead><tr>' +
+      (editing ? '<th><span class="sr-only">削除</span></th>' : '') +
+      '<th>日時</th><th>コード</th>' +
       AXES.map(function(a){ return '<th class="n">' + esc(a.neg.l) + "/" + esc(a.pos.l) + '</th>'; }).join("") +
       '<th class="n">所要</th></tr></thead>';
     var body = "<tbody>" + rows.map(function(r){
       return "<tr>" +
+        (editing ? '<td class="hd-cell"><button type="button" class="hist-del" data-t="' + r.t +
+          '" aria-label="' + fmtDate(r.t) + ' の記録を削除">削除</button></td>' : '') +
         '<td class="mono t">' + fmtDate(r.t) + "</td>" +
         '<td><a class="mono hcode" href="' + B + "t/" + r.code + '/">' + esc(r.code) + "</a></td>" +
         AXES.map(function(a){
@@ -193,7 +201,7 @@
     $("body").classList.toggle("hidden", !has);
     $("foot").classList.toggle("hidden", !has);
     $("recWrap").classList.toggle("hidden", !has);   /* 表だけ隠す。貼り付け欄は残す */
-    if (!has) return;
+    if (!has){ $("table").innerHTML = ""; return; }
     renderTiles(h);
     renderStrips(h);
     renderTable(h);
@@ -240,6 +248,46 @@
   $("tokenIn").addEventListener("keydown", function(e){
     if (e.key === "Enter"){ e.preventDefault(); $("tokenAdd").click(); }
   });
+
+  /* 「記録を選んで削除」のモード切り替え */
+  $("editBtn").addEventListener("click", function(){
+    editing = !editing;
+    this.textContent = editing ? "削除をやめる" : "記録を選んで削除";
+    this.classList.toggle("on", editing);
+    renderTable(E.getHistory());
+  });
+
+  /* 行ごとの削除。全体の削除と同じく、2回押させる */
+  $("table").addEventListener("click", function(e){
+    var btn = e.target.closest(".hist-del");
+    if (!btn) return;
+    if (btn.dataset.armed !== "1"){
+      /* ほかの行が構えたままだと、どれを消すのか分からなくなる。先に戻す */
+      Array.prototype.forEach.call(this.querySelectorAll(".hist-del"), disarm);
+      btn.dataset.armed = "1";
+      btn.textContent = "本当に削除";
+      btn.classList.add("armed");
+      setTimeout(function(){ disarm(btn); }, 5000);
+      return;
+    }
+    var t = parseInt(btn.dataset.t, 10);
+    if (E.removeHistory(t)){
+      E.track("history_delete_one", {});
+      var h = E.getHistory();
+      if (!h.length) editing = false;
+      $("editBtn").textContent = editing ? "削除をやめる" : "記録を選んで削除";
+      $("editBtn").classList.toggle("on", editing);
+      paint();
+      /* いちばん新しい記録を消すと、マイタイプや「前回の結果」が変わることがある */
+      if (window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();
+    }
+  });
+  function disarm(btn){
+    if (btn.dataset.armed !== "1") return;
+    btn.dataset.armed = "0";
+    btn.textContent = "削除";
+    btn.classList.remove("armed");
+  }
 
   /* 削除は取り返しがつかないので、2段階にする */
   $("clearBtn").addEventListener("click", function(){

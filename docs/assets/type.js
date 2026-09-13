@@ -127,6 +127,37 @@
     });
   }
 
+  /* ---------- まだ出ていないもの（診断前） ----------
+     数値も鑑定コードも、自分の結果として開いたときにしか出ない。
+     これまでは節ごと隠していたので、受けていない人には
+     「鑑定コードというものがある」と知る手がかりが無かった。
+     中身の代わりに空の枠を出して、何が空いているのかを見せる。
+
+     出すのは「一度も受けていない人」だけ。すでに受けた人は、
+     自分の数値も鑑定コードも持っているので伝えることがないし、
+     この2つが出るのは自分の結果ページだけなので、他人のタイプの
+     ページで「まだ出ていない」と言うと、受け直せばここが埋まるように
+     読めてしまう（そのタイプと判定されない限り埋まらない）。 */
+  if (!sc && !hasTaken()){
+    var lk = $("lkGauges");
+    if (lk){
+      /* 本物のゲージは1軸3行あるが、ここで伝えたいのは「6本ぶん空いている」
+         ことだけなので1行に畳む。上に置く枠なので、高さは短いほどいい。 */
+      lk.innerHTML = AXES.map(function(a){
+        return '<div class="lk-row">' +
+          '<span class="lk-ax">' + a.title + '</span>' +
+          '<span class="lk-track"></span>' +
+          '<span class="lk-l">' + a.neg.l + ' / ' + a.pos.l + '</span>' +
+          '</div>';
+      }).join("");
+    }
+    $("secLocked").classList.remove("hidden");
+    var lkBtn = $("secLocked").querySelector(".lk-btn");
+    if (lkBtn) lkBtn.addEventListener("click", function(){
+      track("cta_click", { monster_type: CODE, label: "locked", from_result: false });
+    });
+  }
+
   /* ---------- 鑑定コード ----------
      自分の結果として開かれたときだけ出す。ギャラリーから来た人には
      6軸の数値が無く、符号化するものが無い。
@@ -161,12 +192,63 @@
   /* 履歴からマイタイプが埋め直されたとき（settings.js）にも合わせる */
   document.addEventListener("mytype:change", paintMy);
   myBtn.addEventListener("click", function(){
-    if (ls(MYKEY) === CODE){ lsDel(MYKEY); lsSet(MYOFF, "1"); }
+    var wasMine = ls(MYKEY) === CODE;
+    if (wasMine){ lsDel(MYKEY); lsSet(MYOFF, "1"); }
     else { lsSet(MYKEY, CODE); lsDel(MYOFF); }
     paintMy();
     /* ヘッダーのマイタイプにも反映する */
     if (window.SiteHeader && window.SiteHeader.refreshMyType) window.SiteHeader.refreshMyType();
+    /* 一度も診断を受けていない人が登録したときだけ、何が入っていないかを伝える。
+       登録は止めない。本人が求めた操作なので、返事として添えるだけ。 */
+    if (!wasMine && !hasTaken()) tellWhatsMissing();
   });
+
+  function hasTaken(){
+    if (!E) return false;
+    try { return E.getHistory().length > 0; } catch(e){ return false; }
+  }
+
+  /* 登録直後の一言。設定モーダルと同じ見た目の部品を使う。 */
+  function tellWhatsMissing(){
+    track("register_before_quiz", { monster_type: CODE });
+    var base = (window.SITE_BASE || "../../");
+    var m = document.createElement("div");
+    m.className = "modal";
+    m.innerHTML =
+      '<div class="modal-back" data-x></div>' +
+      '<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="regTitle">' +
+        '<div class="modal-head">' +
+          '<h2 id="regTitle" class="modal-title">登録しました</h2>' +
+          '<button type="button" class="modal-x" data-x aria-label="閉じる">×</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          '<p class="body-text"><b class="mono">' + CODE + '</b> をマイタイプにしました。</p>' +
+          '<p class="g-note">ただし、<b>6軸のスコア</b>と<b>鑑定コード</b>は、90問を受けた人にだけ出ます。' +
+          '鑑定コードは、Myフレンドに登録してもらうときに相手へ渡すものです。</p>' +
+        '</div>' +
+        '<div class="modal-acts">' +
+          '<a class="btn" href="' + base + 'quiz/">90問を受ける</a>' +
+          '<button type="button" class="btn ghost" data-x>あとで</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(m);
+    document.body.classList.add("modal-open");
+    function close(){
+      m.remove();
+      /* ほかにモーダルやドロアーが開いていなければ、スクロールを戻す */
+      if (!document.querySelector(".modal:not(.hidden), .drawer:not(.hidden)")){
+        document.body.classList.remove("modal-open");
+      }
+      document.removeEventListener("keydown", onKey);
+    }
+    function onKey(e){ if (e.key === "Escape") close(); }
+    m.addEventListener("click", function(e){ if (e.target.hasAttribute("data-x")) close(); });
+    m.querySelector(".btn").addEventListener("click", function(){
+      track("cta_click", { monster_type: CODE, label: "after_register", from_result: false });
+    });
+    document.addEventListener("keydown", onKey);
+    m.querySelector(".modal-x").focus();
+  }
 
   /* ---------- 一枚絵 ----------
      ボタンの文言は、自分の結果として開かれたときだけ「結果」と言う。

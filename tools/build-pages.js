@@ -350,6 +350,29 @@ function typePage(code){
     <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
   </div>
 
+  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
+       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
+       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
+  <div class="locked hidden" id="secLocked">
+    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
+    <div class="lk-grid">
+      <div class="lk-item">
+        <p class="lk-t">6軸のスコア</p>
+        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
+        <p class="lk-n">同じ ${code} でも、どの軸がどれだけ立っているかは人によって違います。</p>
+      </div>
+      <div class="lk-item">
+        <p class="lk-t">鑑定コード</p>
+        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
+        <p class="lk-n">結果を16文字にしたものです。別の端末に移すときと、<a href="${base}friends/">Myフレンド</a>に登録してもらうときに渡します。</p>
+      </div>
+    </div>
+    <div class="lk-foot">
+      <a class="btn lk-btn" href="${base}quiz/">90問を受けて、この2つを出す</a>
+      <p class="lk-note">約10分・登録不要。回答はブラウザの中だけで採点します。</p>
+    </div>
+  </div>
+
   <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
   <div class="sec split hidden" id="secToken">
     <h2>鑑定コード</h2>

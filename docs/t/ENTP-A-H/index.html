@@ -144,7 +144,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=7c6280af">
+<link rel="stylesheet" href="../../assets/style.css?v=3b88b054">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -185,6 +185,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="flatnote hidden" id="flatNote">
     <p class="fn-h">6つの軸すべてが、立っていません。</p>
     <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
+  </div>
+
+  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
+       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
+       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
+  <div class="locked hidden" id="secLocked">
+    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
+    <div class="lk-grid">
+      <div class="lk-item">
+        <p class="lk-t">6軸のスコア</p>
+        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
+        <p class="lk-n">同じ ENTP-A-H でも、どの軸がどれだけ立っているかは人によって違います。</p>
+      </div>
+      <div class="lk-item">
+        <p class="lk-t">鑑定コード</p>
+        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
+        <p class="lk-n">結果を16文字にしたものです。別の端末に移すときと、<a href="../../friends/">Myフレンド</a>に登録してもらうときに渡します。</p>
+      </div>
+    </div>
+    <div class="lk-foot">
+      <a class="btn lk-btn" href="../../quiz/">90問を受けて、この2つを出す</a>
+      <p class="lk-note">約10分・登録不要。回答はブラウザの中だけで採点します。</p>
+    </div>
   </div>
 
   <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
@@ -314,9 +337,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script src="../../assets/types.js?v=ff983dbf"></script>
 <script src="../../assets/render.js?v=5b83920b"></script>
 <script src="../../assets/questions.js?v=0b31d093"></script>
-<script src="../../assets/engine.js?v=b962afbb"></script>
+<script src="../../assets/engine.js?v=85f59244"></script>
 <script src="../../assets/share.js?v=315ad15f"></script>
-<script src="../../assets/type.js?v=31783111"></script>
-<script src="../../assets/settings.js?v=fedeae26"></script>
+<script src="../../assets/type.js?v=411bb25f"></script>
+<script src="../../assets/settings.js?v=93a077af"></script>
 </body>
 </html>

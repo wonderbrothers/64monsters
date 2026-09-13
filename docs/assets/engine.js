@@ -67,6 +67,29 @@
     return setHistory(h);
   }
   function clearHistory(){ lsDel(HISTKEY); }
+  /* 1件だけ消す。記録は受けた時刻で見分ける（同じミリ秒に2件は積まれない）。
+     いちばん新しい記録を消したときは、「前回の結果」を1つ前に付け替える。
+     マイタイプは、消した記録のタイプを指していたときだけ動かす。
+     全部消えたときは .myoff を立てない。自分で解除したわけではないので、
+     あとで記録を読み込めば、また埋め直されてほしい。 */
+  function removeHistory(t){
+    var h = getHistory(), i = -1;
+    for (var k = 0; k < h.length; k++){ if (h[k].t === t){ i = k; break; } }
+    if (i < 0) return false;
+    var gone = h[i], wasNewest = (i === h.length - 1);
+    h.splice(i, 1);
+    setHistory(h);
+    if (!wasNewest) return true;
+    if (h.length){
+      var r = h[h.length - 1];
+      setLast(r.code, scFromRecord(r));
+      if (getMyType() === gone.code) setMyType(r.code);
+    } else {
+      lsDel(LASTKEY);
+      if (getMyType() === gone.code) lsDel(MYKEY);
+    }
+    return true;
+  }
 
   /* ---------- Myフレンド（受け取った鑑定コードに名前をつけて残す） ----------
      他人の記録なので .history とは必ず分ける。混ぜると
@@ -365,7 +388,7 @@
     getMyType:getMyType, setMyType:setMyType, clearMyType:clearMyType,
     getLast:getLast, setLast:setLast, reconcile:reconcile,
     score:score, codeFrom:codeFrom,
-    getHistory:getHistory, setHistory:setHistory, pushHistory:pushHistory,
+    getHistory:getHistory, setHistory:setHistory, pushHistory:pushHistory, removeHistory:removeHistory,
     getFriends:getFriends, setFriends:setFriends, addFriend:addFriend, readCode:readCode,
     removeFriend:removeFriend, clearFriends:clearFriends,
     clearHistory:clearHistory, pct:pct,

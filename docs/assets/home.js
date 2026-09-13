@@ -71,10 +71,11 @@
     $("pkHC").addEventListener("click", function(e){
       var b = e.target.closest("button"); if (!b) return; pk.hc = b.dataset.v; paint();
     });
+    /* ここは「見に行く」だけ。マイタイプには登録しない。
+       診断を受けた人がここから別のタイプを覗くと、自分の結果が
+       上書きされてしまうため。登録はタイプページ上部のボタンでできる。 */
     $("pkGo").addEventListener("click", function(){
-      var code = this.dataset.code;
-      E.setMyType(code);
-      location.href = TURL(code);
+      location.href = TURL(this.dataset.code);
     });
     paint();
   })();
