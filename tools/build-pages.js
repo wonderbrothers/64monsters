@@ -10,7 +10,7 @@
      docs/axis/hc/index.html                入口ページ：H と C
      docs/sitemap.xml                       lastmod は「中身が最後に変わった日」
 
-   原稿の実体は docs/assets/types.js と docs/assets/extra.js の2つだけ。
+   原稿の実体は docs/assets/types.js・extra.js・compat-copy.js の3つだけ。
    ここではそれを読んで HTML に焼き付ける。編集したら再実行すること。
 
    内部リンクについて（重要）
@@ -32,11 +32,11 @@ const PUBLISHER = "株式会社ワンダーブラザース";
 const sandbox = { window: {}, document: undefined };
 sandbox.window.window = sandbox.window;
 vm.createContext(sandbox);
-["assets/types.js", "assets/render.js", "assets/extra.js"].forEach(f => {
+["assets/types.js", "assets/render.js", "assets/extra.js", "assets/compat-copy.js"].forEach(f => {
   vm.runInContext(fs.readFileSync(path.join(DOCS, f), "utf8"), sandbox, { filename: f });
 });
 const W = sandbox.window;
-const { BASE_TYPES: BASE, SUBTYPES: SUB, RENDER: R, AXES, EXTRA } = W;
+const { BASE_TYPES: BASE, SUBTYPES: SUB, RENDER: R, AXES, EXTRA, COMPAT_COPY: CC } = W;
 const CODES = Object.keys(SUB);
 const BASE_KEYS = Object.keys(BASE);
 const SFX = ["A-H", "A-C", "O-H", "O-C"];
@@ -477,12 +477,18 @@ ${scripts(base, ["types.js", "render.js", "questions.js", "engine.js", "share.js
 
 const PURPOSE_SHORT = { love:"恋人", work:"仕事", friend:"友人" };
 
+/* 相手1人ぶんのカード。
+   内訳は「いま見ている用途の重み」で取ること。軸ごとの pref が用途で違うので、
+   恋人の内訳を仕事・友人の節にも出すと、追い風と向かい風が逆さまになる。
+   理由文は追い風の1位と向かい風の1位を両方出す。追い風だけだと、
+   重みが最大の軸が同じせいで、64枚とも同じ一文が並ぶことになる。 */
 function partnerCard(base, a, code, active){
   const scores = R.purposeScores(a, code);
   const s = SUB[code];
-  const rows = scores[0].rows;                                  /* 軸の内訳は用途で共通 */
-  const up = rows.filter(r => r.ok).sort((x, y) => y.w - x.w).slice(0, 2);
-  const down = rows.filter(r => !r.ok).sort((x, y) => y.w - x.w).slice(0, 1);
+  const re = R.pairReasons(a, code, active);
+  const up = re.up.slice(0, 2), down = re.down.slice(0, 1);
+  const why = (up.length ? up[0].text + "。" : "")
+            + (down.length ? (up.length ? "いっぽうで、" : "") + down[0].text + "。" : "");
   return `<div class="cmp-card">
     <a class="cmp-head" href="${base}t/${code}/">
       <span class="thumb"><img src="${base}images/thumbs/${code}.webp" alt="" loading="lazy" width="56" height="56"></span>
@@ -494,7 +500,7 @@ function partnerCard(base, a, code, active){
       <p class="cmp-ax up"><span class="ax-h">追い風</span>${up.map(r => esc(r.title)).join("、") || "—"}</p>
       <p class="cmp-ax down"><span class="ax-h">向かい風</span>${down.map(r => esc(r.title)).join("、") || "—"}</p>
     </div>
-    <p class="cmp-why">${esc(up.length ? up[0].text : down.length ? down[0].text : "")}</p>
+    <p class="cmp-why">${esc(why)}</p>
     <a class="cmp-more" href="${base}pair/?a=${a}&amp;b=${code}">${a} × ${code} の内訳を見る</a>
   </div>`;
 }
@@ -509,11 +515,11 @@ function fullTableHTML(base, code){
     <div class="ft-wrap"><table class="ft">
       <thead><tr><th>タイプ</th><th>恋人</th><th>仕事</th><th>友人</th></tr></thead>
       <tbody>${all.map(c => `<tr>
-        <td><a href="${base}t/${c}/"><span class="mono">${c}</span><span class="ft-lab">${esc(SUB[c].label)}${c === code ? "（同じタイプ）" : ""}</span></a></td>
+        <td><a href="${base}t/${c}/"><span class="mono">${c}</span>${c === code ? '<span class="ft-lab">同じタイプ</span>' : ""}</a></td>
         ${pos.map(m => `<td class="ft-n"><b>${m[c].s}</b><span class="ft-r">${m[c].r}位</span></td>`).join("")}
       </tr>`).join("")}</tbody>
     </table></div>
-    <p class="g-note" style="margin-top:14px">数値は6軸の重みづけから計算した目安で、測定値ではありません。順位は64タイプ中のものです。同じタイプ同士も相手として数えています。</p>
+    <p class="g-note" style="margin-top:14px">コードを押すと、そのタイプのページが開きます。数値は6軸の重みづけから計算した目安で、測定値ではありません。順位は64タイプ中のものです。同じタイプ同士も相手として数えています。</p>
   </details>`;
 }
 
@@ -525,9 +531,24 @@ function compatPage(code){
   const lists = R.rankAll(code);
   const top3 = i => lists[i].slice(0, 3).map(x => x.code).join("、");
   const same = i => lists[i].findIndex(x => x.code === code) + 1;
+  const bottom3 = i => lists[i].slice(-3).reverse().map(x => x.code).join("、");
+
+  /* compat-copy.js の原稿。無いコードは従来の定型文に落ちる（16本ずつ足していける） */
+  const cc = (CC && CC[code]) || {};
+
+  /* このコード自身の6軸。冒頭とFAQで使う。64通りすべて違う文になる */
+  const prof = R.axisProfile(code);
+  const profText  = prof.map(x => `${x.title}は${x.name}`).join("、");
+  const profShort = prof.map(x => `${x.letter}＝${x.name}`).join("・");
+
+  /* 3用途の合計が低い3人。避けるための一覧ではなく、どこで擦れるかを先に置くための節 */
+  const totals = {};
+  lists.forEach(l => l.forEach(x => { totals[x.code] = (totals[x.code] || 0) + x.score; }));
+  const worst = Object.keys(totals)
+    .sort((x, y) => (totals[x] - totals[y]) || (x < y ? -1 : 1)).slice(0, 3);
 
   const title = `${code}の相性｜恋愛・仕事・友人で見る相性ランキング｜${SITE}`;
-  const desc  = clip(`${code}（${bt}-${ao}${hc}）と相性がいいのはどのタイプか。恋人・仕事のパートナー・友人の3つの用途ごとに、64タイプを6軸の重みづけで順位づけしました。どの軸が効いたかの内訳つき。`, 122);
+  const desc  = clip(`${code}（${bt}-${ao}${hc}）と相性がいいのはどのタイプか。恋人は${lists[0][0].code}、仕事は${lists[1][0].code}、友人は${lists[2][0].code}が1位です。64タイプすべてを6軸の重みづけで順位づけし、どの軸が効いたかの内訳をつけました。`, 122);
 
   const crumbs = [
     { name: SITE, href: base, abs: ORIGIN + "/" },
@@ -540,11 +561,19 @@ function compatPage(code){
     { q: `${code}と最も相性がいいのはどのタイプですか？`,
       a: `用途によって変わります。恋人として噛み合うのは${top3(0)}、仕事のパートナーとしては${top3(1)}、友人としては${top3(2)}が上位です。ひとつの答えにならないのは、同じ相手でも用途ごとに効く軸が違うからです。` },
     { q: `相性のスコアは何を根拠にしていますか？`,
-      a: `測定値ではありません。6つの軸それぞれについて「一致が効くか、違いが効くか」を用途別に重みづけし、追い風になっている軸の重みが全体の何割かを出しています。設計した重みなので、数値だけでなく必ずどの軸が効いたかと一緒に見てください。重みの中身は各カードの「追い風」「向かい風」で開いています。` },
+      a: `測定値ではありません。6つの軸それぞれについて「一致が効くか、違いが効くか」を用途別に重みづけし、追い風になっている軸の重みが全体の何割かを出しています。${code}は${profShort}なので、この6つが相手と揃うか外れるかで順位が決まります。設計した重みなので、数値だけでなく必ずどの軸が効いたかと一緒に見てください。` },
     { q: `${code}同士の相性はどうですか？`,
       a: `${code}同士も相手として数えていて、恋人${same(0)}位・仕事${same(1)}位・友人${same(2)}位です。6つの軸がすべて同じになるので、一致が効く用途では上位に来て、違いが効く用途では下がります。同じタイプだから相性がいい、とも悪いとも決めていません。` },
-    { q: `相性の悪いタイプはいますか？`,
-      a: `順位の下のほうに来るタイプはありますが、悪いという扱いはしていません。噛み合いにくい相手は、価値観の置き所が違うぶん、自分に足りない視点を最も速く手渡してくれる相手でもあります。全64タイプの順位は一覧で開けます。` }
+    { q: `${code}と相性の悪いタイプはいますか？`,
+      a: `順位の下のほうに来るタイプはあります。${code}の場合、恋人では${bottom3(0)}、仕事では${bottom3(1)}、友人では${bottom3(2)}が下位3タイプです。ただし悪いという扱いはしていません。噛み合いにくい相手は、価値観の置き所が違うぶん、自分に足りない視点を最も速く手渡してくれる相手でもあります。` },
+    { q: `${code}と${lists[0][0].code}はなぜ恋人として1位なのですか？`,
+      a: (() => {
+        const b0 = lists[0][0], re0 = R.pairReasons(code, b0.code, 0);
+        return `${code}と${b0.code}（${SUB[b0.code].label}）は、恋人としてのスコアが${b0.score}で64タイプ中1位です。追い風になっているのは${re0.up.map(r => r.title).join("、")}で、${re0.up[0].text}。`
+          + (re0.down.length
+              ? `逆に${re0.down.map(r => r.title).join("、")}は向かい風で、${re0.down[0].text}。ここは最初に取り決めておくところです。`
+              : `6軸すべてが追い風で、恋人として見たときにずれる軸がありません。`);
+      })() }
   ];
 
   const ldPage = {
@@ -557,8 +586,8 @@ function compatPage(code){
 
   const sections = W.PURPOSES.map((P, i) => `<div class="sec split">
       <h2>${esc(R.PURPOSE_LEAD[P.key])}</h2>
-      <p class="body-text">${esc(P.lead)}、64タイプを並べたときの上位6です。</p>
-      <p class="g-note" style="margin-top:10px">${esc(R.purposeWhy(i))}</p>
+      <p class="body-text">${cc[P.key] ? esc(cc[P.key]) : esc(P.lead) + "、64タイプを並べたときの上位6です。"}</p>
+      <p class="g-note" style="margin-top:10px">${esc(R.purposeWhy(i, code))}</p>
       <div class="cmp-grid">${lists[i].slice(0, 6).map(x => partnerCard(base, code, x.code, i)).join("")}</div>
     </div>`).join("\n");
 
@@ -571,10 +600,35 @@ function compatPage(code){
   <div class="page-head">
     <p class="eyebrow">compatibility</p>
     <h1 class="subtitle">${code} の相性</h1>
-    <p class="lede">${code}（${esc(s.label)}）と、恋人・仕事のパートナー・友人。用途ごとに効く軸が違うので、順位も変わります。6軸の重みづけから計算した目安であって、測定値ではありません。</p>
+    <p class="lede">${code}（${esc(s.label)}）は、${esc(profText)}。この6つが相手とどう噛み合うかで、恋人・仕事のパートナー・友人それぞれの順位が決まります。6軸の重みづけから計算した目安であって、測定値ではありません。</p>
   </div>
 
-${sections}
+${cc.stance ? `  <div class="sec split">
+    <h2>${code} が関係のなかでやっていること</h2>
+    <p class="body-text">${esc(cc.stance)}</p>
+  </div>
+
+` : ""}${sections}
+
+${cc.works ? `  <div class="sec split">
+    <h2>かみ合っているときの形</h2>
+    <p class="body-text">${esc(cc.works)}</p>
+  </div>
+
+` : ""}${cc.breaks ? `  <div class="sec split">
+    <h2>崩れるときの入り口</h2>
+    <p class="body-text">${esc(cc.breaks)}</p>
+  </div>
+
+` : ""}  <div class="sec split">
+    <h2>順位の下のほうに来る相手</h2>
+    <p class="body-text">3用途の合計が低い3人です。避けるための一覧ではありません。噛み合わない軸がはっきりしているぶん、${code} が自分では持ちにくい見方を、いちばん速く手渡してくれる相手でもあります。どこで擦れるかを先に知っておくために置いています。</p>
+    <div class="cmp-grid">${worst.map(c => {
+      const ps = R.purposeScores(code, c);
+      let wi = 0; ps.forEach((x, i) => { if (x.score < ps[wi].score) wi = i; });
+      return partnerCard(base, code, c, wi);
+    }).join("")}</div>
+  </div>
 
   <div class="sec split">
     <h2>全64タイプとの相性</h2>

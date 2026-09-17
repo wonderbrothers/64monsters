@@ -53,14 +53,49 @@
     friend:"友人として続きやすい相手"
   };
 
-  /* その用途で何が効くのか。重みの大きい2軸を、PURPOSES の設計そのままに文章化する */
-  function purposeWhy(i){
+  /* その用途で何が効くのか。重みの大きい2軸を、PURPOSES の設計そのままに文章化する。
+     code を渡すと、そのコードの上位6人がその2軸をどれだけ満たしているかを続けて出す。
+     code なしだと64枚のページに同じ3文が並ぶことになるので、
+     静的ページから呼ぶときは必ず code を渡すこと。 */
+  function purposeWhy(i, code){
     var AXES = root.AXES, P = root.PURPOSES[i];
-    var top = AXES.map(function(x){ return { title:x.title, w:P.w[x.key].w, pref:P.w[x.key].pref }; })
+    var top = AXES.map(function(x){ return { key:x.key, title:x.title, w:P.w[x.key].w, pref:P.w[x.key].pref }; })
                   .sort(function(a, b){ return b.w - a.w; }).slice(0, 2);
-    return "この用途では「" + top.map(function(t){
+    var head = "この用途では「" + top.map(function(t){
       return t.title + "が" + (t.pref === "same" ? "同じ" : "違う");
     }).join("」と「") + "」ことを最も重く見ています。";
+    if (!code) return head;
+    var both = 0;
+    rankAll(code)[i].slice(0, 6).forEach(function(x){
+      var rows = purposeScores(code, x.code)[i].rows;
+      var hit = top.filter(function(t){
+        return rows.some(function(r){ return r.key === t.key && r.ok; });
+      }).length;
+      if (hit === 2) both++;
+    });
+    return head + code + " の上位6人では、" + (
+      both === 6 ? "6人ともこの2つを両方とも満たしています" :
+      both === 0 ? "2つとも満たす相手はいません。片方だけで上がってきた顔ぶれです" :
+      both + "人がこの2つを両方とも満たし、残りはどちらか一方です"
+    ) + "。";
+  }
+
+  /* そのコード自身の6軸。相性ページの冒頭で「何を持っている人か」を先に置くために使う */
+  function axisProfile(code){
+    var l = letterMap(code);
+    return root.AXES.map(function(x){
+      var side = x.neg.l === l[x.key] ? x.neg : x.pos;
+      return { key:x.key, title:x.title, letter:side.l, name:side.name, note:side.note };
+    });
+  }
+
+  /* その用途で、2人のあいだで効いている軸。追い風・向かい風それぞれ重みの大きい順。
+     用途ごとに pref が違うので、必ず見ている用途の index で取ること
+     （以前ここで恋人の内訳を仕事・友人の節にも出していた） */
+  function pairReasons(a, b, i){
+    var rows = purposeScores(a, b)[i].rows;
+    var by = function(f){ return rows.filter(f).sort(function(x, y){ return y.w - x.w; }); };
+    return { up: by(function(r){ return r.ok; }), down: by(function(r){ return !r.ok; }) };
   }
 
   /* 64タイプすべてを、用途ごとに噛み合いの高い順で返す。
@@ -117,7 +152,7 @@
       }).join("");
       return '<div class="match-group" data-purpose="' + P.key + '"><p class="sub-h">' + PURPOSE_LEAD[P.key] + '</p>' +
              '<div class="match-list">' + chips + '</div>' +
-             '<p class="match-why">' + purposeWhy(i) + '</p></div>';
+             '<p class="match-why">' + purposeWhy(i, code) + '</p></div>';
     }).join("");
   }
 
@@ -161,6 +196,7 @@
     thumb:thumb, typeUrl:typeUrl, pairUrl:pairUrl, flip:flip,
     matrixHTML:matrixHTML, chipHTML:chipHTML, topHTML:topHTML,
     rankAll:rankAll, standing:standing, relation:relation, purposeWhy:purposeWhy,
+    axisProfile:axisProfile, pairReasons:pairReasons,
     PURPOSE_SHORT:PURPOSE_SHORT, PURPOSE_LEAD:PURPOSE_LEAD,
     purposeScores:purposeScores, letterMap:letterMap
   };
