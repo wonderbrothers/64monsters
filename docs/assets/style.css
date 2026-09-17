@@ -1532,7 +1532,12 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 .cell.on .c-lab{ color:var(--on-brand); }
 a.cell.on:hover{ background:var(--ink); border-color:var(--ink); }
 .chip .c2{ font-size:var(--fs-sm); }
-.chip{ padding:8px 6px 8px 8px; }
+/* ピルは角がまるごと丸いので、四角い箱と同じ余白では右が詰まって見える。
+   高さ60pxなら半径は30pxで、上下の行が出ている高さでは曲線が6pxぶん内側に入る。
+   左はまるいサムネが曲線を埋めているので8pxのままでよく、右だけ広げる。
+   スコアの丸（.c-score）が入るチップは、丸そのものが曲線に沿うので広げない。 */
+.chip{ padding:8px 20px 8px 8px; }
+.match-group .chip{ padding-right:8px; }
 .chip .thumb{ border-radius:var(--r-full); }
 /* ---- バッジ（押せない）とボタン・リンク（押せる）を見分けられるようにする ----
    このサイトでは「丸い枠線のピル」を押せるものの形として使っている
@@ -2027,10 +2032,6 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .ft-n{ text-align:right !important; white-space:nowrap; }
 .ft-n b{ font-family:var(--f-mono); font-weight:500; }
 .ft-r{ display:inline-block; min-width:3.4em; text-align:right; font-size:var(--fs-xs); color:var(--ink-3); }
-@media (max-width:560px){
-  .ft-lab{ display:none; }
-}
-
 /* 順位のなかに出てくる「自分と同じタイプ」の印 */
 .chip.same{ border-color:var(--ink); }
 .c-self{

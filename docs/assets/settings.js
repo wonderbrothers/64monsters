@@ -21,8 +21,8 @@
      BUILD は docs/ の中身のハッシュ。問い合わせを受けたとき、
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
-  var VERSION = "1.4.0";
-  var BUILD   = "527d4ff";
+  var VERSION = "1.4.1";
+  var BUILD   = "338a1cc";
   var BUILT   = "2026-09-17";
 
   var MYKEY = KEY + ".mytype";
@@ -60,7 +60,7 @@
     '<path d="M9 5l7 7-7 7"></path></svg>';
   var LOGO =
     '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=0596b964" alt="" width="234" height="30">' +
-    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=135deb30" alt="" width="234" height="30">';
+    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=6667d37a" alt="" width="234" height="30">';
 
   /* ヘッダーのリンクは、英字を大きく・日本語を小さく2行で出す（読み上げは日本語だけ） */
   function navLabel(en, jp){
