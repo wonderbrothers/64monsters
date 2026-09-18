@@ -13,9 +13,10 @@
   "use strict";
 
   var S = 1080, PAD = 70, BW = 2, R = 24;
-  var PAPER = "#FFFFFF";
-  var INK = "#111111", INK2 = "#3D4145", INK3 = "#71716D";
-  var LINE2 = "#DCDCD8", SURF2 = "#F4F4F2";
+  /* style.css の :root と同じ値。片方だけ直すと、画面と保存画像の色がずれる */
+  var PAPER = "#FFFAEF";
+  var INK = "#12110F", INK2 = "#42403C", INK3 = "#73706B";
+  var LINE2 = "#DFDBD3", SURF2 = "#F8F4EA";
   var SITE = "64monsters.wonder-bros.com";
   var STRAP = "6 AXES / 90 QUESTIONS / 64 MONSTERS";
   var FD  = '"Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif';

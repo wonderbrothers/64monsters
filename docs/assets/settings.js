@@ -22,7 +22,7 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.5.0";
-  var BUILD   = "6860997";
+  var BUILD   = "857583a";
   var BUILT   = "2026-09-18";
 
   var MYKEY = KEY + ".mytype";
@@ -59,8 +59,8 @@
     'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M9 5l7 7-7 7"></path></svg>';
   var LOGO =
-    '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=0596b964" alt="" width="234" height="30">' +
-    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=6667d37a" alt="" width="234" height="30">';
+    '<img class="logo logo-light" src="' + B + 'assets/logo.svg?v=fbf77e02" alt="" width="234" height="30">' +
+    '<img class="logo logo-dark" src="' + B + 'assets/logo-dark.svg?v=81c42de9" alt="" width="234" height="30">';
 
   /* ヘッダーのリンクは、英字を大きく・日本語を小さく2行で出す（読み上げは日本語だけ） */
   function navLabel(en, jp){
@@ -118,8 +118,8 @@
       '<span class="foot-sep" aria-hidden="true"></span>' +
       '<a class="wb-logo" href="https://wonder-bros.com" target="_blank" rel="noopener noreferrer"' +
         ' aria-label="株式会社ワンダーブラザース（別のタブで開きます）">' +
-        '<img class="wb wb-light" src="' + B + 'assets/wb-logo.svg?v=1a3fabf9" alt="" width="176" height="30">' +
-        '<img class="wb wb-dark" src="' + B + 'assets/wb-logo-dark.svg?v=39ef6f45" alt="" width="176" height="30">' +
+        '<img class="wb wb-light" src="' + B + 'assets/wb-logo.svg?v=709c3fb5" alt="" width="176" height="30">' +
+        '<img class="wb wb-dark" src="' + B + 'assets/wb-logo-dark.svg?v=edbe16fe" alt="" width="176" height="30">' +
       '</a>';
     copy.parentNode.insertBefore(f, copy);
   })();

@@ -17,19 +17,23 @@ html{ font-size:16px; }   /* ← ここが base。すべての --fs-* はこの�
 }
 
 :root{
-  /* 2026-09 リデザイン：白地・太い黒。色は6軸の識別だけに使う */
-  --paper:#FFFFFF; --surface:#FFFFFF; --surface-2:#F4F4F2;
-  --ink:#111111; --ink-2:#3D4145; --ink-3:#71716D;
+  /* 2026-09 リデザイン：生成りの紙・太い黒。色は6軸の識別だけに使う。
+     紙を #FFFAEF（暖色の生成り）にしたのに合わせて、グレーと黒も同じ色相
+     （OKLCH 86.4°）へ寄せてある。明るさ（OKLCH L）は無彩色だったときと
+     同じ値のままなので、コントラスト比は据え置き（本文18.1・注釈4.7）。
+     暗いほうへ行くほど彩度を落としてあるのは、黒が茶色に見えないようにするため。 */
+  --paper:#FFFAEF; --surface:#FFFAEF; --surface-2:#F8F4EA;
+  --ink:#12110F; --ink-2:#42403C; --ink-3:#73706B;
   /* --line＝カード・入力・ボタンの枠（黒・2px）／--line-2＝区切りのヘアライン */
-  --line:#111111; --line-2:#DCDCD8;
+  --line:#12110F; --line-2:#DFDBD3;
   /* 塗りは単色の黒。グラデーションは廃止したが、変数名は各所で使うので残す */
-  --g1:#111111; --g2:#111111;
+  --g1:#12110F; --g2:#12110F;
   --grad:var(--ink);
   --grad-text:var(--ink);
-  --on-brand:#FFFFFF;
+  --on-brand:#FFFAEF;
   --ai:var(--ink); --shu:var(--ink); --gold:#806331;
   --danger:#C4183F;
-  --thumb:#F4F4F2;
+  --thumb:#F8F4EA;
   --shadow:none;
   /* 6軸の識別色。色は「どの軸か」だけを表し、大きさや良し悪しは表さない */
   --ax-EI:#3DDC97; --ax-SN:#A64BF0; --ax-TF:#1E86F0;
@@ -499,18 +503,20 @@ html[data-fs="l"]{ font-size:18px; }
 /* ---------- 表示設定：ダークモード ---------- */
 html[data-theme="dark"]{ color-scheme:dark; }
 html[data-theme="dark"]{
-  /* ライトの黒と白をそっくり入れ替える。枠線は「紙の色」ではなく「文字の色」 */
-  --paper:#111315; --surface:#111315; --surface-2:#1B1E21;
-  --ink:#F7F7F5; --ink-2:#C8CCD0; --ink-3:#9AA0A5;
-  --line:#F7F7F5; --line-2:#33383D;
-  --g1:#F7F7F5; --g2:#F7F7F5;
+  /* ライトの黒と白をそっくり入れ替える。枠線は「紙の色」ではなく「文字の色」。
+     色相はライトと同じ 86.4°。明るさは寒色だったときと同じ値なので、
+     こちらもコントラスト比は据え置き（本文17.3・注釈7.0）。 */
+  --paper:#141311; --surface:#141311; --surface-2:#1F1D1A;
+  --ink:#FAF7EE; --ink-2:#CFCBC4; --ink-3:#A19F99;
+  --line:#FAF7EE; --line-2:#393733;
+  --g1:#FAF7EE; --g2:#FAF7EE;
   --grad:var(--ink);
   --grad-text:var(--ink);
   /* 塗りつぶしのボタンは「明るい地に暗い文字」になる */
-  --on-brand:#111315;
+  --on-brand:#141311;
   --ai:var(--ink); --shu:var(--ink); --gold:#D2B26B;
   --danger:#FF8FA8;
-  --thumb:#1B1E21;
+  --thumb:#1F1D1A;
   --shadow:none;
 }
 
@@ -606,7 +612,7 @@ body.modal-open{ overflow:hidden; }
   transition:left .16s ease, background .16s ease;
 }
 .switch.on{ background:var(--grad); border-color:transparent; }
-.switch.on .knob{ left:23px; background:#FFFFFF; }
+.switch.on .knob{ left:23px; background:var(--on-brand); }
 
 @media (max-width:560px){
   .set-row.col{ flex-direction:column; align-items:stretch; gap:12px; }
@@ -1469,7 +1475,7 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 /* ---- 使い方（黒帯） ---- */
 .how{ list-style:none; margin:36px 0 0; padding:0; display:grid; gap:26px; }
 @media (min-width:820px){ .how{ grid-template-columns:repeat(3,1fr); gap:24px; } }
-.how-step{ padding-top:22px; border-top:1px solid rgba(255,255,255,.28); }
+.how-step{ padding-top:22px; border-top:1px solid color-mix(in srgb, var(--paper) 28%, transparent); }
 .how-n{ display:block; font-family:var(--f-en); font-weight:900; font-size:2.25rem; line-height:1; letter-spacing:-.02em; }
 .how-step:nth-child(1) .how-n{ color:var(--ax-AO); }
 .how-step:nth-child(2) .how-n{ color:var(--ax-EI); }
@@ -1622,11 +1628,13 @@ html[data-theme="dark"] .fv-art .art-dark{ display:block; }
    ライトでは黒帯だが、ダークでそのまま反転すると「白い帯」になり、
    工程番号（6軸の色）が白地に乗って読めなくなる。
    ダークでは地より一段暗い黒にして、帯としての切り替わりを保つ。 */
-html[data-theme="dark"] .band-dark{ background:#000000; color:var(--ink); }
+/* ダークでは地よりさらに沈めて帯を出す。無彩色の黒だと周りの暖色から
+   浮くので、紙と同じ色相のまま明るさだけ落とした黒を使う */
+html[data-theme="dark"] .band-dark{ background:#0A0908; color:var(--ink); }
 html[data-theme="dark"] .band-dark .sec-title{ color:var(--ink); }
 html[data-theme="dark"] .band-dark .eyebrow{ color:var(--ink-3); opacity:1; }
 html[data-theme="dark"] .band-dark .how-d{ color:var(--ink-2); opacity:1; }
-html[data-theme="dark"] .band-dark .how-step{ border-top-color:rgba(255,255,255,.22); }
+html[data-theme="dark"] .band-dark .how-step{ border-top-color:color-mix(in srgb, var(--ink) 22%, transparent); }
 
 /* 強み＝＋、気をつけたいところ＝− を記号そのもので出す（色に頼らない） */
 .list li::before{ width:10px; height:2px; left:0; top:.86em; background:var(--ink); }

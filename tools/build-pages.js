@@ -76,8 +76,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="canonical" href="${o.url}">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="author" content="${PUBLISHER}">
-<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#15181B" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFFAEF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)">
 <meta name="format-detection" content="telephone=no">
 
 <!-- OGP / Twitter -->
