@@ -2058,3 +2058,117 @@ html:not([data-visit]) [data-when~="new"],
 html[data-visit="new"]   [data-when~="new"],
 html[data-visit="mine"]  [data-when~="mine"],
 html[data-visit="other"] [data-when~="other"]{ display:block; }
+
+/* ---- 4文字（16タイプ）の相性ページ ----
+   1つの数値に丸めず、サブタイプ16通りの下限〜上限を出す。
+
+   レンジバー（.rb）… 0〜100 のレールに帯を置く。数値だけでは「50〜86」が
+   どのあたりなのか直感的に読めないため（2026-09-21 たいし指摘）。
+   レールは --line-2。--surface-2 では地との差が小さすぎて、目盛りとして
+   読めなかった（2026-09-21 たいし指摘）。0〜100 の範囲そのものを示す要素なので、
+   控えめではあっても見えないといけない。
+   このサイトは単色なので、覆る組み合わせは色ではなく斜線で分ける。
+   薄いグレーの地にしていたときは見分けがつかなかった。地ではなく塗りの質で示す。 */
+.bs-top{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px; }
+.bs-card{
+  padding:16px; border:1px solid var(--line-2);
+  border-radius:var(--r-card); background:var(--surface);
+}
+.bs-c{ display:block; font-family:var(--f-mono); font-size:var(--fs-base); letter-spacing:.08em; color:var(--ink-3); }
+.bs-r{ display:block; margin-top:8px; font-family:var(--f-en); font-weight:900; font-size:var(--fs-xl); line-height:1; }
+.bs-b{ display:block; margin-top:9px; font-size:var(--fs-xs); color:var(--ink-3); line-height:1.6; }
+
+/* レール。目盛りは引かない（0と100の両端だけが意味を持つ） */
+.rb{
+  position:relative; display:block; height:10px; margin-top:11px;
+  border-radius:var(--r-full); background:var(--line-2); overflow:hidden;
+}
+.rb i{ position:absolute; top:0; bottom:0; display:block; }
+.rb-fill{ background:var(--ink); border-radius:4px; }
+/* 中央値。帯を地の色で切って示す。線を足さずに、隙間で示す */
+.rb-mid{ width:2px; background:var(--surface); }
+/* 覆る組み合わせ。45度の斜線 */
+.rb-f .rb-fill{
+  background-image:repeating-linear-gradient(45deg,
+    var(--ink) 0 3px, var(--surface) 3px 6px);
+  background-color:transparent;
+}
+.rb-f .rb-mid{ background:var(--surface); }
+/* 表の中の細い版 */
+.rb-s{ height:6px; margin-top:7px; }
+/* 注記に置く凡例 */
+.rb-key{
+  display:inline-block; width:26px; height:8px; margin:0 5px;
+  vertical-align:middle; overflow:hidden;
+}
+
+/* 4文字ページの冒頭。右の余白に4体を 2×2 で置く。
+   この並びは A/O（行）× H/C（列）の行列そのもので、
+   「4通りに分かれる」という本文の主張と同じ形にしてある。 */
+.page-head.bh{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:24px 40px; align-items:start; }
+.bh-figs{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; width:min(34vw,340px); }
+.bh-figs a{ display:block; text-decoration:none; color:inherit; }
+.bh-img{
+  display:block; aspect-ratio:1; border-radius:var(--r-card); overflow:hidden;
+  background:var(--surface-2); border:1px solid var(--line-2);
+  transition:border-color .15s ease;
+}
+.bh-figs a:hover .bh-img{ border-color:var(--shu); }
+.bh-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+.bh-c{
+  display:block; margin-top:7px; text-align:center;
+  font-family:var(--f-mono); font-size:var(--fs-xs); letter-spacing:.06em; color:var(--ink-3);
+}
+@media (max-width:900px){
+  /* 縦積みになったら、4体を1列に並べる。
+     2×2 のまま広げると1枚が265pxまで育って、冒頭だけで画面を埋めてしまう。
+     横1列なら A/O×H/C の並び順は保ったまま、高さを4分の1に抑えられる */
+  .page-head.bh{ grid-template-columns:1fr; }
+  .bh-figs{ width:100%; max-width:34em; margin-top:10px; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .bh-c{ margin-top:5px; font-size:10px; letter-spacing:.02em; }
+}
+@media (max-width:640px){
+  /* スマホでは 2×2 に戻す。1列のままだと1枚80pxまで縮んで、
+     羽織りものの差は残るが表情の差が潰れる。4通りあることだけでなく、
+     どう違うかまで見せたいので、ここは高さを使う */
+  .bh-figs{ grid-template-columns:repeat(2,1fr); gap:14px; }
+  .bh-c{ margin-top:7px; font-size:var(--fs-xs); letter-spacing:.06em; }
+}
+
+/* ギャラリーの見出し右。「そのタイプを詳しく見る」への入口 */
+.group-link{
+  margin-left:auto; flex:0 0 auto; align-self:center; padding:7px 14px;
+  border:1px solid var(--line-2); border-radius:var(--r-full);
+  font-size:var(--fs-sm); color:var(--ink-2); text-decoration:none; white-space:nowrap;
+}
+.group-link:hover{ border-color:var(--shu); color:var(--ink); }
+@media (max-width:640px){
+  .group-link{ margin:10px 0 0; width:100%; text-align:center; }
+}
+
+.verdicts{ list-style:none; padding:0; margin:20px 0 0; display:grid; gap:10px; }
+.verdicts li{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:var(--fs-md); }
+.verdicts .mono{
+  font-family:var(--f-mono); font-size:var(--fs-sm); letter-spacing:.06em;
+  padding:3px 9px; border-radius:var(--r-full); background:var(--surface-2); color:var(--ink-2);
+}
+.vd-h{ display:inline-block; min-width:12.5em; font-size:var(--fs-xs); letter-spacing:.06em; color:var(--ink-3); }
+.vd-h.up{ color:var(--ink); font-weight:700; }
+.vd-h.mid{ color:var(--shu); font-weight:700; }
+
+.ft.bs td.bs-n{ text-align:right; white-space:nowrap; min-width:8.5em; }
+.ft.bs td.bs-n b{ font-family:var(--f-en); font-size:var(--fs-base); }
+
+/* 16タイプ相互の行き来。カードからリンクを外したぶん、ここで受ける */
+.bs-links a{
+  display:inline-block; margin:0 6px 6px 0; padding:4px 10px;
+  border-radius:var(--r-full); background:var(--surface-2);
+  font-family:var(--f-mono); font-size:var(--fs-xs); letter-spacing:.06em;
+  color:var(--ink-2); text-decoration:none;
+}
+.bs-links a:hover{ color:var(--ink); }
+
+@media (max-width:560px){
+  .bs-top{ grid-template-columns:1fr; }
+  .vd-h{ min-width:100%; }
+}

@@ -32,11 +32,11 @@ const PUBLISHER = "株式会社ワンダーブラザース";
 const sandbox = { window: {}, document: undefined };
 sandbox.window.window = sandbox.window;
 vm.createContext(sandbox);
-["assets/types.js", "assets/render.js", "assets/extra.js", "assets/compat-copy.js"].forEach(f => {
+["assets/types.js", "assets/render.js", "assets/extra.js", "assets/compat-copy.js", "assets/base-copy.js"].forEach(f => {
   vm.runInContext(fs.readFileSync(path.join(DOCS, f), "utf8"), sandbox, { filename: f });
 });
 const W = sandbox.window;
-const { BASE_TYPES: BASE, SUBTYPES: SUB, RENDER: R, AXES, EXTRA, COMPAT_COPY: CC } = W;
+const { BASE_TYPES: BASE, SUBTYPES: SUB, RENDER: R, AXES, EXTRA, COMPAT_COPY: CC, BASE_COPY: BC } = W;
 const CODES = Object.keys(SUB);
 const BASE_KEYS = Object.keys(BASE);
 const SFX = ["A-H", "A-C", "O-H", "O-C"];
@@ -286,6 +286,7 @@ function typePage(code){
   const crumbs = [
     { name: SITE, href: base, abs: ORIGIN + "/" },
     { name: "モンスターギャラリー", href: base + "types.html", abs: ORIGIN + "/types.html" },
+    { name: bt, href: base + "t/" + bt + "/", abs: `${ORIGIN}/t/${bt}/` },
     { name: code, href: url, abs: url }
   ];
   const faqs = typeFaq(code);
@@ -443,6 +444,7 @@ ${loveSec}
     <div class="pair-cta">
       <p class="pair-cta-txt">用途別のスコアと、どの軸が効いているかまで見るなら。</p>
       <a class="btn" href="${base}t/${code}/compat/">${code} の相性をくわしく見る</a>
+      <p class="g-note" style="margin-top:12px"><a href="${base}t/${bt}/">${bt} とはどんなタイプか（16タイプとの相性つき）</a>も見られます。${bt} の4つのうち、どれかで評価が変わる相手が分かります。</p>
       <a class="btn ghost" href="${base}pair/?a=${code}">相手のコードを入れて調べる</a>
     </div>
   </div>
@@ -479,8 +481,8 @@ const PURPOSE_SHORT = { love:"恋人", work:"仕事", friend:"友人" };
 
 /* 相手1人ぶんのカード。
    内訳は「いま見ている用途の重み」で取ること。軸ごとの pref が用途で違うので、
-   恋人の内訳を仕事・友人の節にも出すと、追い風と向かい風が逆さまになる。
-   理由文は追い風の1位と向かい風の1位を両方出す。追い風だけだと、
+   恋人の内訳を仕事・友人の節にも出すと、かみ合う軸とずれる軸が逆さまになる。
+   理由文はかみ合う軸の1位とずれる軸の1位を両方出す。かみ合う側だけだと、
    重みが最大の軸が同じせいで、64枚とも同じ一文が並ぶことになる。 */
 function partnerCard(base, a, code, active){
   const scores = R.purposeScores(a, code);
@@ -497,8 +499,8 @@ function partnerCard(base, a, code, active){
     <div class="cmp-scores">${scores.map((x, i) =>
       `<div class="cmp-s${i === active ? " on" : ""}"><span class="cs-t">${esc(PURPOSE_SHORT[x.key] || x.title)}</span><span class="cs-n">${x.score}</span><span class="cs-b">${esc(x.band)}</span></div>`).join("")}</div>
     <div class="cmp-axes">
-      <p class="cmp-ax up"><span class="ax-h">追い風</span>${up.map(r => esc(r.title)).join("、") || "—"}</p>
-      <p class="cmp-ax down"><span class="ax-h">向かい風</span>${down.map(r => esc(r.title)).join("、") || "—"}</p>
+      <p class="cmp-ax up"><span class="ax-h">かみ合う軸</span>${up.map(r => esc(r.title)).join("、") || "—"}</p>
+      <p class="cmp-ax down"><span class="ax-h">ずれる軸</span>${down.map(r => esc(r.title)).join("、") || "—"}</p>
     </div>
     <p class="cmp-why">${esc(why)}</p>
     <a class="cmp-more" href="${base}pair/?a=${a}&amp;b=${code}">${a} × ${code} の内訳を見る</a>
@@ -553,6 +555,7 @@ function compatPage(code){
   const crumbs = [
     { name: SITE, href: base, abs: ORIGIN + "/" },
     { name: "モンスターギャラリー", href: base + "types.html", abs: ORIGIN + "/types.html" },
+    { name: bt, href: base + "t/" + bt + "/", abs: `${ORIGIN}/t/${bt}/` },
     { name: code, href: base + "t/" + code + "/", abs: `${ORIGIN}/t/${code}/` },
     { name: "相性", href: url, abs: url }
   ];
@@ -561,7 +564,7 @@ function compatPage(code){
     { q: `${code}と最も相性がいいのはどのタイプですか？`,
       a: `用途によって変わります。恋人として噛み合うのは${top3(0)}、仕事のパートナーとしては${top3(1)}、友人としては${top3(2)}が上位です。ひとつの答えにならないのは、同じ相手でも用途ごとに効く軸が違うからです。` },
     { q: `相性のスコアは何を根拠にしていますか？`,
-      a: `測定値ではありません。6つの軸それぞれについて「一致が効くか、違いが効くか」を用途別に重みづけし、追い風になっている軸の重みが全体の何割かを出しています。${code}は${profShort}なので、この6つが相手と揃うか外れるかで順位が決まります。設計した重みなので、数値だけでなく必ずどの軸が効いたかと一緒に見てください。` },
+      a: `測定値ではありません。6つの軸それぞれについて「一致が効くか、違いが効くか」を用途別に重みづけし、かみ合っている軸の重みが全体の何割かを出しています。${code}は${profShort}なので、この6つが相手と揃うか外れるかで順位が決まります。設計した重みなので、数値だけでなく必ずどの軸が効いたかと一緒に見てください。` },
     { q: `${code}同士の相性はどうですか？`,
       a: `${code}同士も相手として数えていて、恋人${same(0)}位・仕事${same(1)}位・友人${same(2)}位です。6つの軸がすべて同じになるので、一致が効く用途では上位に来て、違いが効く用途では下がります。同じタイプだから相性がいい、とも悪いとも決めていません。` },
     { q: `${code}と相性の悪いタイプはいますか？`,
@@ -569,10 +572,10 @@ function compatPage(code){
     { q: `${code}と${lists[0][0].code}はなぜ恋人として1位なのですか？`,
       a: (() => {
         const b0 = lists[0][0], re0 = R.pairReasons(code, b0.code, 0);
-        return `${code}と${b0.code}（${SUB[b0.code].label}）は、恋人としてのスコアが${b0.score}で64タイプ中1位です。追い風になっているのは${re0.up.map(r => r.title).join("、")}で、${re0.up[0].text}。`
+        return `${code}と${b0.code}（${SUB[b0.code].label}）は、恋人としてのスコアが${b0.score}で64タイプ中1位です。かみ合っているのは${re0.up.map(r => r.title).join("、")}で、${re0.up[0].text}。`
           + (re0.down.length
-              ? `逆に${re0.down.map(r => r.title).join("、")}は向かい風で、${re0.down[0].text}。ここは最初に取り決めておくところです。`
-              : `6軸すべてが追い風で、恋人として見たときにずれる軸がありません。`);
+              ? `逆に${re0.down.map(r => r.title).join("、")}はずれていて、${re0.down[0].text}。ここは最初に取り決めておくところです。`
+              : `6軸すべてがかみ合っていて、恋人として見たときにずれる軸がありません。`);
       })() }
   ];
 
@@ -638,7 +641,7 @@ ${cc.works ? `  <div class="sec split">
 
   <div class="sec split">
     <h2>同じ ${bt} の他の3タイプの相性</h2>
-    <p class="body-text">自分への確信（A / O）と人への構え（H / C）が変わると、順位も変わります。</p>
+    <p class="body-text">自分への確信（A / O）と人への構え（H / C）が変わると、順位も変わります。4つをまとめて、<a href="${base}t/${bt}/">${bt} というタイプ全体</a>として見ることもできます。</p>
     <div class="match-list" style="margin-top:16px">${siblings.map(c =>
       `<a class="chip" href="${base}t/${c}/compat/"><span class="thumb"><img src="${base}images/thumbs/${c}.webp" alt="" loading="lazy"></span><span class="c-txt"><span class="c1">${c}</span><span class="c2">${esc(SUB[c].label)}</span></span></a>`).join("")}</div>
   </div>
@@ -666,6 +669,177 @@ ${scripts(base, ["types.js", "render.js", "settings.js"])}
    存在しない状態に戻さないこと。
    ============================================================ */
 
+/* ============================================================
+   4文字（16タイプ）レベルの相性ページ  /t/<BASE>/compat/
+   ------------------------------------------------------------
+   世の中が検索しているのは「INTJ 相性」であって「INTJ-A-H 相性」ではない。
+   64枚のサブタイプ相性ページは、その階層に出せる玉が無かった（2026-09-21）。
+
+   ここで1つの数値に丸めないこと。丸めた瞬間に、根拠を示さない
+   他所の「INTJの相性」記事と同じものになる。A/O と H/C で
+   評価が覆るという事実こそが、このサイトだけが言えることなので、
+   サブタイプ16通りの幅をそのまま見せる。
+   ============================================================ */
+
+/* 0〜100 のレールに、下限〜上限の帯を置く。中央値に細い目盛りを1本。
+   数値だけだと「50〜86」がどのあたりなのか読めない（2026-09-21 たいし指摘）。
+   色は使わない。このサイトは単色なので、帯は --ink、覆る組み合わせだけ斜線にする。
+   薄いグレーの地では見分けがつかなかったので、地ではなく塗りの質で分ける。 */
+function rangeBar(sp, cls){
+  const w = Math.max(sp.max - sp.min, 2);
+  return `<span class="rb${sp.flips ? " rb-f" : ""}${cls ? " " + cls : ""}" role="img"`
+    + ` aria-label="100点満点で ${sp.min} から ${sp.max}、中央値 ${sp.median}${sp.flips ? "。サブタイプ次第でかみ合う側とずれる側が入れ替わります" : ""}">`
+    + `<i class="rb-fill" style="left:${sp.min}%;width:${w}%"></i>`
+    + `<i class="rb-mid" style="left:${sp.median}%"></i></span>`;
+}
+
+function rangeCell(sp){
+  return `<td class="bs-n"><b>${sp.min}〜${sp.max}</b>${rangeBar(sp, "rb-s")}</td>`;
+}
+
+/* 16タイプ全体の表。モンスター名は載せない（16枚すべてで同一の文字列になるため） */
+function baseTableHTML(base, bt){
+  const lists = R.baseRank(bt);
+  const pos = lists.map(l => { const m = {}; l.forEach(x => m[x.code] = x.s); return m; });
+  const all = lists[0].map(x => x.code).slice().sort();
+  return `<div class="ft-wrap"><table class="ft bs">
+    <thead><tr><th>タイプ</th><th>恋人</th><th>仕事</th><th>友人</th></tr></thead>
+    <tbody>${all.map(b => `<tr>
+      <td><span class="mono">${b}</span>${b === bt ? '<span class="ft-lab">同じタイプ</span>' : ""}</td>
+      ${pos.map(m => rangeCell(m[b])).join("")}
+    </tr>`).join("")}</tbody>
+  </table></div>
+  <p class="g-note" style="margin-top:14px">数字は、サブタイプの組み合わせ16通りで計算したスコアの下限〜上限です。6軸の重みづけから出した目安であって、測定値ではありません。帯が<span class="rb rb-f rb-key"><i class="rb-fill" style="left:0;width:100%"></i></span>斜線になっている組み合わせは、サブタイプ次第でかみ合うか、かみ合わないかが入れ替わります。</p>`;
+}
+
+/* その用途で、名指しできる3種類の顔ぶれ。16枚それぞれで中身が変わる */
+function verdictHTML(bt, list, i){
+  const names = ["恋人", "仕事のパートナー", "友人"];
+  const flips  = list.filter(x => x.s.flips).map(x => x.code);
+  const always = list.filter(x => x.s.verdict === "always-up").map(x => x.code);
+  const never  = list.filter(x => x.s.verdict === "always-down").map(x => x.code);
+  const li = [];
+  if (always.length) li.push(`<li><span class="vd-h up">どの組み合わせでもかみ合う</span>${always.map(c => `<span class="mono">${c}</span>`).join("")}</li>`);
+  if (flips.length)  li.push(`<li><span class="vd-h mid">サブタイプ次第で覆る</span>${flips.map(c => `<span class="mono">${c}</span>`).join("")}</li>`);
+  if (never.length)  li.push(`<li><span class="vd-h down">どの組み合わせでもかみ合わない</span>${never.map(c => `<span class="mono">${c}</span>`).join("")}</li>`);
+  if (!li.length) return "";
+  return `<ul class="verdicts">${li.join("")}</ul>
+    <p class="g-note" style="margin-top:10px">${bt} を${names[i]}として見たとき、${
+      flips.length
+        ? `${flips.length}タイプは相手のA/O・H/C次第で評価が入れ替わります。「${bt}と${flips[0]}は合う／合わない」と一言で言えないのはこのためです。`
+        : `評価が入れ替わる相手はいません。${always.length ? always.join("・") + "とは4通りのどれでもかみ合い、" : ""}${never.length ? never.join("・") + "とは4通りのどれでもかみ合いません。" : ""}この用途だけは、4文字の段階で方向が決まります。`
+    }</p>`;
+}
+
+function baseCompatPage(bt){
+  const b = BASE[bt], base = "../../";
+  const url = `${ORIGIN}/t/${bt}/`;
+  const ogimg = `${ORIGIN}/images/ogp/${bt}-A-H.jpg`;
+  const lists = R.baseRank(bt);
+  const cc = (BC && BC[bt]) || {};
+  const subs = SFX.map(sf => bt + "-" + sf);
+
+  const top = i => lists[i].filter(x => x.code !== bt).slice(0, 3).map(x => x.code);
+  const flipAll = [...new Set([].concat(...lists.map(l => l.filter(x => x.s.flips).map(x => x.code))))];
+
+  const title = `${bt}とは？性格・特徴と相性のいいタイプ｜${SITE}`;
+  const desc  = clip(`${bt}（${b.name}）とはどんなタイプか、相性がいいのはどのタイプか。${bt}は自分への確信と人への構えで4通りに分かれ、相性も1通りではありません。恋人・仕事・友人それぞれで全16タイプを順位づけました。`, 122);
+
+  const crumbs = [
+    { name: SITE, href: base, abs: ORIGIN + "/" },
+    { name: "モンスターギャラリー", href: base + "types.html", abs: ORIGIN + "/types.html" },
+    { name: bt, href: url, abs: url }
+  ];
+
+  const faqs = [
+    { q: `${bt}と最も相性がいいのはどのタイプですか？`,
+      a: `用途によって変わります。恋人としては${top(0).join("、")}、仕事のパートナーとしては${top(1).join("、")}、友人としては${top(2).join("、")}が上位です。ただしどれも幅を持った数字で、相手の自分への確信（A/O）と人への構え（H/C）によって上下します。` },
+    { q: `同じ${bt}でも相性が違うのはなぜですか？`,
+      a: `自分への確信（A／O）と人への構え（H／C）が、関係のなかで最も摩擦を生む2つだからです。${bt}の場合、${flipAll.length ? `${flipAll.join("・")}との評価がここで入れ替わります。同じ${bt}でも、相手が${flipAll[0]}のどのサブタイプかで、かみ合う側にも、かみ合わない側にも振れます。` : `どの相手とも、この2つで順位が上下します。`}` },
+    { q: `相性のスコアは何を根拠にしていますか？`,
+      aHTML: `測定値ではありません。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして出した目安です。4文字では2軸が決まらないため、1つの数値に丸めず、16通りの下限と上限を出しています。軸そのものの説明は <a href="${base}64types/">64タイプ性格診断とは</a> にあります。`,
+      a: `測定値ではありません。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして出した目安です。4文字では2軸が決まらないため、1つの数値に丸めず、16通りの下限と上限を出しています。` },
+    { q: `自分が${bt}のどれなのか、どう調べますか？`,
+      a: `90問の診断を受けると、${subs.join("、")}のどれかが出ます。約10分・登録不要です。すでに${bt}だと分かっているなら、4つを読み比べるほうが早いこともあります。${lists[0][0].code !== bt ? `恋人としての上位が${lists[0][0].code}、仕事が${lists[1][0].code}` : `仕事としての上位が${lists[1][0].code}、友人が${lists[2][0].code}`}である理由も、自分のサブタイプが決まるとはっきりします。` }
+  ];
+
+  const ldPage = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title, url, inLanguage: "ja", description: desc,
+    isPartOf: { "@type": "WebSite", name: SITE, url: ORIGIN + "/" },
+    publisher: { "@type": "Organization", name: PUBLISHER, url: "https://wonder-bros.com" }
+  };
+
+  const sections = W.PURPOSES.map((P, i) => `<div class="sec split">
+      <h2>${esc(R.PURPOSE_LEAD[P.key])}</h2>
+      <p class="body-text">${cc[P.key] ? esc(cc[P.key]) : esc(P.lead) + `、16タイプを並べたときの順です。`}</p>
+      <div class="bs-top">${lists[i].slice(0, 6).map(x =>
+        `<div class="bs-card"><span class="bs-c mono">${x.code}</span><span class="bs-r">${x.s.min}〜${x.s.max}</span>${rangeBar(x.s)}<span class="bs-b">${esc(x.s.worst.band)} 〜 ${esc(x.s.best.band)}</span></div>`).join("")}</div>
+      ${verdictHTML(bt, lists[i], i)}
+    </div>`).join("\n");
+
+  return headHTML({ title, desc, url, base, ogimg, ogalt: `${bt} の相性`,
+                    ld: [ldPage, crumbLD(crumbs), faqLD(faqs)] }) +
+`<section id="basecompat" class="wrap">
+  ${crumbHTML(crumbs)}
+  <div class="page-head bh">
+    <div class="bh-txt">
+    <p class="eyebrow">${bt}</p>
+    <h1 class="subtitle">${bt} の性格と相性</h1>
+    <p class="lede">${bt}（${esc(b.name)}）がどんなタイプで、どのタイプとかみ合うのか。${bt}の相性は、1通りではありません。自分への確信と人への構えという2つの軸を足すと、${bt}は4通りに分かれ、相手も4通りに分かれます。同じ組み合わせでもスコアは幅を持ち、${flipAll.length ? `${flipAll.length}タイプでは、かみ合うかどうかの評価そのものが入れ替わります。` : `その幅のなかで順位が動きます。`}ここでは丸めずに、その幅ごと出しています。</p>
+    </div>
+    <!-- 2×2 は A/O（行）× H/C（列）の並びそのもの。「4通りに分かれる」と
+         書いている横に、その4体を同じ配置で置く -->
+    <div class="bh-figs">${subs.map(c =>
+      `<a href="${base}t/${c}/"><span class="bh-img"><img src="${base}images/thumbs/${c}.webp" alt="${c} ${esc(SUB[c].label)}" width="440" height="440" loading="eager" decoding="async"></span><span class="bh-c mono">${c}</span></a>`).join("")}</div>
+  </div>
+
+${cc.intro ? `  <div class="sec split">
+    <h2>${bt} とはどんなタイプか</h2>
+    <p class="body-text">${esc(cc.intro)}</p>
+  </div>
+
+` : ""}${cc.stance ? `  <div class="sec split">
+    <h2>${bt} が関係のなかでやっていること</h2>
+    <p class="body-text">${esc(cc.stance)}</p>
+  </div>
+
+` : ""}${sections}
+
+  <div class="sec split">
+    <h2>全16タイプとの相性</h2>
+    <p class="body-text">上の3つは用途ごとの上位です。全体はこちらで、恋人・仕事・友人それぞれの下限〜上限を並べています。</p>
+    ${baseTableHTML(base, bt)}
+    <p class="g-note bs-links" style="margin-top:16px">ほかのタイプの相性：${
+      BASE_KEYS.filter(k => k !== bt).map(k => `<a href="${base}t/${k}/">${k}</a>`).join("")
+    }</p>
+  </div>
+
+  <div class="sec split">
+    <h2>${bt} の4つのタイプ</h2>
+    <p class="body-text">自分がどれなのかが分かると、上の幅が1つの数字に定まります。A/O は自分の判断をどれだけ疑うか、H/C は人にどこから心を開くかの軸です。</p>
+    <div class="match-list" style="margin-top:16px">${subs.map(c =>
+      `<a class="chip" href="${base}t/${c}/"><span class="thumb"><img src="${base}images/thumbs/${c}.webp" alt="" loading="lazy"></span><span class="c-txt"><span class="c1">${c}</span><span class="c2">${esc(SUB[c].label)}</span></span></a>`).join("")}</div>
+    <p class="g-note" style="margin-top:14px">軸そのものの説明は <a href="${base}axis/ao/">AとOの違い</a> と <a href="${base}axis/hc/">HとCの違い</a> にあります。</p>
+  </div>
+
+  ${faqHTML(faqs)}
+
+  ${quizCtaHTML(base, "自分がどの4通りなのかが分かると、相性の幅が1つの数字になります。")}
+
+  <p class="disclaimer">相性の数値は、6軸の重みづけから計算した目安です。人の関係は、タイプだけで決まるものではありません。</p>
+
+  ${footHTML(base)}
+</section>
+
+${ownNoteHTML(base)}
+${scripts(base, ["types.js", "render.js", "settings.js"])}
+</body>
+</html>
+`;
+}
+
 function galleryPage(){
   const base = "", url = ORIGIN + "/types.html";
   const title = `64タイプ一覧｜モンスターギャラリー｜${SITE}`;
@@ -686,10 +860,10 @@ function galleryPage(){
         `<span class="tdesc" style="display:block">${esc(s.desc)}</span></span></a>`;
     }).join("");
     return `<section class="group" id="g-${k}"><div class="group-head"><span class="gc">${k}</span>` +
-      `<span class="gn">${esc(b.name)}</span><span class="gt">${esc(b.tagline)}</span></div>` +
+      `<span class="gn">${esc(b.name)}</span><span class="gt">${esc(b.tagline)}</span>` +
+      `<a class="group-link" href="t/${k}/">${k} タイプを詳しく見る</a></div>` +
       `<p class="group-sum">${esc(b.summary)}</p>` +
-      `<div class="tgrid">${cards}</div>` +
-      `<p class="group-more"><a href="t/${k}-O-H/compat/">${k} の相性を見る</a></p></section>`;
+      `<div class="tgrid">${cards}</div></section>`;
   }).join("\n");
 
   const jump = BASE_KEYS.map(k =>
@@ -1211,6 +1385,10 @@ for (const code of CODES){
   pages.push({ rel: `t/${code}/index.html`,        loc: `${ORIGIN}/t/${code}/`,        pri: "0.7", html: typePage(code) });
   pages.push({ rel: `t/${code}/compat/index.html`, loc: `${ORIGIN}/t/${code}/compat/`, pri: "0.6", html: compatPage(code) });
 }
+BASE_KEYS.forEach(bt => {
+  pages.push({ rel: `t/${bt}/index.html`, loc: `${ORIGIN}/t/${bt}/`, pri: "0.85", html: baseCompatPage(bt) });
+});
+
 pages.push({ rel: "types.html",         loc: `${ORIGIN}/types.html`,  pri: "0.9", html: galleryPage() });
 pages.push({ rel: "64types/index.html", loc: `${ORIGIN}/64types/`,    pri: "0.9", html: hubPage() });
 pages.push({ rel: "axis/ao/index.html", loc: `${ORIGIN}/axis/ao/`,    pri: "0.8", html: axisPage("AO") });

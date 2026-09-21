@@ -89,7 +89,7 @@
     });
   }
 
-  /* その用途で、2人のあいだで効いている軸。追い風・向かい風それぞれ重みの大きい順。
+  /* その用途で、2人のあいだで効いている軸。かみ合う側・ずれる側それぞれ重みの大きい順。
      用途ごとに pref が違うので、必ず見ている用途の index で取ること
      （以前ここで恋人の内訳を仕事・友人の節にも出していた） */
   function pairReasons(a, b, i){
@@ -119,6 +119,58 @@
       });
     });
     return lists;
+  }
+
+  /* ===== 4文字（16タイプ）レベルの相性 =====
+     4文字の段階では A/O（自分への確信）と H/C（人への構え）が分からない。
+     そこを平均して1つの数値に丸めると、このサイトの取り柄が消えるうえ、
+     根拠を示さない他所の「INTJの相性」記事と同じものになる。
+     なので丸めず、サブタイプの組み合わせ16通りぶんの幅をそのまま返す。
+
+     注意: 幅の「大きさ」は全256組で同じになる（恋人31点・仕事36点・友人25点）。
+     A/O と H/C の重みが4文字の中身に依存しないので当然そうなる。
+     したがってページに書けるのは幅の数値ではなく、レンジの位置と、
+     どの相手で評価が覆るかという顔ぶれのほう。 */
+  var BAND_ORDER = ["ほとんどかみ合わない", "かみ合いにくい", "半々", "かみ合う", "よくかみ合う"];
+  function bandIndex(score){
+    return score >= 80 ? 4 : score >= 60 ? 3 : score >= 40 ? 2 : score >= 20 ? 1 : 0;
+  }
+
+  /* a, b は4文字。用途ごとに16通りの内訳と、そのまとめを返す */
+  function baseSpread(a, b){
+    var SFX = ["A-H", "A-C", "O-H", "O-C"];
+    return root.PURPOSES.map(function(P, i){
+      var list = [];
+      SFX.forEach(function(sa){
+        SFX.forEach(function(sb){
+          var s = purposeScores(a + "-" + sa, b + "-" + sb)[i];
+          list.push({ a:a + "-" + sa, b:b + "-" + sb, score:s.score, band:s.band });
+        });
+      });
+      list.sort(function(x, y){ return (y.score - x.score) || (x.a < y.a ? -1 : 1); });
+      var hi = list[0], lo = list[list.length - 1];
+      var sorted = list.map(function(x){ return x.score; }).sort(function(p, q){ return p - q; });
+      var median = Math.round((sorted[7] + sorted[8]) / 2);
+      /* 「覆る」= かみ合いにくい以下からかみ合う以上まで届く。中途半端な幅は数えない */
+      var flips = bandIndex(lo.score) <= 1 && bandIndex(hi.score) >= 3;
+      return {
+        key:P.key, title:P.title, all:list,
+        min:lo.score, max:hi.score, median:median,
+        best:hi, worst:lo, flips:flips,
+        verdict: lo.score >= 60 ? "always-up" : hi.score < 40 ? "always-down" : "mixed"
+      };
+    });
+  }
+
+  /* あるベースタイプから見た、16タイプぶんのまとめ（用途ごとに中央値で並べる） */
+  function baseRank(a){
+    var keys = Object.keys(root.BASE_TYPES);
+    var rows = keys.map(function(b){ return { code:b, p:baseSpread(a, b) }; });
+    return root.PURPOSES.map(function(P, i){
+      return rows.slice().sort(function(x, y){
+        return (y.p[i].median - x.p[i].median) || (y.p[i].max - x.p[i].max) || (x.code < y.code ? -1 : 1);
+      }).map(function(r){ return { code:r.code, s:r.p[i] }; });
+    });
   }
 
   /* 2人が、それぞれの用途で64タイプ中の何位にあたるか（/pair/ 用） */
@@ -158,12 +210,15 @@
 
   /* 用途ごとの相性スコア（/pair/ 用）
      6軸それぞれについて「一致が効く／違いが効く」を用途別に重みづけし、
-     追い風になっている軸の重みが全体の何割かを出す。測定値ではなく設計した重みなので、
+     かみ合っている軸の重みが全体の何割かを出す。測定値ではなく設計した重みなので、
      数値だけを出さず、必ずどの軸が効いたかを一緒に見せること。 */
   var BANDS = [
-    { min:80, lab:"かなり追い風" }, { min:60, lab:"追い風" },
-    { min:40, lab:"半々" },        { min:20, lab:"向かい風が多い" },
-    { min:0,  lab:"ほぼ向かい風" }
+    /* 段階の言い回し。「追い風／向かい風」は比喩なので、読む側が一度
+       翻訳しないと意味が取れなかった（2026-09-21 たいし指摘）。
+       見出しの「恋人としてかみ合う相手」と語を揃えて、そのまま読める形にする。 */
+    { min:80, lab:"よくかみ合う" },   { min:60, lab:"かみ合う" },
+    { min:40, lab:"半々" },           { min:20, lab:"かみ合いにくい" },
+    { min:0,  lab:"ほとんどかみ合わない" }
   ];
   function letterMap(code){
     var p = code.split("-");
@@ -197,6 +252,7 @@
     matrixHTML:matrixHTML, chipHTML:chipHTML, topHTML:topHTML,
     rankAll:rankAll, standing:standing, relation:relation, purposeWhy:purposeWhy,
     axisProfile:axisProfile, pairReasons:pairReasons,
+    baseSpread:baseSpread, baseRank:baseRank, bandIndex:bandIndex, BAND_ORDER:BAND_ORDER,
     PURPOSE_SHORT:PURPOSE_SHORT, PURPOSE_LEAD:PURPOSE_LEAD,
     purposeScores:purposeScores, letterMap:letterMap
   };
