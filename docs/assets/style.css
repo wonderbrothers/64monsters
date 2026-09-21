@@ -100,7 +100,11 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 #intro{ padding:clamp(34px,7vh,72px) 0 40px; }
 .intro-head{ padding-bottom:34px; }
 .intro-head .eyebrow{ margin-bottom:14px; }
-.title{ font-size:clamp(2.25rem, 7vw, 3.5rem); letter-spacing:.02em; margin-top:14px; }
+/* ページ見出し。以前はギャラリーだけが h1 にインラインで
+   clamp(1.875rem, 5vw, 2.625rem) を直書きして42pxにしており、
+   クラスの既定値（56px）は誰も使っていなかった（2026-09-21 たいし指摘）。
+   実際に使われていた値のほうをクラスに移し、インラインは消した。 */
+.title{ font-size:clamp(1.875rem, 5vw, 2.625rem); letter-spacing:.02em; margin-top:14px; }
 .title .num{
   font-family:var(--f-mono); font-weight:500;
   background:var(--grad-text); -webkit-background-clip:text; background-clip:text;
@@ -1752,8 +1756,7 @@ html{ overflow-x:clip; }
 .crumb{
   /* 折り返さず、1行に収める。入りきらないときは先頭と中間から「…」で削る。
      文字は消さずにCSSで隠すだけなので、読み上げにも検索にも全文が残る。
-     縮むのは先頭と中間だけ（flex-shrink:3・下限3.2em）。
-     現在地の直前（タイプコードなど）は最後に、しかも 5.5em まで残す。
+     先に縮むのは先頭と中間（flex-shrink:3）。現在地の直前は最後（flex-shrink:1）。
      現在地は縮めない（flex-shrink:0）。いまどこにいるかが読めなくなっては意味がない。
      そのぶんパンくずのラベルは短く保つこと。長い見出しをそのまま入れない */
   display:flex; flex-wrap:nowrap; align-items:center; gap:6px;
@@ -1762,9 +1765,15 @@ html{ overflow-x:clip; }
 .crumb a, .crumb [aria-current]{
   min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
-.crumb a{ flex:0 3 auto; min-width:3.2em; color:var(--ink-3); text-decoration:none; border-bottom:1px solid transparent; }
-/* 現在地のひとつ手前（タイプコードなど、そのページを名指している語）は最後に削る */
-.crumb a:last-of-type{ flex-shrink:1; min-width:5.5em; }
+/* 既定は縮まない。縮むのは長いラベルを持つ先頭2つだけにする。
+   以前は全リンクに flex-shrink と min-width を掛けていたため、
+   短い語（4文字コード）が下限ぶん広がって余白に見えていた
+   （2026-09-21 たいし指摘）。下限を消すと今度は短い語まで
+   「I…」まで削れたので、そもそも縮める対象を絞る。
+   なお min() の中に max-content は書けない（宣言ごと無効になる） */
+.crumb a{ flex:0 0 auto; color:var(--ink-3); text-decoration:none; border-bottom:1px solid transparent; }
+.crumb a:nth-of-type(1), .crumb a:nth-of-type(2){ flex:0 3 auto; min-width:3.2em; }
+
 .crumb a:hover{ color:var(--ink); border-bottom-color:var(--line-2); }
 .crumb [aria-current]{ flex:0 0 auto; color:var(--ink-2); font-family:var(--f-mono); }
 .crumb-sep{ flex:0 0 auto; color:var(--line-2); }
@@ -2172,3 +2181,4 @@ html[data-visit="other"] [data-when~="other"]{ display:block; }
   .bs-top{ grid-template-columns:1fr; }
   .vd-h{ min-width:100%; }
 }
+

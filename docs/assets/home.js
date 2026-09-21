@@ -29,12 +29,14 @@
   }).join("");
 
   /* ---------- キャラクターの帯 ---------- */
-  /* 16の基本タイプを1枚ずつ。絵は各タイプの A-H を代表に使い、
-     押すとそのタイプのページへ行く（行き先は従来の帯と同じ /t/<CODE>/）。 */
+  /* 16の基本タイプを1枚ずつ。絵は各タイプの A-H を代表に使う。
+     行き先は4文字のページ /t/<BASE>/。カードに出しているのは4文字（INTJ）と
+     そのタイプ名なので、A-H のページへ送ると、押したものと違うページが開く
+     （2026-09-21 たいし指摘）。絵の代表と行き先は別に考える。 */
   (function renderStrip(){
     $("strip").innerHTML = Object.keys(BASE).map(function(k){
       var code = k + "-A-H", b = BASE[k];
-      return '<a class="mcard" href="' + TURL(code) + '">' +
+      return '<a class="mcard" href="' + B + 't/' + k + '/">' +
         '<span class="thumb"><img src="' + THUMB(code) + '" alt="" loading="lazy"></span>' +
         '<span class="mbody">' +
           '<span class="mcode">' + k + '</span>' +

@@ -602,7 +602,7 @@ function compatPage(code){
   ${crumbHTML(crumbs)}
   <div class="page-head">
     <p class="eyebrow">compatibility</p>
-    <h1 class="subtitle">${code} の相性</h1>
+    <h1 class="title">${code} の相性</h1>
     <p class="lede">${code}（${esc(s.label)}）は、${esc(profText)}。この6つが相手とどう噛み合うかで、恋人・仕事のパートナー・友人それぞれの順位が決まります。6軸の重みづけから計算した目安であって、測定値ではありません。</p>
   </div>
 
@@ -786,7 +786,7 @@ function baseCompatPage(bt){
   <div class="page-head bh">
     <div class="bh-txt">
     <p class="eyebrow">${bt}</p>
-    <h1 class="subtitle">${bt} の性格と相性</h1>
+    <h1 class="title">${bt} の性格と相性</h1>
     <p class="lede">${bt}（${esc(b.name)}）がどんなタイプで、どのタイプとかみ合うのか。${bt}の相性は、1通りではありません。自分への確信と人への構えという2つの軸を足すと、${bt}は4通りに分かれ、相手も4通りに分かれます。同じ組み合わせでもスコアは幅を持ち、${flipAll.length ? `${flipAll.length}タイプでは、かみ合うかどうかの評価そのものが入れ替わります。` : `その幅のなかで順位が動きます。`}ここでは丸めずに、その幅ごと出しています。</p>
     </div>
     <!-- 2×2 は A/O（行）× H/C（列）の並びそのもの。「4通りに分かれる」と
@@ -885,7 +885,7 @@ function galleryPage(){
   ${crumbHTML(crumbs)}
   <div class="page-head">
     <p class="eyebrow">index</p>
-    <h1 class="title" style="font-size:clamp(1.875rem, 5vw, 2.625rem)">モンスターギャラリー</h1>
+    <h1 class="title">モンスターギャラリー</h1>
     <p class="lede">4文字のコード × 自分への確信（A / O）× 人への構え（H / C）で64通り。カードを開くと、そのタイプの解説が読めます。コードの読み方は <a href="64types/">64タイプ性格診断とは</a> にまとめています。</p>
   </div>
   <nav class="gjump" id="gjump" aria-label="基本タイプへ移動">${jump}</nav>
@@ -1029,7 +1029,7 @@ function hubPage(){
   ${crumbHTML(crumbs)}
   <div class="page-head">
     <p class="eyebrow">about 64 types</p>
-    <h1 class="subtitle">64タイプ性格診断とは</h1>
+    <h1 class="title">64タイプ性格診断とは</h1>
     <p class="lede">90問への回答から6つの軸を算出し、いまの自己認識を64通りのタイプとして表すものです。<code class="mono">INTJ-O-H</code> のように、E / I・S / N・T / F・P / J の4組の記号に、<b>自分への確信（A / O）</b>と<b>人への構え（H / C）</b>を加えて書きます。<b>各記号の意味・設問・採点方法・結果の解釈は、すべて64モンスターズ独自のものです。</b></p>
   </div>
 
@@ -1151,7 +1151,7 @@ function axisPage(kind){
   ${crumbHTML(crumbs)}
   <div class="page-head">
     <p class="eyebrow">axis ${L1.l} / ${L2.l}</p>
-    <h1 class="subtitle">${A.h1}</h1>
+    <h1 class="title">${A.h1}</h1>
     <p class="lede">${esc(A.lede)}</p>
   </div>
 
@@ -1232,7 +1232,7 @@ function privacyPage(){
   ${crumbHTML(crumbs)}
   <div class="page-head">
     <p class="eyebrow">privacy</p>
-    <h1 class="subtitle">プライバシーポリシー</h1>
+    <h1 class="title">プライバシーポリシー</h1>
     <p class="lede">何をこの端末の中だけに置いていて、何が外に出ているのか。ここを混ぜずに書きます。</p>
   </div>
 
@@ -1310,7 +1310,7 @@ function termsPage(){
   ${crumbHTML(crumbs)}
   <div class="page-head">
     <p class="eyebrow">terms</p>
-    <h1 class="subtitle">利用規約</h1>
+    <h1 class="title">利用規約</h1>
     <p class="lede">64モンスターズ（以下「本サービス」）をお使いいただくうえでの約束ごとです。株式会社ワンダーブラザース（以下「当社」）が定めます。</p>
   </div>
 
