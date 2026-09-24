@@ -76,8 +76,9 @@ ${consentTag(o.base)}
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(o.title)}</title>
 <meta name="description" content="${esc(o.desc)}">
-<link rel="canonical" href="${o.url}">
-<meta name="robots" content="index, follow, max-image-preview:large">
+${o.noindex
+  ? `<meta name="robots" content="noindex, follow">`
+  : `<link rel="canonical" href="${o.url}">\n<meta name="robots" content="index, follow, max-image-preview:large">`}
 <meta name="author" content="${PUBLISHER}">
 <meta name="theme-color" content="#FFFAEF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)">
@@ -1287,6 +1288,37 @@ ${scripts(base, ["types.js", "render.js", "settings.js"])}
 }
 
 /* ============================================================
+   404  （存在しないURL）
+   ------------------------------------------------------------
+   GitHub Pages は、どの階層のURLでも docs/404.html の中身を返す。
+   相対パスだと /t/XXXX/yyy のような深いURLで CSS や画像が切れるので、base は "/"（絶対パス）。
+   noindex・canonical なし・sitemap に入れない。
+   ============================================================ */
+function notFoundPage(){
+  const base = "/";
+  return headHTML({ title: `ページが見つかりません｜${SITE}`,
+                    desc: "お探しのページは見つかりませんでした。",
+                    url: ORIGIN + "/", base, noindex: true, ogtype: "website",
+                    ogimg: ORIGIN + "/images/ogp.png" }) +
+`<section id="notfound" class="wrap">
+  <div class="page-head">
+    <p class="eyebrow">404 not found</p>
+    <h1 class="title">ページが見つかりません</h1>
+    <p class="lede">お探しのページは、移動したか削除された可能性があります。URLに間違いがないかもご確認ください。</p>
+  </div>
+  <div class="sec">
+    <p><a class="btn" href="${base}">ホームへ戻る</a></p>
+  </div>
+  ${footHTML(base, "")}
+</section>
+
+${scripts(base, ["types.js", "render.js", "settings.js"])}
+</body>
+</html>
+`;
+}
+
+/* ============================================================
    利用規約  /terms/
    ------------------------------------------------------------
    法律文書らしく威圧的に書かない。ただし、守りたいものははっきりさせる。
@@ -1400,6 +1432,9 @@ pages.push({ rel: "privacy/index.html", loc: `${ORIGIN}/privacy/`,    pri: "0.3"
 pages.push({ rel: "terms/index.html",   loc: `${ORIGIN}/terms/`,      pri: "0.3", html: termsPage() });
 
 for (const p of pages) write(p.rel, p.html);
+/* 404 は sitemap に入れない（pages に積まない）。GitHub Pages が存在しないURLに対して
+   ステータス 404 のままこの中身を返す */
+write("404.html", notFoundPage());
 console.log(`ページを生成しました: ${pages.length} 枚`);
 
 /* ---- 手書きページのサイト内リンクを、SITE_LINKS から上書きする ----
@@ -1505,7 +1540,7 @@ console.log(`手書きページのサイト内リンクを同期しました: ${
    パンくず・見出しブロック・サイト内リンクは、手で足すページがあるぶん抜けやすい。
    実際に about / pair / friends に抜けがあった。黙って通さない。 */
 {
-  const skip = new Set(["quiz/index.html"]);          /* 90問に集中する画面。導線を置かない */
+  const skip = new Set(["quiz/index.html", "404.html"]);   /* 90問に集中する画面・404 は導線を置かない */
   const noCrumb = new Set(["index.html"]);            /* トップは現在地そのもの */
   const walk = (d = "") => fs.readdirSync(path.join(DOCS, d), { withFileTypes: true })
     .flatMap(e => {
@@ -1577,3 +1612,42 @@ ${urls.map(u => `  <url><loc>${u.loc}</loc><lastmod>${u.lastmod}</lastmod><prior
 </urlset>
 `);
 console.log(`sitemap.xml を更新しました: ${urls.length} URL（うち中身が変わったもの ${moved} 件 → lastmod を ${now} に）`);
+
+/* ---- 検索向けの基本（title / description / canonical / sitemap）をビルドのたびに検査する ----
+   タイプページやSEOページが数百枚に増えても、テンプレートの書き損じや手書きページの抜けを
+   黙って公開しないための関所。1つでも外れたらビルドを止める。
+     ・index 対象のページ … canonical が自分自身のURL（https / 末尾スラッシュ / クエリなし）
+     ・title と description … 空でない・index 対象のページ同士で重複しない
+     ・sitemap.xml … index 対象のページだけを、漏れなく載せている（noindex・404 は載せない） */
+{
+  const walk = (d = "") => fs.readdirSync(path.join(DOCS, d), { withFileTypes: true })
+    .flatMap(e => {
+      const r = d ? d + "/" + e.name : e.name;
+      if (e.isDirectory()) return (e.name === "images" || e.name === "assets") ? [] : walk(r);
+      return e.name.endsWith(".html") ? [r] : [];
+    });
+  const pick = (html, re) => { const m = html.match(re); return m ? m[1] : ""; };
+  const urlOf = rel => ORIGIN + "/" + rel.replace(/(^|\/)index\.html$/, "$1");
+  const bad = [], titles = new Map(), descs = new Map(), indexable = new Set();
+  for (const rel of walk()){
+    const html = fs.readFileSync(path.join(DOCS, rel), "utf8");
+    const robots = pick(html, /<meta name="robots" content="([^"]*)"/);
+    const noindex = /noindex/.test(robots) || rel === "404.html";
+    if (rel === "404.html" && !/noindex/.test(robots)) bad.push(`  ✗ 404.html … noindex が無い`);
+    if (noindex) continue;
+    const title = pick(html, /<title>([^<]*)<\/title>/);
+    const desc = pick(html, /<meta name="description" content="([^"]*)"/);
+    const canon = pick(html, /<link rel="canonical" href="([^"]*)"/);
+    if (!title) bad.push(`  ✗ ${rel} … title が空`);
+    if (!desc) bad.push(`  ✗ ${rel} … description が空`);
+    if (canon !== urlOf(rel)) bad.push(`  ✗ ${rel} … canonical が自分のURLでない（${canon || "なし"} / 期待値 ${urlOf(rel)}）`);
+    if (titles.has(title)) bad.push(`  ✗ ${rel} … title が ${titles.get(title)} と重複`); else titles.set(title, rel);
+    if (descs.has(desc)) bad.push(`  ✗ ${rel} … description が ${descs.get(desc)} と重複`); else descs.set(desc, rel);
+    indexable.add(urlOf(rel));
+  }
+  const inMap = new Set(urls.map(u => u.loc));
+  for (const u of indexable) if (!inMap.has(u)) bad.push(`  ✗ sitemap に無い: ${u}`);
+  for (const u of inMap) if (!indexable.has(u)) bad.push(`  ✗ sitemap に index 対象外のURLがある: ${u}`);
+  if (bad.length) throw new Error("検索向けの基本に不備があります:\n" + bad.join("\n"));
+  console.log(`title・description・canonical・sitemap の整合を確認しました（index 対象 ${indexable.size} ページ）`);
+}

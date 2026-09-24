@@ -152,7 +152,7 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 
 | イベント | いつ | 一緒に送る値 |
 |---|---|---|
-| `quiz_start` | `/quiz/` を新規に開いた | `total_questions` |
+| `quiz_start` | `/quiz/` を新規に開いた | `total_questions` `entry_page`（直前に見ていたページの種類：type / compat / base_type / axis / hub / gallery / home / direct / external など。URLやコードは送らない） `restart` |
 | `quiz_progress` | 25% / 50% / 75%（23・45・68問目）を通過した | `question_no` `progress_pct` `elapsed_sec` |
 | `quiz_pause` | 「保存して中断」を押した | `question_no` `answered` `progress_pct` `elapsed_sec` |
 | `quiz_exit` | `/quiz/` から HOME で抜けた、またはタブを閉じた・戻った | 同上 |
@@ -178,6 +178,16 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 | `friends_clear` | フレンドをすべて削除した | — |
 
 > **GTM側の設定が要ります。** ここで送っているのは dataLayer までです。GA4 に届けるには、GTM で各イベント名のトリガーと GA4 イベントタグを作る必要があります（既存の設定にないイベントは、そのままでは GA4 に現れません）。
+
+## 検索向けの基本（ビルドで検査）
+
+`npm run pages` は、生成のあとに次を検査し、1つでも外れたら止まります（タイプページが数百枚に増えても崩れないようにするため）。
+
+- index 対象のページの canonical が自分自身のURLであること（https・末尾スラッシュ・クエリなし）
+- title と description が空でなく、index 対象のページ同士で重複しないこと
+- `sitemap.xml` が index 対象のページだけを漏れなく載せていること（noindex・404 は載せない）
+
+存在しないURLには `docs/404.html`（`build-pages.js` の `notFoundPage()` が生成・noindex・絶対パス）が HTTP 404 で返ります。
 
 ## Cookie 同意（Google Consent Mode v2）
 

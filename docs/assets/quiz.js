@@ -174,6 +174,26 @@
     else if (e.key === "ArrowLeft" && pos > 0){ pos--; renderQuestion(); }
   });
 
+  /* どのページから診断を始めたか（SEOページ → 診断開始 の流れを見るため）。
+     同じサイト内の直前のページを、URLではなく「ページの種類」に丸めて送る。
+     タイプのコードや個人を特定できる値は含めない（type / compat / axis などの分類だけ）。 */
+  function entryPage(){
+    var r;
+    try { r = document.referrer ? new URL(document.referrer) : null; } catch(e){ r = null; }
+    if (!r) return "direct";
+    if (r.host !== location.host) return "external";
+    var p = r.pathname;
+    if (/^\/t\/[^/]+\/compat\/?$/.test(p)) return "compat";
+    if (/^\/t\/[A-Z]{4}\/?$/.test(p)) return "base_type";
+    if (/^\/t\/[^/]+\/?$/.test(p)) return "type";
+    if (/^\/axis\//.test(p)) return "axis";
+    if (/^\/64types\/?$/.test(p)) return "hub";
+    if (/^\/types(\.html)?$/.test(p)) return "gallery";
+    if (p === "/" || p === "/index.html") return "home";
+    var m = p.match(/^\/([a-z]+)\/?$/);
+    return m ? m[1] : "other";
+  }
+
   /* ---------- 開始 ---------- */
   (function init(){
     var restart = /[?&]restart=1(&|$)/.test(location.search);
@@ -184,7 +204,7 @@
       ORDER = d.o;                                 /* 中断したときの並びで続ける */
       E.track("quiz_resume", { question_no: pos + 1, elapsed_sec: Math.round(doneMs / 1000) });
     } else {
-      E.track("quiz_start", { total_questions: Q.length });
+      E.track("quiz_start", { total_questions: Q.length, entry_page: entryPage(), restart: restart });
     }
     /* ?restart=1 は履歴に残さない（戻るでもう一度消えないように） */
     if (restart && history.replaceState) history.replaceState(null, "", location.pathname);

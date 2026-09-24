@@ -22,7 +22,7 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.6.0";
-  var BUILD   = "00235de";
+  var BUILD   = "5d21d8b";
   var BUILT   = "2026-09-24";
 
   var MYKEY = KEY + ".mytype";
@@ -361,6 +361,22 @@
      ここで閉じておくと、Cookie設定を閉じたときにフォーカスがヘッダーのボタンへ戻る */
   modal.addEventListener("click", function(e){ if (e.target.closest("[data-wb-consent-open]")) closeModal(); });
   drawer.addEventListener("click", function(e){ if (e.target.closest("[data-wb-consent-open]")) closeDrawer(); });
+  /* 開いているモーダル／ドロアーの中だけを Tab で巡回させる（フォーカストラップ）。
+     このファイルのモーダル・ドロアーと、type.js のマイタイプ登録モーダルに共通で効く。 */
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Tab") return;
+    var open = document.querySelectorAll(".modal:not(.hidden) [role=dialog], .drawer:not(.hidden) [role=dialog]");
+    var dlg = open[open.length - 1];
+    if (!dlg) return;
+    var f = Array.prototype.filter.call(
+      dlg.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'),
+      function(el){ return el.offsetParent !== null; });
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (!dlg.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
   document.addEventListener("keydown", function(e){
     if (e.key !== "Escape") return;
     if (!modal.classList.contains("hidden")) closeModal();
