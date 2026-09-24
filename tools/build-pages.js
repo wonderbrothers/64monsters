@@ -858,7 +858,6 @@ ${cc.intro ? `  <div class="sec split">
 
 ${footHTML(base)}
 
-${ownNoteHTML(base)}
 ${scripts(base, ["types.js", "render.js", "settings.js"])}
 </body>
 </html>
@@ -1564,6 +1563,18 @@ console.log(`手書きページのフッターを同期しました: ${HAND_PAGE
     if (!html.includes('<footer class="site-footer">')) lack.push("共通フッター");
     /* フッターはセクションの外に置く。中に入ると終わりの余白がページごとに変わる */
     else if (/<section[\s\S]*<footer class="site-footer">[\s\S]*?<\/footer>[\s\S]*?<\/section>/.test(html)) lack.push("共通フッターがセクションの中にある");
+    /* フッターより下には何も置かない。
+       置くと「ページの終わり」が二重になり、実際 /t/ENTP/ などの4文字ページでは
+       注記がフッターの外（wrap の外）にもう一度出ていた。
+       読み込むスクリプトと閉じタグだけを許す。 */
+    else {
+      const tail = html.split("</footer>").pop()
+        .replace(/<script[\s\S]*?<\/script>/g, "")
+        .replace(/<\/(?:body|html|div)>/g, "")
+        .replace(/<canvas[^>]*class="[^"]*sr-only[^"]*"[^>]*><\/canvas>/g, "")   /* 画像保存用の隠しcanvas */
+        .trim();
+      if (tail) lack.push(`共通フッターより下に中身がある（${tail.slice(0, 40)}…）`);
+    }
     if (lack.length) warn.push(`  ! ${rel} … ${lack.join(" / ")}`);
   }
   if (warn.length){ console.warn("共通パーツの欠け:"); warn.forEach(w => console.warn(w)); process.exitCode = 1; }
