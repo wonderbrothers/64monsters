@@ -178,8 +178,9 @@ function siteNavHTML(base, current){
     /* Cookie設定（アクセス解析の許可・拒否）。ページではないので <button>。開くのは wb-consent.js */
     `<li><button type="button" class="sitenav-cookie" data-wb-consent-open>Cookie設定</button></li>`;
   /* 字下げは0で返す。手書きページへ差し込むときに、その行の字下げを足す */
+  /* 見出しは置かない。並びを見れば足回りのリンクだと分かるし、
+     読み上げには nav の aria-label がある */
   return `<nav class="sitenav" aria-label="サイト内リンク">
-  <p class="sitenav-h">サイト内のページ</p>
   <ul>${items}</ul>
   <ul class="sitenav-legal">${legal}</ul>
 </nav>`;
@@ -222,10 +223,21 @@ function ownNoteHTML(base){
   return `<p class="disclaimer own-note">${esc(OWN_NOTE)} <a href="${base}about/">この診断について</a></p>`;
 }
 
+/* ---- 全ページ共通のフッター ----
+   独自性の注記・サイト内リンク・著作権を1つの <footer> にまとめる。
+   以前はこれを各ページの最後のセクションの中に置いていたため、
+   終わりの余白や罫線がそのセクションの指定に左右されていた。
+   セクションの外に出したことで、見た目は .site-footer だけで決まる。
+   手書きの5ページにも同じものをビルドのたびに流し込む（下の同期処理）。
+   中に入れるものを増やすときは、必ずここだけを直すこと。 */
 function footHTML(base, current){
-  return `${ownNoteHTML(base)}
-  ${siteNavHTML(base, current)}
-  <p class="copy">© 2026 WONDER BROTHERS INC. All rights reserved.</p>`;
+  return `<footer class="site-footer">
+  <div class="wrap">
+    ${ownNoteHTML(base)}
+    ${siteNavHTML(base, current).split("\n").join("\n    ")}
+    <p class="copy">© 2026 WONDER BROTHERS INC. All rights reserved.</p>
+  </div>
+</footer>`;
 }
 
 function scripts(base, list){
@@ -467,9 +479,10 @@ ${loveSec}
     この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
   </p>
 
-  ${footHTML(base)}
   </div>
 </section>
+
+${footHTML(base)}
 
 <canvas id="shareCanvas" width="1080" height="1080" class="sr-only"></canvas>
 
@@ -662,8 +675,9 @@ ${cc.works ? `  <div class="sec split">
 
   <p class="disclaimer">相性の数値は、6軸の重みづけから計算した目安です。人の関係は、タイプだけで決まるものではありません。</p>
 
-  ${footHTML(base)}
 </section>
+
+${footHTML(base)}
 
 ${scripts(base, ["types.js", "render.js", "settings.js"])}
 </body>
@@ -840,8 +854,9 @@ ${cc.intro ? `  <div class="sec split">
 
   <p class="disclaimer">相性の数値は、6軸の重みづけから計算した目安です。人の関係は、タイプだけで決まるものではありません。</p>
 
-  ${footHTML(base)}
 </section>
+
+${footHTML(base)}
 
 ${ownNoteHTML(base)}
 ${scripts(base, ["types.js", "render.js", "settings.js"])}
@@ -905,8 +920,9 @@ ${groups}
 
   ${quizCtaHTML(base, "自分がどのタイプかは、受けてみると分かります。")}
 
-  ${footHTML(base, "gallery")}
 </section>
+
+${footHTML(base, "gallery")}
 ${scripts(base, ["questions.js", "types.js", "settings.js"])}
 <script>
 /* カードは静的に出してあるので、ここでやるのは現在地の表示だけ */
@@ -1082,8 +1098,9 @@ function hubPage(){
 
   ${quizCtaHTML(base, "自分のコードが分からないときは、90問に答えると出ます。")}
 
-  ${footHTML(base, "hub")}
 </section>
+
+${footHTML(base, "hub")}
 ${scripts(base, ["types.js", "settings.js"])}
 </body>
 </html>
@@ -1191,8 +1208,9 @@ function axisPage(kind){
 
   ${quizCtaHTML(base, `自分が${L1.l}と${L2.l}のどちらかは、90問に答えると出ます。`)}
 
-  ${footHTML(base, A.slug)}
 </section>
+
+${footHTML(base, A.slug)}
 ${scripts(base, ["types.js", "settings.js"])}
 </body>
 </html>
@@ -1286,8 +1304,9 @@ function privacyPage(){
     <p class="body-text">内容は必要に応じて見直します。更新した場合は、このページに反映します。</p>
   </div>
 
-  ${footHTML(base, "privacy")}
 </section>
+
+${footHTML(base, "privacy")}
 
 ${scripts(base, ["types.js", "render.js", "settings.js"])}
 </body>
@@ -1317,8 +1336,9 @@ function notFoundPage(){
   <div class="sec">
     <p><a class="btn" href="${base}">ホームへ戻る</a></p>
   </div>
-  ${footHTML(base, "")}
 </section>
+
+${footHTML(base, "")}
 
 ${scripts(base, ["types.js", "render.js", "settings.js"])}
 </body>
@@ -1414,8 +1434,9 @@ function termsPage(){
     <p class="body-text">本規約は日本法に準拠します。本サービスに関して紛争が生じた場合は、当社の本店所在地を管轄する地方裁判所を第一審の専属的合意管轄裁判所とします。</p>
   </div>
 
-  ${footHTML(base, "terms")}
 </section>
+
+${footHTML(base, "terms")}
 
 ${scripts(base, ["types.js", "render.js", "settings.js"])}
 </body>
@@ -1445,11 +1466,12 @@ for (const p of pages) write(p.rel, p.html);
 write("404.html", notFoundPage());
 console.log(`ページを生成しました: ${pages.length} 枚`);
 
-/* ---- 手書きページのサイト内リンクを、SITE_LINKS から上書きする ----
+/* ---- 手書きページのフッターを、footHTML から丸ごと上書きする ----
    index.html / about/ / pair/ / history/ / friends/ は生成物ではないので、
-   放っておくと SITE_LINKS を変えたときに置き去りになる（実際に一度ずれた）。
-   ビルドのたびに <nav class="sitenav"> の中身だけを差し替えて、二重管理をなくす。
-   ナビが無いページは対象外。quiz/ は意図的に置いていない（90問に集中する画面） */
+   放っておくと共通部分が置き去りになる（実際に一度ずれた）。
+   ビルドのたびに <footer class="site-footer"> ごと差し替えて、二重管理をなくす。
+   注記・サイト内リンク・著作権はこの中に入っているので、これ1つで全部そろう。
+   quiz/ は意図的にフッターを置いていない（90問に集中する画面） */
 const HAND_PAGES = [
   { rel: "index.html",         base: "",     current: "home" },
   { rel: "about/index.html",   base: "../",  current: "about" },
@@ -1463,42 +1485,15 @@ for (const h of HAND_PAGES){
   const file = path.join(DOCS, h.rel);
   if (!fs.existsSync(file)) continue;
   const before = fs.readFileSync(file, "utf8");
-  const re = /^([ \t]*)<nav class="sitenav"[\s\S]*?<\/nav>/m;
-  const m = before.match(re);
-  if (!m){ console.warn(`  ! ${h.rel} に <nav class="sitenav"> がありません`); continue; }
-  const indent = m[1];
-  const nav = siteNavHTML(h.base, h.current).split("\n").map(l => indent + l).join("\n");
-  const after = before.replace(re, nav);
+  const re = /^[ \t]*<footer class="site-footer">[\s\S]*?<\/footer>/m;
+  if (!re.test(before)){ console.warn(`  ! ${h.rel} に <footer class="site-footer"> がありません`); continue; }
+  const after = before.replace(re, footHTML(h.base, h.current));
   if (after !== before){ fs.writeFileSync(file, after); synced++; }
 }
-console.log(`手書きページのサイト内リンクを同期しました: ${HAND_PAGES.length} 枚（書き換え ${synced} 枚）`);
+console.log(`手書きページのフッターを同期しました: ${HAND_PAGES.length} 枚（書き換え ${synced} 枚）`);
 
-/* ---- 手書きページの共通注記も、OWN_NOTE から流し込む ----
-   4文字コードを見せるページには全部出す。手書きの5枚は生成物ではないので、
-   ここで <p class="disclaimer own-note"> を上書きし、無ければ sitenav の直前に足す。
-   文言の二重管理をなくすため、手でこの段落を書き換えないこと。
-   MBTI® の打消し（TM_NOTE）はここには流さない。言及するページだけに置く。 */
-{
-  const re = /^([ \t]*)<p class="disclaimer (?:tm|own)-note">[\s\S]*?<\/p>[ \t]*$/m;
-  let put = 0;
-  for (const h of HAND_PAGES){
-    const file = path.join(DOCS, h.rel);
-    if (!fs.existsSync(file)) continue;
-    const before = fs.readFileSync(file, "utf8");
-    let after;
-    const m = before.match(re);
-    if (m){
-      after = before.replace(re, m[1] + ownNoteHTML(h.base));
-    } else {
-      const nav = /^([ \t]*)<nav class="sitenav"/m;
-      const n = before.match(nav);
-      if (!n){ console.warn(`  ! ${h.rel} に共通注記を入れる場所がありません`); continue; }
-      after = before.replace(nav, n[1] + ownNoteHTML(h.base) + "\n" + n[1] + '<nav class="sitenav"');
-    }
-    if (after !== before){ fs.writeFileSync(file, after); put++; }
-  }
-  console.log(`手書きページの共通注記を同期しました: ${HAND_PAGES.length} 枚（書き換え ${put} 枚）`);
-}
+/* 注記（OWN_NOTE）は footHTML の中に入っているので、フッターの同期だけで
+   手書きページにも流れる。以前はここで別に流し込んでいたが、二重になるのでやめた。 */
 
 /* ---- 手書きページの同意スクリプトの行を consentTag() に揃える ----
    quiz/ を含む手書きの6枚。行ごと置き換えるだけなので、置き場所（<head> の先頭）は手で守ること。 */
@@ -1563,12 +1558,16 @@ console.log(`手書きページのサイト内リンクを同期しました: ${
     const lack = [];
     if (!noCrumb.has(rel) && !html.includes('class="crumb"')) lack.push("パンくず");
     if (!/class="page-head|class="res-head|class="fv-copy/.test(html)) lack.push("見出しブロック");
-    if (!html.includes('class="sitenav"')) lack.push("サイト内リンク");
-    if (!html.includes('class="disclaimer own-note"')) lack.push("独自性の注記");
-    if (lack.length) warn.push(`  ! ${rel} … ${lack.join(" / ")} が無い`);
+    /* フッターは部品ごとではなく、まるごと1つあるかで見る。
+       中身（注記・サイト内リンク・著作権）は footHTML() が必ず入れるので、
+       ここで個別に数えると、同じことを2か所で決めることになる。 */
+    if (!html.includes('<footer class="site-footer">')) lack.push("共通フッター");
+    /* フッターはセクションの外に置く。中に入ると終わりの余白がページごとに変わる */
+    else if (/<section[\s\S]*<footer class="site-footer">[\s\S]*?<\/footer>[\s\S]*?<\/section>/.test(html)) lack.push("共通フッターがセクションの中にある");
+    if (lack.length) warn.push(`  ! ${rel} … ${lack.join(" / ")}`);
   }
-  if (warn.length){ console.warn("共通パーツの欠け:"); warn.forEach(w => console.warn(w)); }
-  else console.log("共通パーツ（パンくず・見出し・サイト内リンク・独自性の注記）の欠けはありません");
+  if (warn.length){ console.warn("共通パーツの欠け:"); warn.forEach(w => console.warn(w)); process.exitCode = 1; }
+  else console.log("共通パーツ（パンくず・見出し・共通フッター）の欠けはありません");
 }
 
 /* ---- sitemap の lastmod ----

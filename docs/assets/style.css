@@ -289,30 +289,27 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 
 /* FVのサムネイル直下。結果そのものへの操作（保存・登録）だけを置く */
 .hero-acts{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:-8px 0 22px; }
-.disclaimer{ font-size:var(--fs-sm); color:var(--ink-3); line-height:1.9; margin-top:36px; padding-top:22px; border-top:1px solid var(--line-2); }
-/* 直前が .sec のときは、その下罫線と2本並ぶので自前の上罫線は引かない
-   （結果ページ下部のボタン群を外して、.sec と隣り合うようになった） */
-.sec + .disclaimer{ padding-top:0; border-top:0; }
-/* 注意書きが2つ並ぶとき（結果ページの「回答時点の自己認識」＋商標注記）は、
-   2枚目の罫線を出さずに1つの塊として見せる。3本の罫線が重なるのを避ける */
-.disclaimer + .disclaimer{ margin-top:14px; padding-top:0; border-top:0; }
+/* ---------- 罫線のルール ----------
+   線は「役割が変わるところ」にだけ引く。同じ役割の中は余白で分ける。
+   ページ下部の役割は3つで、線は2本になる。
+
+     本文
+     ──────── 1px ヘアライン … 本文 → 注記
+     独自性の注記
+     ════════ 2px 文字色     … 注記 → 足回り（ここから下はページの外側）
+     サイト内のページ／規約類／ロゴ／著作権
+
+   線を持つのは各グループの先頭（.disclaimer と .sitenav）だけ。
+   グループの中の部品（.sitenav-legal・.site-foot・.copy）は線を持たない。
+   直前がすでに線で終わっている場合だけ、例外で消す。 */
+/* 注記そのものは線を持たない。役割の変わり目を示すのは
+   フッターの上線（本文→足回り）と .sitenav の線（注記→ナビ）の2本だけ。
+   ページ内の注記（結果ページの「回答時点の自己認識」など）は余白で分ける。 */
+.disclaimer{ font-size:var(--fs-sm); color:var(--ink-3); line-height:1.9; margin-top:36px; }
+/* 注意書きが2つ並ぶときは、1つの塊として近づける */
+.disclaimer + .disclaimer{ margin-top:14px; }
 /* 商標の打消し表示。読めればよいので、本文よりさらに落とす */
 .disclaimer.tm-note{ color:var(--ink-3); }
-
-/* ---------- 注意書きへのリンク（本体は /about/） ---------- */
-.notice-link{
-  margin-top:30px; padding-top:22px; border-top:1px solid var(--line-2);
-  font-size:var(--fs-sm);
-}
-.notice-link a{
-  color:var(--ink-3); text-decoration:underline; text-underline-offset:3px;
-}
-.notice-link a:hover{ color:var(--ink); }
-/* 直前がすでに線で終わっている要素のときは、上線を出さない */
-.note + .notice-link,
-.pair-ask + .notice-link,
-.hist-note + .notice-link,
-.disclaimer + .notice-link{ margin-top:16px; padding-top:0; border-top:0; }
 
 /* /about/ */
 #about{ padding:0 0 40px; }
@@ -1347,7 +1344,8 @@ h1,h2,h3{ font-weight:900; letter-spacing:.01em; }
 .sh-my{ border-radius:var(--r-full); }
 
 /* ---- フッター ---- */
-.site-foot{ margin-top:80px; padding-top:28px; border-top:var(--bw) solid var(--ink); }
+/* 足回りの線は .sitenav が1本持っている。ここでは引かず、余白だけで分ける */
+.site-foot{ margin-top:40px; }
 /* サイトのロゴ｜細い縦線｜運営会社のロゴ、を1行に並べる。
    .sh-logo はヘッダー用に margin-right:auto を持っているので、
    そのままだと後ろの2つが右端まで飛ぶ。フッターでは打ち消す */
@@ -1375,6 +1373,8 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 @media (max-width:900px){
   .site-foot{ justify-content:center; }
   .site-foot + .copy{ text-align:center; }
+  /* 足回りはひとかたまりなので、リンクもロゴ・著作権と同じタイミングで中央に寄せる */
+  .sitenav ul{ justify-content:center; }
 }
 
 /* ---- ファーストビュー（トップ） ---- */
@@ -1560,7 +1560,7 @@ a.cell.on:hover{ background:var(--ink); border-color:var(--ink); }
 .chip .thumb{ border-radius:var(--r-full); }
 /* ---- バッジ（押せない）とボタン・リンク（押せる）を見分けられるようにする ----
    このサイトでは「丸い枠線のピル」を押せるものの形として使っている
-   （.btn / .sitenav a / .gjump a / .fr-btn）。押せないただの見出し語まで
+   （.btn / .gjump a / .fr-btn / .seg-toggle）。押せないただの見出し語まで
    同じ形にすると、押せると思わせてしまう。
    押せないものは枠線を外し、薄い面を敷いて置く。形ではなく地で示す。
    （相性カードの「自分」印 .c-self が、もともとこの作りになっている） */
@@ -1845,36 +1845,59 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
   .qc-btn{ display:flex; width:100%; }
 }
 
+/* ---- 共通フッター（footer.site-footer）----
+   注記・サイト内リンク・著作権・ロゴをまとめた、全ページ共通の部品。
+   中身は tools/build-pages.js の footHTML() が1か所で作っていて、
+   生成ページにも手書きの5枚にもビルドのたびに同じものが入る。
+
+   置き場所はどのページでも <section> の外。以前は最後のセクションの中にあり、
+   終わりの余白や上の罫線が、そのセクションの padding / border 次第で
+   ページごとに違っていた（TOP 88px／多くは 40px／privacy・terms・404 は 0）。
+   外に出したことで、見た目はこのブロックの指定だけで決まる。
+
+   罫線は2本。① この上の線が「本文 → 注記」、② .sitenav の線が「注記 → 足回り」。 */
+.site-footer{
+  margin-top:56px; padding-top:22px; padding-bottom:64px;
+  border-top:1px solid var(--line-2);
+}
+/* 注記はフッターの先頭。上の余白はフッター側が持つ */
+.site-footer .disclaimer{ margin-top:0; }
+/* 本文の最後のセクションが下線で終わると、そのすぐ下のフッターの上線と2本並ぶ。
+   ページの終わりを示すのはフッターの線なので、最後のセクションの線は消す。
+   （:has() を解さないブラウザでは線が残るだけで、読めなくなることはない） */
+.sec:not(:has(~ .sec)){ border-bottom:0; }
+
 /* ---- 下部のサイト内リンク。HTMLだけを見たときの導線がここ ----
-   見た目はギャラリーの移動チップ（.gjump a）に合わせた丸い枠。
-   全ページで同じ並び・同じ文言。現在地は塗りつぶす */
-.sitenav{ margin-top:52px; padding-top:26px; border-top:1px solid var(--line-2); }
-.sitenav-h{ font-size:var(--fs-sm); letter-spacing:.1em; color:var(--ink-3); margin-bottom:16px; }
-.sitenav ul{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
+   枠のある丸いピルは「操作するもの」（フィルタ＝.seg-toggle／ボタン＝.btn）に
+   限っていて、ここは移動するだけなのでテキストリンクにする。
+   以前はナビもピルで、選択中のフィルタと現在地のリンクがどちらも黒い塗りになり、
+   同じ形が3つの意味（選ぶ・押す・移動する）に使われていた。
+
+   下線は引かない。8個が横に並ぶと下線だらけになるので、
+   ここでは「行に並んだ短い語」という並び自体がリンクの合図になる。
+   現在地だけ濃い文字色＋太字で示す。 */
+.sitenav{ margin-top:40px; padding-top:22px; border-top:var(--bw) solid var(--ink); }
+.sitenav ul{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:0 24px; }
 .sitenav a, .sitenav .sitenav-cookie{
   display:inline-flex; align-items:center;
-  padding:9px 16px; border-radius:var(--r-full);
-  border:var(--bw) solid var(--ink); background:var(--paper);
-  color:var(--ink); text-decoration:none; white-space:nowrap;
+  /* 指で押す高さ（44px）は縦の余白で確保する。枠は持たせない */
+  min-height:44px; padding:12px 0; border:0; border-radius:0; background:none;
+  color:var(--ink-2); text-decoration:none; white-space:nowrap;
   font-size:var(--fs-md); line-height:1.4;
-  transition:background .12s ease, color .12s ease;
+  transition:color .12s ease;
 }
-.sitenav a:hover, .sitenav .sitenav-cookie:hover{ background:var(--surface-2); }
-.sitenav a[aria-current="page"]{ background:var(--ink); color:var(--on-brand); }
-/* 規約類は内容のページと列を分ける。チップにすると同じ重みに見えるので、
-   ここだけは下線のテキストリンクにして一段落とす（ドロアーと同じ扱い）。
-   セレクタを .sitenav から書いているのは、下のSP用の指定（.sitenav a に
-   padding を戻すもの）より詳細度を上げて、あとから打ち消されないようにするため。 */
-.sitenav .sitenav-legal{ margin-top:22px; gap:6px 22px; }
+.sitenav a:hover, .sitenav .sitenav-cookie:hover{ color:var(--ink); text-decoration:underline; text-underline-offset:4px; }
+.sitenav a[aria-current="page"]{ color:var(--ink); font-weight:700; }
+/* 規約類は内容のページと列を分ける。同じテキストリンクだが、
+   読みに来る頻度が違うので一段小さく・薄くする（ドロアーと同じ扱い） */
+.sitenav .sitenav-legal{ margin-top:6px; gap:0 22px; }
 .sitenav .sitenav-legal a,
 .sitenav .sitenav-legal .sitenav-cookie{
-  padding:0; border:0; background:none; border-radius:0;
-  font-size:var(--fs-sm); line-height:1.6; color:var(--ink-3);
-  text-decoration:underline; text-underline-offset:3px;
+  min-height:40px; padding:10px 0; font-size:var(--fs-sm); line-height:1.6; color:var(--ink-3);
 }
 .sitenav .sitenav-legal a:hover,
-.sitenav .sitenav-legal .sitenav-cookie:hover{ background:none; color:var(--ink); }
-.sitenav .sitenav-legal a[aria-current="page"]{ background:none; color:var(--ink); }
+.sitenav .sitenav-legal .sitenav-cookie:hover{ color:var(--ink); }
+.sitenav .sitenav-legal a[aria-current="page"]{ color:var(--ink); font-weight:500; }
 
 /* ---- FAQ ---- */
 .faq{ display:grid; gap:10px; }
@@ -1959,7 +1982,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 @media (max-width:760px){
   .cmp-grid, .alltypes, .axpairs{ grid-template-columns:1fr; }
   .quizcta{ padding:26px 18px; }
-  .sitenav a, .sitenav .sitenav-cookie{ padding:8px 13px; font-size:var(--fs-sm); }
+  .sitenav a, .sitenav .sitenav-cookie{ font-size:var(--fs-sm); }
 }
 
 
