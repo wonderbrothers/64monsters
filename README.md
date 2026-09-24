@@ -179,6 +179,24 @@ GTM（`GTM-PDKDBFBW`）経由で dataLayer に送っているイベントです�
 
 > **GTM側の設定が要ります。** ここで送っているのは dataLayer までです。GA4 に届けるには、GTM で各イベント名のトリガーと GA4 イベントタグを作る必要があります（既存の設定にないイベントは、そのままでは GA4 に現れません）。
 
+## Cookie 同意（Google Consent Mode v2）
+
+全ページの `<head>` 先頭で `assets/wb-consent.js` を読み込み、GTM（`GTM-PDKDBFBW`）はこれが「アクセス解析を許可した人」にだけ読み込みます。
+生成ページは `tools/build-pages.js` の `consentTag()`、手書きページ（index・quiz・about・pair・history・friends）はビルドのたびに同じ行へ揃えます。
+GTM を直接読み込むページや `wb-consent.js` の無いページがあると、`npm run pages` がエラーで止まります。
+「Cookie設定」の入口は、サイト内リンク（全ページ下部）・メニュー（SP）・設定モーダル（PC）の3か所です。
+
+仕組みは wonder-bros.com・64モンスターズ・連想ゲームの3サイト共通で、`wb-consent.js` 1本にまとまっています。
+
+- **正本は `corporate-site/src/scripts/wb-consent.js`**。64モンスターズ（`docs/assets/wb-consent.js`）と連想ゲーム（`wb-consent.js`）はコピーで、各サイトのビルド（`npm run stamp` / `npm run build`）が正本と違っていれば自動で写し直す。コピーを手で直さないこと。各サイトが自分のドメインから配信するので、どれか1サイトが落ちても他は影響を受けない。
+- **Basic Consent Mode**。未選択・拒否のあいだは GTM も GA も読み込まない（Google への通信は発生しない）。「許可する」を選んだときだけ、`analytics_storage` を `granted`（広告系3項目は常に `denied`）にしてから GTM を読み込む。
+- 同意は Cookie **`wb_consent_v1`**（値は `granted` か `denied` だけ／`Domain=.wonder-bros.com`／`Path=/`／`Secure`／`SameSite=Lax`／`Max-Age=15552000`＝180日）。3サイトで共有する。ページを開くたびに期限を延ばしている（Safari は JavaScript で書いた Cookie の期限を7日に切り詰めるため、延ばさないと iPhone では毎週たずねることになる）。
+- 「Cookie設定」を開く入口は、要素に `data-wb-consent-open` を付けるだけ。
+- 許可→拒否に変えると、その場で GA の送信を止め（`ga-disable`）、`_ga` / `_ga_*` などの GA Cookie を消す。未選択・拒否の人がページを開いたときも、残っている GA Cookie を消す。
+- localStorage / sessionStorage には触らない（診断データ・ゲームの記録は同意の対象外）。
+- 同意の中身を大きく変えたら、`wb-consent.js` の `COOKIE_NAME` を `wb_consent_v2` に上げ、古い名前を `OLD_COOKIES` に足す → 全員にもう一度たずねる。
+- **GTM のスニペットや noscript の iframe を HTML に直接書かないこと**（同意前に GA が動いてしまう）。
+
 ## 版の付け方
 
 フッターに `v<版>+<ビルド番号> ・ <更新日>` の形で出る。

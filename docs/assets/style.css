@@ -591,6 +591,11 @@ body.modal-open{ overflow:hidden; }
 .modal-foot a{ color:var(--ink-3); text-decoration:underline; text-underline-offset:3px; }
 .modal-foot a:hover{ color:var(--ink); }
 .modal-foot a[aria-current="page"]{ color:var(--ink-2); }
+.modal-foot-btn{
+  margin-top:6px; padding:0; color:var(--ink-3); line-height:inherit; text-align:left;
+  text-decoration:underline; text-underline-offset:3px;
+}
+.modal-foot-btn:hover{ color:var(--ink); }
 
 .set-row{ display:flex; align-items:center; justify-content:space-between; gap:18px;
   padding:18px 0; border-bottom:1px solid var(--line-2); }
@@ -977,6 +982,12 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
   text-decoration:underline; text-underline-offset:3px;
 }
 .drawer-legal a:hover{ color:var(--ink); }
+/* 「Cookie設定」は画面を開くボタンだが、並びの中では規約リンクと同じ見た目にする */
+.drawer-legal button{
+  padding:0; font-size:var(--fs-sm); color:var(--ink-3); line-height:inherit;
+  text-decoration:underline; text-underline-offset:3px;
+}
+.drawer-legal button:hover{ color:var(--ink); }
 .drawer-legal a[aria-current="page"]{ color:var(--ink); }
 /* ドロアーの中では、設定の1行目に余分な上余白をつけない */
 .drawer-sec .set-row:first-child{ padding-top:0; }
@@ -1842,7 +1853,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .sitenav{ margin-top:52px; padding-top:26px; border-top:1px solid var(--line-2); }
 .sitenav-h{ font-size:var(--fs-sm); letter-spacing:.1em; color:var(--ink-3); margin-bottom:16px; }
 .sitenav ul{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:8px; }
-.sitenav a{
+.sitenav a, .sitenav .sitenav-cookie{
   display:inline-flex; align-items:center;
   padding:9px 16px; border-radius:var(--r-full);
   border:var(--bw) solid var(--ink); background:var(--paper);
@@ -1850,7 +1861,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
   font-size:var(--fs-md); line-height:1.4;
   transition:background .12s ease, color .12s ease;
 }
-.sitenav a:hover{ background:var(--surface-2); }
+.sitenav a:hover, .sitenav .sitenav-cookie:hover{ background:var(--surface-2); }
 .sitenav a[aria-current="page"]{ background:var(--ink); color:var(--on-brand); }
 
 /* ---- FAQ ---- */
@@ -1936,7 +1947,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 @media (max-width:760px){
   .cmp-grid, .alltypes, .axpairs{ grid-template-columns:1fr; }
   .quizcta{ padding:26px 18px; }
-  .sitenav a{ padding:8px 13px; font-size:var(--fs-sm); }
+  .sitenav a, .sitenav .sitenav-cookie{ padding:8px 13px; font-size:var(--fs-sm); }
 }
 
 
@@ -2182,3 +2193,21 @@ html[data-visit="other"] [data-when~="other"]{ display:block; }
   .vd-h{ min-width:100%; }
 }
 
+
+/* 本文の中で画面を開くボタン（プライバシーポリシーの「Cookie設定」）。見た目は本文のリンクと同じ */
+.text-btn{ display:inline; padding:0; color:var(--ink); font-weight:inherit; line-height:inherit;
+  text-decoration:underline; text-decoration-thickness:1px; text-decoration-color:var(--ink-3);
+  text-underline-offset:3px; }
+.text-btn:hover{ text-decoration-color:var(--ink); }
+/* ---- Cookie 同意バナー／Cookie設定（assets/wb-consent.js）----
+   仕組みは3サイト共通。ここでは見た目のトークンだけをこのサイトに合わせる。
+   紙の地・黒2pxの枠・影なし。許可＝黒の塗り／拒否＝黒の枠線で、大きさは同じ。
+   色はテーマの変数を使っているので、ダークモードでもそのまま切り替わる。 */
+.wbc{
+  --wbc-bg:var(--paper); --wbc-fg:var(--ink); --wbc-muted:var(--ink-3); --wbc-line:var(--line-2);
+  --wbc-accent:var(--ink); --wbc-accent-fg:var(--on-brand); --wbc-switch-off:var(--line-2);
+  --wbc-border:var(--bw) solid var(--line); --wbc-btn-border-width:var(--bw);
+  --wbc-radius:var(--r-card); --wbc-btn-radius:var(--r-full); --wbc-shadow:none;
+  --wbc-font:var(--f-body); --wbc-fs:var(--fs-md); --wbc-backdrop:rgba(18,17,15,.5);
+}
+.wbc .wbc-btn{ font-weight:500; letter-spacing:.04em; }

@@ -25,6 +25,15 @@ const ROOT = path.join(__dirname, "..");
 const DOCS = path.join(ROOT, "docs");
 const ORIGIN = "https://64monsters.wonder-bros.com";
 const GTM = "GTM-PDKDBFBW";
+
+/* Cookie 同意 + Google Consent Mode v2（Basic）。
+   GTM は wb-consent.js が「アクセス解析を許可した人」にだけ読み込む。
+   GTM のスニペットや noscript の iframe を <head>/<body> に直接書かないこと（同意前に読み込まれてしまう）。
+   dataLayer を触るどのスクリプトより前、<head> の先頭に置く。
+   手書きページ（HAND_CONSENT）もビルドのたびにこの1行へ揃える。 */
+function consentTag(base){
+  return `<script src="${base}assets/wb-consent.js" data-gtm="${GTM}" data-privacy="${base}privacy/"></script>`;
+}
 const SITE = "64モンスターズ";
 const PUBLISHER = "株式会社ワンダーブラザース";
 
@@ -63,13 +72,7 @@ function headHTML(o){
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${GTM}');</script>
-<!-- End Google Tag Manager -->
+${consentTag(o.base)}
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(o.title)}</title>
 <meta name="description" content="${esc(o.desc)}">
@@ -125,10 +128,6 @@ ${o.pageCode ? `window.PAGE_CODE = "${o.pageCode}";` : ""}
 </script>
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${GTM}"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager -->
 `;
 }
 
@@ -167,7 +166,9 @@ function siteNavHTML(base, current){
     const href = rel ? base + rel : (base || "./");
     const on = key === current ? ' aria-current="page"' : "";
     return `<li><a href="${href}"${on}>${esc(label)}</a></li>`;
-  }).join("");
+  }).join("") +
+    /* Cookie設定（アクセス解析の許可・拒否）。ページではないので <button>。開くのは wb-consent.js */
+    `<li><button type="button" class="sitenav-cookie" data-wb-consent-open>Cookie設定</button></li>`;
   /* 字下げは0で返す。手書きページへ差し込むときに、その行の字下げを足す */
   return `<nav class="sitenav" aria-label="サイト内リンク">
   <p class="sitenav-h">サイト内のページ</p>
@@ -1253,7 +1254,9 @@ function privacyPage(){
   <div class="sec split">
     <h2>アクセス解析（Google アナリティクス）</h2>
     <p class="body-text">一方で、利用状況の把握とサービス改善のために <b>Google アナリティクス</b>（Google タグ マネージャー経由）を利用しています。これに伴い、<b>Cookie 等の識別子、閲覧したページ、利用日時、ブラウザ・OS・端末の情報、おおよその地域情報などが Google へ送信される場合があります。</b>これらの情報は Google のプライバシーポリシー等に基づいて処理されます。</p>
-    <p class="body-text">送信を望まない場合は、ブラウザで Cookie を無効にするか、Google が提供する<a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">オプトアウト アドオン</a>をご利用ください。いずれの場合も、このサイトの機能はそのままお使いいただけます。Google の取り扱いについては<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google のプライバシーポリシー</a>をご確認ください。</p>
+    <p class="body-text"><b>アクセス解析は、画面下に表示される確認で「許可する」を選んだ場合にだけ行います。</b>許可するまで（「拒否する」を選んだ場合も）、Google アナリティクスと Google タグ マネージャーは読み込まず、Google への送信もしません。選んだ内容は、あとから<button type="button" class="text-btn" data-wb-consent-open>Cookie設定</button>（ページ下部のサイト内リンクと、メニューの中にあります）でいつでも変えられます。拒否に変えた場合は、Google アナリティクスが保存した Cookie（名前が「_ga」「_ga_」で始まるもの）も削除します。</p>
+    <p class="body-text">この選択は、ブラウザに Cookie「wb_consent_v1」（値は「許可」か「拒否」だけで、個人を識別する情報は含みません）として保存し（有効期間は最後に利用した日から180日間）、株式会社ワンダーブラザースが運営する wonder-bros.com・64モンスターズ・連想ゲームで共通に使います。広告を目的とした Cookie は使っていません。</p>
+    <p class="body-text">このほか、ブラウザで Cookie を無効にするか、Google が提供する<a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">オプトアウト アドオン</a>を使っても送信を止められます。いずれの場合も、このサイトの機能はそのままお使いいただけます。Google の取り扱いについては<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google のプライバシーポリシー</a>をご確認ください。</p>
   </div>
 
   <div class="sec split">
@@ -1452,6 +1455,50 @@ console.log(`手書きページのサイト内リンクを同期しました: ${
     if (after !== before){ fs.writeFileSync(file, after); put++; }
   }
   console.log(`手書きページの共通注記を同期しました: ${HAND_PAGES.length} 枚（書き換え ${put} 枚）`);
+}
+
+/* ---- 手書きページの同意スクリプトの行を consentTag() に揃える ----
+   quiz/ を含む手書きの6枚。行ごと置き換えるだけなので、置き場所（<head> の先頭）は手で守ること。 */
+{
+  const HAND_CONSENT = [
+    { rel: "index.html", base: "" },
+    { rel: "about/index.html", base: "../" },
+    { rel: "pair/index.html", base: "../" },
+    { rel: "history/index.html", base: "../" },
+    { rel: "friends/index.html", base: "../" },
+    { rel: "quiz/index.html", base: "../" }
+  ];
+  const re = /<script src="[^"]*assets\/wb-consent\.js(\?v=[a-f0-9]+)?"[^>]*><\/script>/;
+  let n = 0;
+  for (const h of HAND_CONSENT){
+    const file = path.join(DOCS, h.rel);
+    if (!fs.existsSync(file)) continue;
+    const before = fs.readFileSync(file, "utf8");
+    if (!re.test(before)){ console.warn(`  ! ${h.rel} に wb-consent.js の行がありません`); continue; }
+    /* ?v= は stamp-assets.js の持ち物なので、付いていればそのまま残す */
+    const after = before.replace(re, (m, v) => consentTag(h.base).replace("wb-consent.js", "wb-consent.js" + (v || "")));
+    if (after !== before){ fs.writeFileSync(file, after); n++; }
+  }
+  console.log(`手書きページの同意スクリプトを同期しました: ${HAND_CONSENT.length} 枚（書き換え ${n} 枚）`);
+}
+
+/* ---- 同意前に Google へ通信するページが無いことを、ビルドのたびに確かめる ----
+   GTM のスニペットが1枚でも残っていると、そのページだけ同意前に GA が動いてしまう。黙って通さない。 */
+{
+  const walk = (d = "") => fs.readdirSync(path.join(DOCS, d), { withFileTypes: true })
+    .flatMap(e => {
+      const r = d ? d + "/" + e.name : e.name;
+      if (e.isDirectory()) return (e.name === "images" || e.name === "assets") ? [] : walk(r);
+      return e.name.endsWith(".html") ? [r] : [];
+    });
+  const bad = [];
+  for (const rel of walk()){
+    const html = fs.readFileSync(path.join(DOCS, rel), "utf8");
+    if (/googletagmanager\.com|gtag\/js/.test(html)) bad.push(`  ✗ ${rel} … GTM/gtag を直接読み込んでいる`);
+    else if (!/<script src="[^"]*assets\/wb-consent\.js/.test(html)) bad.push(`  ✗ ${rel} … wb-consent.js が無い`);
+  }
+  if (bad.length) throw new Error("Cookie 同意の組み込みに漏れがあります:\n" + bad.join("\n"));
+  console.log("全ページに wb-consent.js があり、GTM を直接読み込むページはありません");
 }
 
 /* ---- 共通パーツの欠けを、ビルドのたびに知らせる ----

@@ -7,6 +7,21 @@
 const fs = require("fs"), path = require("path"), crypto = require("crypto");
 
 const DOCS = path.join(__dirname, "..", "docs");
+
+/* ---------- Cookie 同意スクリプトを正本から写す ----------
+   wb-consent.js の正本は corporate-site/src/scripts/wb-consent.js（3サイト共通）。
+   隣に corporate-site があれば、中身が違うときだけ docs/assets/ へ写す。
+   各サイトが自分のドメインから配信するためのコピーなので、ここを手で直さないこと。
+   ハッシュ（?v=）はこのあと付け直されるので、写した版がそのまま配信される。 */
+(function syncConsent(){
+  const src = path.join(__dirname, "..", "..", "corporate-site", "src", "scripts", "wb-consent.js");
+  const dst = path.join(DOCS, "assets", "wb-consent.js");
+  if (!fs.existsSync(src)){ console.log("wb-consent.js: 正本（../corporate-site）が見つからないため、いまのコピーを使います"); return; }
+  const a = fs.readFileSync(src), b = fs.existsSync(dst) ? fs.readFileSync(dst) : null;
+  if (b && a.equals(b)) return;
+  fs.writeFileSync(dst, a);
+  console.log("wb-consent.js を正本から更新しました（corporate-site/src/scripts/wb-consent.js）");
+})();
 const hashCache = new Map();
 
 function hashOf(rel){

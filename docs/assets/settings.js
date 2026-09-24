@@ -22,8 +22,8 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.6.0";
-  var BUILD   = "d82574c";
-  var BUILT   = "2026-09-21";
+  var BUILD   = "ba92a5c";
+  var BUILT   = "2026-09-24";
 
   var MYKEY = KEY + ".mytype";
   var MYOFF = KEY + ".myoff";      /* 自分で解除した印 */
@@ -158,7 +158,9 @@
       '</div>' +
       '<div class="modal-body" id="modalBody"></div>' +
       '<p class="modal-foot"><a href="' + ABOUT + '"' + (onAbout ? ' aria-current="page"' : '') + '>' +
-        'この診断についての注意（回答の扱い・外部への通信・権利）</a></p>' +
+        'この診断についての注意（回答の扱い・外部への通信・権利）</a><br>' +
+        /* Cookie設定（アクセス解析の許可・拒否）。開くのは wb-consent.js（data-wb-consent-open） */
+        '<button type="button" class="modal-foot-btn" data-wb-consent-open>Cookie設定（アクセス解析の許可・拒否）</button></p>' +
     '</div>';
   document.body.appendChild(modal);
 
@@ -192,6 +194,7 @@
       '<nav class="drawer-legal" aria-label="規約">' +
         '<a href="' + PRIVACY + '"' + (onPrivacy ? ' aria-current="page"' : '') + '>プライバシーポリシー</a>' +
         '<a href="' + TERMS + '"' + (onTerms ? ' aria-current="page"' : '') + '>利用規約</a>' +
+        '<button type="button" data-wb-consent-open>Cookie設定</button>' +
       '</nav>' +
       '<div class="drawer-sec"><p class="drawer-h">表示設定</p><div id="drawerBody"></div></div>' +
     '</aside>';
@@ -354,6 +357,10 @@
   document.getElementById("shMenu").addEventListener("click", openDrawer);
   modal.addEventListener("click", function(e){ if (e.target.hasAttribute("data-close")) closeModal(); });
   drawer.addEventListener("click", function(e){ if (e.target.hasAttribute("data-dclose")) closeDrawer(); });
+  /* 「Cookie設定」を押したら、先にこのモーダル／ドロアーを閉じる（Cookie設定の画面は wb-consent.js が開く）。
+     ここで閉じておくと、Cookie設定を閉じたときにフォーカスがヘッダーのボタンへ戻る */
+  modal.addEventListener("click", function(e){ if (e.target.closest("[data-wb-consent-open]")) closeModal(); });
+  drawer.addEventListener("click", function(e){ if (e.target.closest("[data-wb-consent-open]")) closeDrawer(); });
   document.addEventListener("keydown", function(e){
     if (e.key !== "Escape") return;
     if (!modal.classList.contains("hidden")) closeModal();
