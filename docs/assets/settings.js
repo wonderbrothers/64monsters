@@ -22,7 +22,7 @@
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
   var VERSION = "1.6.0";
-  var BUILD   = "5d21d8b";
+  var BUILD   = "1305ad4";
   var BUILT   = "2026-09-24";
 
   var MYKEY = KEY + ".mytype";
@@ -190,11 +190,15 @@
         '<a href="' + ABOUT + '"' + (onAbout ? ' aria-current="page"' : '') + '>' +
           '<span>この診断について</span>' + SVG_CHEV + '</a>' +
       '</nav>' +
-      /* 規約類は読む頻度が低いので、本体のナビとは分けて小さく置く */
-      '<nav class="drawer-legal" aria-label="規約">' +
-        '<a href="' + PRIVACY + '"' + (onPrivacy ? ' aria-current="page"' : '') + '>プライバシーポリシー</a>' +
-        '<a href="' + TERMS + '"' + (onTerms ? ' aria-current="page"' : '') + '>利用規約</a>' +
-        '<button type="button" data-wb-consent-open>Cookie設定</button>' +
+      /* 規約類は読む頻度が低いので節は分けるが、行の見た目は上のナビと同じにする。
+         同じ縦並びのリストの中で、ここだけ小さい横並びだと別物に見えるので。 */
+      '<nav class="drawer-nav drawer-legal" aria-label="規約">' +
+        '<a href="' + PRIVACY + '"' + (onPrivacy ? ' aria-current="page"' : '') + '>' +
+          '<span>プライバシーポリシー</span>' + SVG_CHEV + '</a>' +
+        '<a href="' + TERMS + '"' + (onTerms ? ' aria-current="page"' : '') + '>' +
+          '<span>利用規約</span>' + SVG_CHEV + '</a>' +
+        '<button type="button" data-wb-consent-open>' +
+          '<span>Cookie設定</span>' + SVG_CHEV + '</button>' +
       '</nav>' +
       '<div class="drawer-sec"><p class="drawer-h">表示設定</p><div id="drawerBody"></div></div>' +
     '</aside>';

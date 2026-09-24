@@ -157,23 +157,31 @@ const SITE_LINKS = [
   ["ao",      "axis/ao/",     "AとOの違い"],
   ["hc",      "axis/hc/",     "HとCの違い"],
   ["pair",    "pair/",        "2人の相性"],
-  ["about",   "about/",       "この診断について"],
+  ["about",   "about/",       "この診断について"]
+];
+
+/* 規約類。読みに来る頻度が違うので、内容のページとは列を分ける。
+   ドロアー（SP）でも同じ分け方にしてある。 */
+const LEGAL_LINKS = [
   ["privacy", "privacy/",     "プライバシーポリシー"],
   ["terms",   "terms/",       "利用規約"]
 ];
 
 function siteNavHTML(base, current){
-  const items = SITE_LINKS.map(([key, rel, label]) => {
+  const li = ([key, rel, label]) => {
     const href = rel ? base + rel : (base || "./");
     const on = key === current ? ' aria-current="page"' : "";
     return `<li><a href="${href}"${on}>${esc(label)}</a></li>`;
-  }).join("") +
+  };
+  const items = SITE_LINKS.map(li).join("");
+  const legal = LEGAL_LINKS.map(li).join("") +
     /* Cookie設定（アクセス解析の許可・拒否）。ページではないので <button>。開くのは wb-consent.js */
     `<li><button type="button" class="sitenav-cookie" data-wb-consent-open>Cookie設定</button></li>`;
   /* 字下げは0で返す。手書きページへ差し込むときに、その行の字下げを足す */
   return `<nav class="sitenav" aria-label="サイト内リンク">
   <p class="sitenav-h">サイト内のページ</p>
   <ul>${items}</ul>
+  <ul class="sitenav-legal">${legal}</ul>
 </nav>`;
 }
 

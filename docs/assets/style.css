@@ -33,6 +33,12 @@ html{ font-size:16px; }   /* ← ここが base。すべての --fs-* はこの�
   --on-brand:#FFFAEF;
   --ai:var(--ink); --shu:var(--ink); --gold:#806331;
   --danger:#C4183F;
+  /* 「いま許可されている」を示す緑。色は6軸の識別に使う決まりだが、
+     トグルのON/OFFだけは形が同じで地の色しか手がかりが無いので、例外にする */
+  --ok:#2FB457;
+  /* トグルのつまみ。帯（緑／くすんだグレー）の上に乗るので、
+     ダークでも明るいままにする。ここはテーマで反転させない */
+  --knob:#FFFAEF;
   --thumb:#F8F4EA;
   --shadow:none;
   /* 6軸の識別色。色は「どの軸か」だけを表し、大きさや良し悪しは表さない */
@@ -520,6 +526,7 @@ html[data-theme="dark"]{
   --on-brand:#141311;
   --ai:var(--ink); --shu:var(--ink); --gold:#D2B26B;
   --danger:#FF8FA8;
+  --ok:#3ED27A;
   --thumb:#1F1D1A;
   --shadow:none;
 }
@@ -610,18 +617,21 @@ body.modal-open{ overflow:hidden; }
 .set-link:hover{ color:var(--ink); }
 
 /* トグルスイッチ */
+/* トグルは Cookie設定（.wbc-switch）と同じ作りにそろえる。
+   枠線は持たせず、OFF＝くすんだ帯／ON＝緑の帯、つまみは常に紙の色。
+   形が同じ部品なので、見た目が違うと別の意味に見える。 */
 .switch{
-  flex:0 0 auto; width:48px; height:28px; border-radius:100px;
-  background:var(--surface-2); border:1px solid var(--line);
-  position:relative; transition:background .16s ease, border-color .16s ease;
+  flex:0 0 auto; width:46px; height:28px; border-radius:100px;
+  background:color-mix(in srgb, var(--ink) 26%, var(--paper)); border:0;
+  position:relative; transition:background .16s ease;
 }
 .switch .knob{
   position:absolute; top:50%; left:3px; transform:translateY(-50%);
-  width:20px; height:20px; border-radius:50%; background:var(--ink-3);
-  transition:left .16s ease, background .16s ease;
+  width:22px; height:22px; border-radius:50%; background:var(--knob);
+  transition:left .16s ease;
 }
-.switch.on{ background:var(--grad); border-color:transparent; }
-.switch.on .knob{ left:23px; background:var(--on-brand); }
+.switch.on{ background:var(--ok); }
+.switch.on .knob{ left:21px; background:var(--knob); }
 
 @media (max-width:560px){
   .set-row.col{ flex-direction:column; align-items:stretch; gap:12px; }
@@ -910,7 +920,6 @@ body.modal-open{ overflow:hidden; }
 }
 @media (max-width:360px){
   .sh-cta{ padding:4px 12px; font-size:var(--fs-sm); }
-  .sh-logo .logo{ height:22px; }
 }
 
 .drawer{ position:fixed; inset:0; z-index:70; }
@@ -936,16 +945,18 @@ html[data-theme="dark"] .drawer-logo .logo-light{ display:none; }
 html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 
 .drawer-nav{ padding:10px 12px; border-bottom:1px solid var(--line-2); }
-.drawer-nav a{
+/* 「Cookie設定」だけは画面を開く button だが、並びの中では行として同じに見せる */
+.drawer-nav a,
+.drawer-nav button{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
-  padding:12px 14px; border-radius:8px;
-  color:var(--ink); font-size:var(--fs-md); text-decoration:none;
+  width:100%; padding:12px 14px; border-radius:8px;
+  color:var(--ink); font-size:var(--fs-md); text-align:left; text-decoration:none;
   transition:background .12s ease;
   font-weight: 600;
 }
 .drawer-nav .chev{ flex:none; color:var(--ink); }
-.drawer-nav a:hover .chev{ color:var(--ink-2); }
-.drawer-nav a:hover{ background:var(--surface-2); }
+.drawer-nav a:hover .chev, .drawer-nav button:hover .chev{ color:var(--ink-2); }
+.drawer-nav a:hover, .drawer-nav button:hover{ background:var(--surface-2); }
 .drawer-nav a[aria-current="page"]{ background:var(--surface-2); font-weight:500; }
 
 .drawer-sec{ padding:22px 20px; border-bottom:1px solid var(--line-2); }
@@ -973,22 +984,10 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 }
 .drawer-sub:hover{ color:var(--ink); }
 /* 規約類。読む頻度が低いので、本体のナビより控えめに置く */
-.drawer-legal{
-  display:flex; flex-wrap:wrap; gap:6px 18px;
-  padding:12px 12px 14px; border-bottom:1px solid var(--line-2);
-}
-.drawer-legal a{
-  font-size:var(--fs-sm); color:var(--ink-3);
-  text-decoration:underline; text-underline-offset:3px;
-}
-.drawer-legal a:hover{ color:var(--ink); }
-/* 「Cookie設定」は画面を開くボタンだが、並びの中では規約リンクと同じ見た目にする */
-.drawer-legal button{
-  padding:0; font-size:var(--fs-sm); color:var(--ink-3); line-height:inherit;
-  text-decoration:underline; text-underline-offset:3px;
-}
-.drawer-legal button:hover{ color:var(--ink); }
-.drawer-legal a[aria-current="page"]{ color:var(--ink); }
+/* 規約類。行の作りは .drawer-nav と同じ。読む頻度が低いので文字色だけ一段落とす */
+.drawer-legal a,
+.drawer-legal button{ color:var(--ink-2); font-weight:500; }
+.drawer-legal .chev{ color:var(--ink-3); }
 /* ドロアーの中では、設定の1行目に余分な上余白をつけない */
 .drawer-sec .set-row:first-child{ padding-top:0; }
 .drawer-sec .set-row:last-child{ border-bottom:0; }
@@ -1346,7 +1345,6 @@ h1,h2,h3{ font-weight:900; letter-spacing:.01em; }
 .sh-jp{ display:block; font-size:var(--fs-xs); color:var(--ink-3); line-height:1.3; margin-top:3px; }
 .sh-cta{ padding:11px 20px; border-radius:var(--r-full); font-size:var(--fs-md); }
 .sh-my{ border-radius:var(--r-full); }
-@media (max-width:360px){ .sh-logo .logo{ height:24px; } }
 
 /* ---- フッター ---- */
 .site-foot{ margin-top:80px; padding-top:28px; border-top:var(--bw) solid var(--ink); }
@@ -1621,10 +1619,9 @@ a.cell.on:hover{ background:var(--ink); border-color:var(--ink); }
 .hist-del.armed{ color:var(--danger); border-color:var(--danger); }
 
 /* ---- 設定・モーダル・ドロアー ---- */
-.switch{ border-width:var(--bw); border-color:var(--ink); background:var(--paper); }
-.switch.on{ background:var(--ink); border-color:var(--ink); }
-.switch .knob{ background:var(--ink); }
-.switch.on .knob{ background:var(--on-brand); }
+/* ここでは枠線を戻さない。トグルだけは他の部品と違って
+   「いまどちらの状態か」を地の色で示すので、枠があると帯の色が読みにくい */
+.switch .knob, .switch.on .knob{ background:var(--knob); }
 .modal-back, .drawer-back{ background:rgba(17,17,17,.55); }
 html[data-theme="dark"] .modal-back, html[data-theme="dark"] .drawer-back{ background:rgba(0,0,0,.66); }
 .drawer-panel{ border-right:var(--bw) solid var(--ink); }
@@ -1680,7 +1677,8 @@ html[data-theme="dark"] .band-dark .how-step{ border-top-color:color-mix(in srgb
    高さを落として収める */
 @media (max-width:400px){
   .sh-cta{ padding:9px 14px; font-size:var(--fs-sm); }
-  .sh-logo .logo{ height:20px; }
+  /* ドロアーの見出しはヘッダーの続きに見えるので、ロゴの高さも一緒に落とす */
+  .sh-logo .logo, .drawer-logo .logo{ height:20px; }
   .site-foot{ gap:12px; }
   .site-foot .wb{ height:20px; }
 }
@@ -1863,6 +1861,20 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 }
 .sitenav a:hover, .sitenav .sitenav-cookie:hover{ background:var(--surface-2); }
 .sitenav a[aria-current="page"]{ background:var(--ink); color:var(--on-brand); }
+/* 規約類は内容のページと列を分ける。チップにすると同じ重みに見えるので、
+   ここだけは下線のテキストリンクにして一段落とす（ドロアーと同じ扱い）。
+   セレクタを .sitenav から書いているのは、下のSP用の指定（.sitenav a に
+   padding を戻すもの）より詳細度を上げて、あとから打ち消されないようにするため。 */
+.sitenav .sitenav-legal{ margin-top:22px; gap:6px 22px; }
+.sitenav .sitenav-legal a,
+.sitenav .sitenav-legal .sitenav-cookie{
+  padding:0; border:0; background:none; border-radius:0;
+  font-size:var(--fs-sm); line-height:1.6; color:var(--ink-3);
+  text-decoration:underline; text-underline-offset:3px;
+}
+.sitenav .sitenav-legal a:hover,
+.sitenav .sitenav-legal .sitenav-cookie:hover{ background:none; color:var(--ink); }
+.sitenav .sitenav-legal a[aria-current="page"]{ background:none; color:var(--ink); }
 
 /* ---- FAQ ---- */
 .faq{ display:grid; gap:10px; }
@@ -2211,3 +2223,13 @@ html[data-visit="other"] [data-when~="other"]{ display:block; }
   --wbc-font:var(--f-body); --wbc-fs:var(--fs-md); --wbc-backdrop:rgba(18,17,15,.5);
 }
 .wbc .wbc-btn{ font-weight:500; letter-spacing:.04em; }
+/* トグルは ON/OFF が一目で分かることを最優先にする。
+   これまで ON は文字色（黒／ダークでは生成り）で、ダークでは
+   「生成りの帯に白いつまみ」になり、どちらの状態か読み取れなかった。
+   許可されているときだけ緑にして、つまみは紙の色に合わせる。
+   wb-consent.js 側は :where() で書かれていて詳細度が0なので、ここで普通に上書きできる。 */
+.wbc{ --wbc-switch-off:color-mix(in srgb, var(--ink) 26%, var(--paper)); }
+.wbc .wbc-knob{ background:var(--knob); }
+.wbc .wbc-switch[aria-checked="true"] .wbc-track{ background:var(--ok); }
+.wbc .wbc-state{ font-weight:700; letter-spacing:.06em; }
+.wbc .wbc-switch[aria-checked="true"] .wbc-state{ color:var(--ok); }
