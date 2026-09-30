@@ -318,30 +318,26 @@ function siblingsOf(code){
    4文字の各記号には触れない。説明に使ってよいのは独自軸の A / O・H / C だけ。 */
 function typeFaq(code){
   const [bt, ao, hc] = code.split("-");
-  const b = BASE[bt], s = SUB[code];
+  const b = BASE[bt], s = SUB[code], x = EXTRA[code] || {};
   const rank = R.rankAll(code);
   const top3 = i => rank[i].slice(0, 3).map(x => x.code).join("、");
-  const sibs = siblingsOf(code), others = sibs.filter(c => c !== code);
-  const one = others[0];
+  /* A / O・H / C の意味、同じベースコードの4つ、相性の計算方法は、以前ここで
+     64枚（または32枚）に同じ答えを出していた。/axis/ と /about/ に任せて外した（2026-09-30）。
+     代わりに extra.js の answer / scenes / vs があるコードは、その内容で答える。 */
+  const vsKeys = x.vs ? Object.keys(x.vs) : [];
   return [
     { q: `${code}とはどんなタイプですか？`,
-      a: `${code}は「${s.label}」です。64モンスターズが90問の回答から分類する64タイプのひとつで、ベースコード${bt}に、独自軸の${ao}（${aoName(ao)}）と${hc}（${hcName(hc)}）が重なります。${s.desc}` },
-    { q: `${code}の「${ao}」は何を表していますか？`,
-      a: `${ao}は、64モンスターズが独自に加えている「自分への確信」の軸です。${ao}＝${aoName(ao)}で、${pole("AO", ao).note}という意味です。もう一方の極は${ao === "A" ? "O（揺らぎ）" : "A（確信）"}で、この1文字が変わると同じベースコードでも現れ方が変わります。` },
-    { q: `${code}の「${hc}」は何を表していますか？`,
-      a: `${hc}は、64モンスターズが独自に加えている「人への構え」の軸です。${hc}＝${hcName(hc)}で、${pole("HC", hc).note}という意味です。ベースコードとは別に判定するので、どのベースコードの人にも${hc}と${hc === "H" ? "C" : "H"}の両方がいます。` },
-    { q: `${code}と同じ${bt}ベースコードのタイプには何がありますか？`,
-      a: `${sibs.join("、")}の4つです。ベースコードは同じで、独自軸の A / O（自分への確信）と H / C（人への構え）の組み合わせだけが違います。${code}は${ao}（${aoName(ao)}）と${hc}（${hcName(hc)}）、${one}は${one.split("-")[1]}（${aoName(one.split("-")[1])}）と${one.split("-")[2]}（${hcName(one.split("-")[2])}）です。` },
+      a: `${code}は「${s.label}」です。${x.answer || ""}${s.desc}` },
+    ...(x.scenes ? [{ q: `${code}がつまずきやすいのはどんな場面ですか？`,
+      a: x.scenes.map(sc => sc.s).join("") }] : []),
+    ...vsKeys.slice(0, 1).map(c2 => ({ q: `${code}と${c2}の違いは何ですか？`, a: x.vs[c2] })),
     { q: `${code}と相性がいいタイプは？`,
-      a: `用途によって変わります。恋人として噛み合うのは${top3(0)}、仕事のパートナーとしては${top3(1)}、友人としては${top3(2)}が上位です。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして、64タイプを順位づけしています。同じタイプ同士も相手として数えています。設計した重みによる目安で、測定値ではありません。` },
+      a: `恋人としては${top3(0)}、仕事のパートナーとしては${top3(1)}、友人としては${top3(2)}が上位です。` },
     { q: `${code}はどんな仕事で力を発揮しやすいですか？`,
-      a: `職種より先に環境で決まります。${b.work.env}で力を発揮しやすく、${b.work.role}といった役割を担いやすいタイプです。${code}の場合は、${s.work}よく挙がる領域は${b.work.jobs.slice(0, 5).join("、")}ですが、向き不向きを決めるものではありません。` },
-    { q: `${code}の恋愛傾向は？`,
-      a: (EXTRA[code] && EXTRA[code].love
-            ? `${EXTRA[code].love.lead}かみ合いやすいのは、${EXTRA[code].love.good}`
-            : `独自軸の${ao}（${aoName(ao)}）と${hc}（${hcName(hc)}）の組み合わせから見た傾向です。必ずそうなるというものではありません。`) },
+      a: `${b.work.env}で力を発揮しやすく、${b.work.role}といった役割を担いやすいタイプです。${code}の場合は、${s.work}` },
+    ...(x.love ? [{ q: `${code}の恋愛傾向は？`, a: `${x.love.lead}かみ合いやすいのは、${x.love.good}` }] : []),
     { q: `${code}は「${bt}-${ao}${hc}」や「${bt} ${ao}${hc}」と同じですか？`,
-      a: `同じものです。${code}・${bt}-${ao}${hc}・${bt} ${ao}${hc}・${bt} ${ao} ${hc} は、いずれも同じ組み合わせを指します。区切り方はサービスや記事によって異なります。` }
+      a: `同じものです。${code}・${bt}-${ao}${hc}・${bt} ${ao}${hc} は、いずれも同じ組み合わせを指します。` }
   ];
 }
 
@@ -379,7 +375,6 @@ function typePage(code){
   const personaSec = !x ? "" : `
   <div class="sec split" id="persona">
     <h2>${code} はこんな人</h2>
-    <p class="body-text">${code} を、よく見かける役割と場面に置きかえると、次のような人です。</p>
     <ul class="list persona">${x.persona.map(t => "<li>" + esc(t) + "</li>").join("")}</ul>
     <p class="g-note" style="margin-top:16px">実在の人物ではなく、役割と場面の類型で書いています。</p>
   </div>`;
@@ -387,10 +382,7 @@ function typePage(code){
   const aruaruSec = !x ? "" : `
   <div class="sec split" id="aruaru">
     <h2>${code} あるある</h2>
-    <p class="body-text">${code} の人が「自分のことだ」と言いやすい場面を5つ並べました。</p>
     <ul class="list aruaru">${x.aruaru.map(t => "<li>" + esc(t) + "</li>").join("")}</ul>
-    <p class="g-note" style="margin-top:16px" data-when="new">当たっているかどうかは、実際に受けてみるのがいちばん早いです。</p>
-    <p class="g-note" style="margin-top:16px" data-when="mine other">全部が当たるとは限りません。6軸の組み合わせから見た傾向です。</p>
   </div>`;
 
   /* 人間関係。恋愛（love）・仕事（work）・相性（/compat/）と内容が重ならないよう、
@@ -400,7 +392,6 @@ function typePage(code){
   const relSec = !rel ? "" : `  <div class="sec split" id="relations">
     <h2>${code} の人間関係</h2>
     <p class="body-text"><b>${code}</b>は、${esc(rel.lead)}</p>
-    <p class="g-note" style="margin-top:14px">恋愛とは分けて、家族・友人・職場の相手など、日々の関わりに出やすいところをまとめています。</p>
     <div class="cols" style="margin-top:26px">
       <div><p class="sub-h">すでに近い相手とのあいだで</p><p class="body-text">${esc(rel.near)}</p></div>
       <div><p class="sub-h">まだ近くない相手とのあいだで</p><p class="body-text">${esc(rel.far)}</p></div>
@@ -408,6 +399,18 @@ function typePage(code){
   </div>
 
 `;
+
+  /* そのタイプだけの内容（extra.js の answer / scenes / vs）。原稿のあるコードだけ出る。
+     64枚に同じ定型文が並んでいたのを削り、代わりにここを足していく（2026-09-30） */
+  const scenesSec = !(x && x.scenes) ? "" : `
+  <div class="sec split" id="stumble">
+    <h2>${code} がつまずきやすい場面</h2>
+    <ol class="scenes">${x.scenes.map(sc => `<li><p class="body-text">${esc(sc.s)}</p><p class="g-note">${esc(sc.t)}</p></li>`).join("")}</ol>
+  </div>`;
+  const vsHTML = !(x && x.vs) ? "" : `
+    <div class="vs">${Object.keys(x.vs).map(c2 => `
+      <div><p class="sub-h"><a class="mono" href="${base}t/${c2}/">${c2}</a> との違い</p><p class="body-text">${esc(x.vs[c2])}</p></div>`).join("")}
+    </div>`;
 
   const loveSec = !x ? "" : `
   <div class="sec split" id="love">
@@ -444,15 +447,14 @@ function typePage(code){
        ベースコードの4文字は、記号ごとに意味を分解しない（2026-09-29 たいし決定）。 -->
   <div class="tldr">
     <p class="tldr-one"><span class="tldr-k">一言でいうと</span><span class="tldr-v">${esc(s.label)}　—　${ao}（${aoName(ao)}）× ${hc}（${hcName(hc)}）</span></p>
-    <p class="body-text"><b>${code}</b>は、64モンスターズが90問への回答から分類している64タイプのひとつです。ベースコード <span class="mono">${bt}</span> に、64モンスターズ独自軸の <b>${ao}</b>（${aoName(ao)}＝${pole("AO", ao).note}）と <b>${hc}</b>（${hcName(hc)}＝${pole("HC", hc).note}）を持つタイプとして表しています。</p>
-    <p class="body-text">${esc(firstSentence(s.desc))}${esc(firstSentence(s.edge))}いっぽうで、${esc(firstSentence(s.care))}</p>
+    <p class="body-text"><b>${code}</b>とは、${x && x.answer ? esc(x.answer) : esc(firstSentence(s.desc))}${esc(firstSentence(s.edge))}いっぽうで、${esc(firstSentence(s.care))}</p>
   </div>
 
   <nav class="anchors" aria-label="このページの目次">
     <a href="#about-type">${code}とは</a>
-    <a href="#code-structure">コードの構造</a>
-    <a href="#siblings">同じベースコード</a>
-    <a href="#strength">強み・つまずき</a>
+    <a href="#siblings">近いタイプとの違い</a>
+    <a href="#strength">強み</a>${scenesSec ? `
+    <a href="#stumble">つまずきやすい場面</a>` : ""}
     <a href="#work">仕事</a>
     <a href="#love">恋愛</a>
     <a href="#relations">人間関係</a>
@@ -511,57 +513,30 @@ function typePage(code){
 
   <div class="sec split" id="about-type">
     <h2>${code} とは</h2>
-    <p class="body-text"><b>${code}</b>（${bt}-${ao}${hc}／${bt} ${ao}${hc} とも書かれます）は、<a href="${base}64types/">64タイプ性格診断</a>のうちの1つです。ベースコード <code class="mono">${bt}</code> に、64モンスターズ独自の軸である、自分への確信を表す<a href="${base}axis/ao/">${ao}（${aoName(ao)}）</a>と、人への構えを表す<a href="${base}axis/hc/">${hc}（${hcName(hc)}）</a>が重なります。64モンスターズでは「${esc(s.label)}」と呼んでいます。</p>
-    <p class="g-note">ベースコードの <code class="mono">${bt}</code> は、64モンスターズ独自の設問と採点による結果を表すものです。ほかの性格検査による判定を示すものではありません。<a href="${base}64types/">コードの読み方</a></p>
+    <p class="body-text"><b>${code}</b>（${bt}-${ao}${hc}／${bt} ${ao}${hc}）は、ベースコード <span class="mono">${bt}</span> に、独自軸の<a href="${base}axis/ao/">${ao}（${aoName(ao)}）</a>と<a href="${base}axis/hc/">${hc}（${hcName(hc)}）</a>が重なるタイプです。64モンスターズでは「${esc(s.label)}」と呼んでいます。</p>
     <p class="body-text">${esc(b.summary)}</p>
     <p class="body-text">${esc(s.desc)}</p>
-  </div>
-
-  <!-- コードの構造。検索エンジンと生成AIに
-       「${code} は 64モンスターズのタイプコードで、ベースコードと独自軸2つでできている」
-       という関係をそのまま読ませるための節。定義リストで組む。
-       ベースコードの4文字は1文字ずつ分解しない。 -->
-  <div class="sec split" id="code-structure">
-    <h2>${code} のタイプコード</h2>
-    <p class="body-text">${code} は、ベースコード <span class="mono">${bt}</span> と、64モンスターズ独自軸の <b>${ao}</b>・<b>${hc}</b> の3つでできています。64モンスターズは独自の設問と採点ロジックで64タイプに分類していて、${code} を次の構造で表しています。</p>
-    <dl class="codestruct">
-      <div class="cst-row">
-        <dt>ベースコード</dt>
-        <dd><span class="cst-c mono">${bt}</span><span class="cst-n">90問への回答から算出されるベースコードです。一般に知られている記号体系と同じアルファベットを使いますが、設問・採点方法・結果の解釈はいずれも64モンスターズ独自のものです。</span></dd>
-      </div>
-      <div class="cst-row">
-        <dt>64モンスターズ独自軸 ・ 自分への確信</dt>
-        <dd><span class="cst-c mono">${ao}</span><span class="cst-n">${aoName(ao)}。${pole("AO", ao).note}。もう一方の極は ${ao === "A" ? "O（揺らぎ）" : "A（確信）"} です。<a href="${base}axis/ao/">AとOの違い</a></span></dd>
-      </div>
-      <div class="cst-row">
-        <dt>64モンスターズ独自軸 ・ 人への構え</dt>
-        <dd><span class="cst-c mono">${hc}</span><span class="cst-n">${hcName(hc)}。${pole("HC", hc).note}。もう一方の極は ${hc === "H" ? "C（慎重）" : "H（信頼）"} です。<a href="${base}axis/hc/">HとCの違い</a></span></dd>
-      </div>
-    </dl>
-    <p class="g-note" style="margin-top:16px">A / O と H / C は、ベースコードとは別に判定する64モンスターズ独自の軸です。コード全体の読み方は <a href="${base}64types/">64タイプ性格診断とは</a> にまとめています。</p>
+    <p class="g-note">コードの読み方は<a href="${base}64types/">64タイプ性格診断とは</a>に、設問と採点の作り方は<a href="${base}about/#made">この診断について</a>にまとめています。</p>
   </div>
 ${personaSec}
 ${aruaruSec}
   <!-- 比較の軸は A / O と H / C だけにする。ベースコードの4文字は説明材料に使わない -->
   <div class="sec split" id="siblings">
-    <h2>${code} と同じベースコードを持つタイプ</h2>
-    <p class="body-text">${code} と同じベースコード <span class="mono">${bt}</span> を持つタイプは、${siblingsOf(code).join("、")} の4つです。違うのは独自軸の A / O（自分への確信）と H / C（人への構え）の2文字だけで、ベースコードは同じです。</p>
+    <h2>${code} と近いタイプとの違い</h2>
     <ul class="sibs">${siblingsOf(code).map(c2 => {
       const [, a2, h2] = c2.split("-");
       return `<li${c2 === code ? ' class="on"' : ""}>${c2 === code
         ? `<span class="sib-c mono">${c2}</span>`
         : `<a class="sib-c mono" href="${base}t/${c2}/">${c2}</a>`}<span class="sib-l">${esc(SUB[c2].label)}</span><span class="sib-n">${a2}（${aoName(a2)}）× ${h2}（${hcName(h2)}）${c2 === code ? "　＝　いま見ているタイプ" : ""}</span></li>`;
     }).join("")}</ul>
-    <div class="matrix" style="margin-top:22px">${R.matrixHTML(base, code)}</div>
-    <p class="g-note" style="margin-top:14px">ベースコードが同じでも、決めたあとに戻ってくるかどうか（A / O）と、人にまず開くかどうか（H / C）で現れ方が変わります。</p>
+    <div class="matrix" style="margin-top:22px">${R.matrixHTML(base, code)}</div>${vsHTML}
   </div>
 
   <div class="sec split" id="strength">
     <h2>${code} の強みと、気をつけたいところ</h2>
-    <p class="body-text">${code} の強みと落とし穴は、ベースコード <span class="mono">${bt}</span> に共通する性質の上に、${ao}（${aoName(ao)}）と${hc}（${hcName(hc)}）の出方が重なって決まります。まずベースコードに共通する部分から並べます。</p>
     <div class="cols">
-      <div><p class="sub-h">強み</p><ul class="list plus">${b.strengths.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
-      <div><p class="sub-h">気をつけたいところ</p><ul class="list minus">${b.watch.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
+      <div><p class="sub-h">${bt} に共通する強み</p><ul class="list plus">${b.strengths.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
+      <div><p class="sub-h">${bt} に共通する注意点</p><ul class="list minus">${b.watch.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
     </div>
     <div class="stbox">
       <p class="stbox-h"><span class="mono">${code}</span> ならでは</p>
@@ -571,10 +546,10 @@ ${aruaruSec}
       </div>
     </div>
   </div>
+${scenesSec}
 ${loveSec}
   <div class="sec split" id="work">
     <h2>${code} が力を発揮しやすい仕事・環境</h2>
-    <p class="body-text">${code} は、職種より先に環境で決まります。力を発揮しやすい環境と、担いやすい役割を並べました。多く見られる傾向であって、向き不向きを決めるものではありません。</p>
     <div class="cols">
       <div><p class="sub-h">力を発揮しやすい環境</p><p class="body-text">${esc(b.work.env)}</p></div>
       <div><p class="sub-h">担いやすい役割</p><p class="body-text">${esc(b.work.role)}</p></div>
@@ -585,20 +560,18 @@ ${loveSec}
 
 ${relSec}  <div class="sec split" id="compat">
     <h2>${code} と相性がいいタイプ</h2>
-    <p class="body-text">${code} と噛み合う相手は、恋人・仕事・友人で変わります。用途ごとの上位を並べました。</p>
-    <p class="g-note" style="margin-top:14px">6軸の重みづけから計算した参考値で、測定した数値ではありません。実際の人間関係や将来の関係を判定・保証するものでもありません。</p>
-    <div>${R.topHTML(base, code, 5)}</div>
+    <div>${R.topHTML(base, code, 5, true)}</div>
+    <p class="g-note" style="margin-top:14px">6軸の重みづけから計算した目安で、実際の関係を判定するものではありません。</p>
     <div class="pair-cta">
-      <p class="pair-cta-txt">用途別のスコアと、どの軸が効いているかまで見るなら。</p>
       <a class="btn" href="${base}t/${code}/compat/">${code} の相性をくわしく見る</a>
-      <p class="g-note" style="margin-top:12px"><a href="${base}t/${bt}/">${bt} とはどんなタイプか（16タイプとの相性つき）</a>も見られます。${bt} の4つのうち、どれかで評価が変わる相手が分かります。</p>
+      <p class="g-note" style="margin-top:12px"><a href="${base}t/${bt}/">${bt} と16タイプの相性</a></p>
       <a class="btn ghost" href="${base}pair/?a=${code}">相手のコードを入れて調べる</a>
     </div>
   </div>
 
   ${faqHTML(faqs, `t/${code}/`)}
 
-  ${quizCtaHTML(base, `${code} は診断結果の1つです。自分がどのタイプかは、受けてみると分かります。`)}
+  ${quizCtaHTML(base, `自分が ${code} かどうかは、90問で確かめられます。`)}
 
   <p class="disclaimer">
     この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
@@ -746,7 +719,8 @@ function compatPage(code){
 
   const siblings = SFX.map(sf => bt + "-" + sf).filter(c => c !== code);
 
-  return headHTML({ title, desc, url, base, ogimg, ogalt: `${code} の相性`,
+  /* 相性ページは noindex（2026-09-30）。理由は NOINDEX_NOTE を参照 */
+  return headHTML({ title, desc, url, base, ogimg, ogalt: `${code} の相性`, noindex: true,
                     ld: [ldPage, crumbLD(crumbs), faqLD(faqs)] }) +
 `<section id="compat" class="wrap">
   ${crumbHTML(crumbs)}
@@ -932,7 +906,8 @@ function baseCompatPage(bt){
       ${verdictHTML(bt, lists[i], i)}
     </div>`).join("\n");
 
-  return headHTML({ title, desc, url, base, ogimg, ogalt: `${bt} の相性`,
+  /* 4文字ページも noindex（2026-09-30）。理由は NOINDEX_NOTE を参照 */
+  return headHTML({ title, desc, url, base, ogimg, ogalt: `${bt} の相性`, noindex: true,
                     ld: [ldPage, crumbLD(crumbs), faqLD(faqs)] }) +
 `<section id="basecompat" class="wrap">
   ${crumbHTML(crumbs)}
@@ -1581,12 +1556,18 @@ ${scripts(base, ["types.js", "render.js", "settings.js"])}
 }
 
 
+/* NOINDEX_NOTE（2026-09-30）
+   9/24 から表示がほぼ0になった（September 2026 spam update と同時期。手動対策なし）。
+   型で量産したページと判定された見立てで、同じ型どうしの一致率が高い
+   相性64枚（48%）と4文字16枚（51%）を検索対象から外した。
+   ページと内部リンクは残す（診断した人の導線は変えない）。noindex: true を付けたものは
+   head が noindex, follow になり、canonical を出さず、sitemap にも載らない。 */
 for (const code of CODES){
   pages.push({ rel: `t/${code}/index.html`,        loc: `${ORIGIN}/t/${code}/`,        pri: "0.7", html: typePage(code) });
-  pages.push({ rel: `t/${code}/compat/index.html`, loc: `${ORIGIN}/t/${code}/compat/`, pri: "0.6", html: compatPage(code) });
+  pages.push({ rel: `t/${code}/compat/index.html`, loc: `${ORIGIN}/t/${code}/compat/`, pri: "0.6", html: compatPage(code), noindex: true });
 }
 BASE_KEYS.forEach(bt => {
-  pages.push({ rel: `t/${bt}/index.html`, loc: `${ORIGIN}/t/${bt}/`, pri: "0.85", html: baseCompatPage(bt) });
+  pages.push({ rel: `t/${bt}/index.html`, loc: `${ORIGIN}/t/${bt}/`, pri: "0.85", html: baseCompatPage(bt), noindex: true });
 });
 
 pages.push({ rel: "types.html",         loc: `${ORIGIN}/types.html`,  pri: "0.9", html: galleryPage() });
@@ -1748,7 +1729,7 @@ const STATIC = [
 
 const all = [
   ...STATIC.map(s => ({ loc: s.loc, pri: s.pri, src: fs.readFileSync(path.join(DOCS, s.rel), "utf8") })),
-  ...pages.map(p => ({ loc: p.loc, pri: p.pri, src: p.html }))
+  ...pages.filter(p => !p.noindex).map(p => ({ loc: p.loc, pri: p.pri, src: p.html }))
 ];
 
 const now = today();
@@ -1795,6 +1776,10 @@ console.log(`sitemap.xml を更新しました: ${urls.length} URL（うち中�
     const robots = pick(html, /<meta name="robots" content="([^"]*)"/);
     const noindex = /noindex/.test(robots) || rel === "404.html";
     if (rel === "404.html" && !/noindex/.test(robots)) bad.push(`  ✗ 404.html … noindex が無い`);
+    /* 相性ページと4文字ページは noindex のまま（NOINDEX_NOTE）。うっかり戻したら止める */
+    const mustNoindex = /^t\/[A-Z]{4}-[AO]-[HC]\/compat\/index\.html$/.test(rel) || /^t\/[A-Z]{4}\/index\.html$/.test(rel);
+    if (mustNoindex && !noindex) bad.push(`  ✗ ${rel} … noindex のはずのページが index 対象になっている`);
+    if (mustNoindex && /<link rel="canonical"/.test(html)) bad.push(`  ✗ ${rel} … noindex なのに canonical がある`);
     if (noindex) continue;
     const title = pick(html, /<title>([^<]*)<\/title>/);
     const desc = pick(html, /<meta name="description" content="([^"]*)"/);

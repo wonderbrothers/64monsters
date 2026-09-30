@@ -195,8 +195,10 @@
       (score == null ? "" : '<span class="c-score">' + score + '</span>') + '</a>';
   }
 
-  /* 個別ページの「相性」節。用途ごとに上位 n 件 */
-  function topHTML(base, code, n){
+  /* 個別ページの「相性」節。用途ごとに上位 n 件。
+     noWhy を立てると「この用途では何を重く見ているか」の一文を省く。
+     64枚に同じ3文が並ぶので、タイプページでは省いて相性ページに任せる */
+  function topHTML(base, code, n, noWhy){
     var lists = rankAll(code);
     return root.PURPOSES.map(function(P, i){
       var chips = lists[i].slice(0, n || 5).map(function(x){
@@ -204,7 +206,7 @@
       }).join("");
       return '<div class="match-group" data-purpose="' + P.key + '"><p class="sub-h">' + PURPOSE_LEAD[P.key] + '</p>' +
              '<div class="match-list">' + chips + '</div>' +
-             '<p class="match-why">' + purposeWhy(i, code) + '</p></div>';
+             (noWhy ? '' : '<p class="match-why">' + purposeWhy(i, code) + '</p>') + '</div>';
     }).join("");
   }
 

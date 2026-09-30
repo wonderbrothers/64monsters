@@ -285,19 +285,23 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 /* アンカーで飛んだとき、見出しがヘッダーの下に潜らないようにする */
 .sec[id]{ scroll-margin-top:84px; }
 
-/* コードの構造。定義リストで組む（何がベースコードで、何が独自軸か） */
-.codestruct{ margin-top:20px; display:grid; gap:0; }
-.cst-row{
-  display:grid; grid-template-columns:1fr; gap:6px;
-  padding:18px 0; border-top:1px solid var(--line-2);
+/* つまずきやすい場面（extra.js の scenes）。場面を本文、どうすると楽になるかを注記で。
+   番号は読み上げでも数が伝わるよう <ol> のまま、見た目の数字だけ付け直す */
+.scenes{ list-style:none; margin:0; padding:0; counter-reset:scene; display:grid; gap:0; }
+.scenes li{
+  counter-increment:scene; position:relative;
+  padding:18px 0 18px 36px; border-top:1px solid var(--line-2);
 }
-.cst-row:last-child{ border-bottom:1px solid var(--line-2); }
-.codestruct dt{ font-size:var(--fs-sm); color:var(--ink-3); letter-spacing:.06em; }
-.codestruct dd{ margin:0; display:flex; align-items:baseline; gap:14px; }
-.cst-c{ flex:none; min-width:3.6em; font-size:var(--fs-lg); font-weight:700; }
-/* 本文と同じ大きさにする（14pxだと説明が読みにくく、
-   以前は相性カードの .cs-n（20px・mono）と名前が衝突して20pxで出ていた） */
-.cst-n{ font-size:var(--fs-base); line-height:2.05; color:var(--ink-2); }
+.scenes li:last-child{ border-bottom:1px solid var(--line-2); }
+.scenes li::before{
+  content:counter(scene); position:absolute; left:0; top:18px;
+  font-family:var(--f-mono); font-size:var(--fs-sm); color:var(--ink-3);
+}
+.scenes .g-note{ margin-top:8px; }
+
+/* 1文字違いのタイプとの違い（extra.js の vs）。同じベースコードの表のすぐ下に置く */
+.vs{ display:grid; grid-template-columns:1fr 1fr; gap:34px; margin-top:28px; }
+@media (max-width:620px){ .vs{ grid-template-columns:1fr; gap:26px; } }
 
 /* 同じベースコードの4タイプ */
 .sibs{ list-style:none; margin:20px 0 0; padding:0; display:grid; gap:0; }
@@ -313,7 +317,6 @@ a.sib-c:hover{ text-decoration:underline; text-underline-offset:4px; }
 .sib-n{ grid-column:1 / -1; font-size:var(--fs-sm); color:var(--ink-3); line-height:1.8; }
 
 @media (min-width:761px){
-  .cst-row{ grid-template-columns:15em 1fr; gap:0 20px; align-items:baseline; }
   .sibs li{ grid-template-columns:auto 1fr auto; }
   .sibs .sib-n{ grid-column:auto; text-align:right; }
 }
@@ -2092,7 +2095,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .picker-note a,
 .cm-n a,
 .lk-n a,
-.cst-n a,
+.vs .sub-h a,
 .sib-n a,
 .qc-note a{
   color:var(--ink);
@@ -2111,7 +2114,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .picker-note a:hover,
 .cm-n a:hover,
 .lk-n a:hover,
-.cst-n a:hover,
+.vs .sub-h a:hover,
 .sib-n a:hover,
 .qc-note a:hover{ text-decoration-color:var(--ink); }
 /* 濃い帯の上の本文リンク。地色が反転するので、色は本文から受け継ぐ */
