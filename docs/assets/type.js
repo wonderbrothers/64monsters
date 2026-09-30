@@ -38,6 +38,18 @@
       if (hh[hi].code === CODE){ rec = hh[hi]; break; }
     }
   }
+
+  /* ---------- 結果表示用の枠を差し込む ----------
+     全軸拮抗の断り・鑑定コード・6軸スコア（tplMine）と、未受診向けの枠（tplLocked）は
+     64枚に同じ文が並ぶので、静的HTMLでは <template> に入れて本文から外してある。
+     必要なときだけ、その場所に中身を展開する。以降の処理はこの中の id を使うので、先に行う。 */
+  function mount(id){
+    var t = $(id);
+    if (t && t.content) t.parentNode.replaceChild(document.importNode(t.content, true), t);
+  }
+  if (sc) mount("tplMine");
+  else if (!hasTaken()) mount("tplLocked");
+
   function fmtDate(t){
     var d = new Date(t), p = function(n){ return (n < 10 ? "0" : "") + n; };
     return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate());

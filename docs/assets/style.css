@@ -262,6 +262,11 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
   border:var(--bw) solid var(--line); border-radius:calc(var(--r) * 3);
   background:var(--surface-2);
 }
+/* 要約の本文は --measure（1行46文字）の例外にして、枠いっぱいに広げる。
+   枠は下の目次・枠と同じ全幅なので、本文だけ46文字で止めると右に大きな空きが出ていた。
+   2〜3行の要約なら長い行でも読みにくさは小さく、上下と幅がそろうほうを取った
+   （2026-09-30 たいし決定。枠を本文の幅に縮める案は、下の全幅の枠とずれるので不採用） */
+.tldr .body-text{ max-width:none; }
 .tldr-one{
   display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px;
   margin:0 0 16px; padding-bottom:14px; border-bottom:1px solid var(--line-2);
@@ -943,6 +948,8 @@ body.modal-open{ overflow:hidden; }
   border-radius:var(--r); background:var(--surface-2);
   max-width:var(--panel-w);
 }
+/* 6軸のスコアの節の中（説明文とグラフのあいだ）に置く */
+#secGauge .flatnote{ margin:18px 0 22px; max-width:none; }
 .fn-h{ font-size:var(--fs-base); font-weight:700; }
 .fn-t{ font-size:var(--fs-md); color:var(--ink-2); line-height:1.9; margin-top:8px; }
 

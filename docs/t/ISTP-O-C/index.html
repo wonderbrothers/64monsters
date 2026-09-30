@@ -132,14 +132,6 @@
     },
     {
       "@type": "Question",
-      "name": "ISTP-O-Cと相性がいいタイプは？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "恋人としてはISTP-A-C、INTP-A-C、ESTP-A-C、仕事のパートナーとしてはENFP-A-C、INFP-A-C、ENTP-A-C、友人としてはISFP-A-C、ISTP-A-C、ISFP-O-Cが上位です。"
-      }
-    },
-    {
-      "@type": "Question",
       "name": "ISTP-O-Cはどんな仕事で力を発揮しやすいですか？",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -168,7 +160,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=f6106a33">
+<link rel="stylesheet" href="../../assets/style.css?v=32cb09d9">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -224,34 +216,11 @@ window.PAGE_CODE = "ISTP-O-C";
     <a href="#faq">よくある質問</a>
   </nav>
 
-  <div class="flatnote hidden" id="flatNote">
-    <p class="fn-h">6つの軸すべてが、立っていません。</p>
-    <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
-  </div>
-
-  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
-       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
-       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
-  <div class="locked hidden" id="secLocked">
-    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
-    <div class="lk-grid">
-      <div class="lk-item">
-        <p class="lk-t">6軸のスコア</p>
-        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
-        <p class="lk-n">同じ ISTP-O-C でも、どの軸がどれだけ立っているかは人によって違います。</p>
-      </div>
-      <div class="lk-item">
-        <p class="lk-t">鑑定コード</p>
-        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
-        <p class="lk-n">結果を16文字にしたものです。別の端末に移すときと、<a href="../../friends/">Myフレンド</a>に登録してもらうときに渡します。</p>
-      </div>
-    </div>
-    <div class="lk-foot">
-      <a class="btn lk-btn" href="../../quiz/">90問を受けて、この2つを出す</a>
-      <p class="lk-note">約10分・登録不要。回答はブラウザの中だけで採点します。</p>
-    </div>
-  </div>
-
+  <!-- 結果表示用の枠は <template> に入れて、本文には含めない（2026-09-30）。
+       64枚に同じ文が並ぶので、ページの中身として読まれないようにする。
+       差し込むのは type.js：tplMine は自分の結果として開いたとき、
+       tplLocked は一度も受けていない人のときだけ。 -->
+  <template id="tplMine">
   <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
   <div class="sec split hidden" id="secToken">
     <h2>鑑定コード</h2>
@@ -268,10 +237,41 @@ window.PAGE_CODE = "ISTP-O-C";
   <div class="sec split hidden" id="secGauge">
     <h2>6軸のスコア</h2>
     <p class="g-note">数値は、満点30に対するその極への寄りです。3以内は「立っていない」として扱います。</p>
+    <!-- 全軸拮抗の断りは、それを示すグラフの真上に置く（2026-09-30 たいし指摘） -->
+    <div class="flatnote hidden" id="flatNote">
+      <p class="fn-h">6つの軸すべてが、立っていません。</p>
+      <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。このページの解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
+    </div>
     <div class="gauges" id="gauges"></div>
     <button class="tablebtn" id="tableBtn">数値の一覧を表示</button>
     <div id="tableWrap" class="hidden"></div>
   </div>
+
+  </template>
+  <template id="tplLocked">
+  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
+       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
+       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
+  <div class="locked hidden" id="secLocked">
+    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
+    <div class="lk-grid">
+      <div class="lk-item">
+        <p class="lk-t">6軸のスコア</p>
+        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
+        <p class="lk-n">軸ごとの強さは、人によって違います。</p>
+      </div>
+      <div class="lk-item">
+        <p class="lk-t">鑑定コード</p>
+        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
+        <p class="lk-n">結果を16文字にしたもの。端末の移行と<a href="../../friends/">Myフレンド</a>に使います。</p>
+      </div>
+    </div>
+    <div class="lk-foot">
+      <a class="btn lk-btn" href="../../quiz/">90問を受けて、この2つを出す</a>
+    </div>
+  </div>
+
+  </template>
 
   <div class="sec split" id="about-type">
     <h2>ISTP-O-C とは</h2>
@@ -305,16 +305,10 @@ window.PAGE_CODE = "ISTP-O-C";
   <div class="sec split" id="strength">
     <h2>ISTP-O-C の強みと、気をつけたいところ</h2>
     <div class="cols">
-      <div><p class="sub-h">ISTP に共通する強み</p><ul class="list plus"><li>トラブル対応が速く、実地に強い</li><li>道具や仕組みを自分で最適化できる</li><li>緊急時にも動じない</li></ul></div>
-      <div><p class="sub-h">ISTP に共通する注意点</p><ul class="list minus"><li>長期の計画や報告を面倒に感じる</li><li>気持ちの共有を求められると距離を取る</li><li>興味を失うと、途端に手が止まる</li></ul></div>
+      <div><p class="sub-h">強み</p><p class="body-text">外の評価に左右されずに、技術を深く掘り下げられる。専門性がまっすぐ積み上がります。</p></div>
+      <div><p class="sub-h">落とし穴</p><p class="body-text">何も言わないので、必要とされていることに気づかれない。決まった曜日に進捗を一行出すだけで、信頼が積み上がっていきます。</p></div>
     </div>
-    <div class="stbox">
-      <p class="stbox-h"><span class="mono">ISTP-O-C</span> ならでは</p>
-      <div class="cols">
-        <div><p class="sub-h">このタイプの強み</p><p class="body-text">外の評価に左右されずに、技術を深く掘り下げられる。専門性がまっすぐ積み上がります。</p></div>
-        <div><p class="sub-h">落とし穴</p><p class="body-text">何も言わないので、必要とされていることに気づかれない。決まった曜日に進捗を一行出すだけで、信頼が積み上がっていきます。</p></div>
-      </div>
-    </div>
+    <p class="g-note" style="margin-top:18px"><a href="../../t/ISTP/#base-traits">ISTP の4タイプに共通する強みと注意点</a></p>
   </div>
 
   <div class="sec split" id="stumble">
@@ -337,7 +331,6 @@ window.PAGE_CODE = "ISTP-O-C";
       <div><p class="sub-h">担いやすい役割</p><p class="body-text">実装、修理・改善、現場対応、専門技能</p></div>
     </div>
     <p class="body-text" style="margin-top:22px">研究開発・専門技能向き。定点で進捗を出すと信頼が積み上がる。</p>
-    <div class="jobs"><span>エンジニア・技術職</span><span>整備・製造・建築</span><span>データ/セキュリティ</span><span>職人・専門技能</span></div>
   </div>
 
   <div class="sec split" id="relations">
@@ -362,7 +355,7 @@ window.PAGE_CODE = "ISTP-O-C";
 
   <div class="sec split" id="faq">
     <h2>よくある質問</h2>
-    <div class="faq"><details class="faq-i"><summary>ISTP-O-Cとはどんなタイプですか？</summary><p class="body-text">ISTP-O-Cは「寡黙な手さばきモンスター」です。考えていることも試していることも外に出さず、ひとりで技術を掘り下げる人です。考えていることも試していることも、外に出さないタイプ。自分の判断を疑い、人にも見せないので、進んでいるのかどうかが誰にも分かりません。内側では相当な量を試していますが、それが表に出るのは形になってからです。</p></details><details class="faq-i"><summary>ISTP-O-Cがつまずきやすいのはどんな場面ですか？</summary><p class="body-text">問題の原因をほぼ突き止めているのに、確証が取れるまで報告せず、周りが別の方向で動き出してしまう。頼まれた作業を黙々と進めていたら、「進んでいないのでは」と心配される。やり方に迷ったとき、人に聞く前に自分で何通りも試して、時間を使いすぎる。</p></details><details class="faq-i"><summary>ISTP-O-CとISTP-A-Cの違いは何ですか？</summary><p class="body-text">どちらも人に相談せず、ひとりで手を動かします。ISTP-A-C は判断に迷いがなく最短で片づけ、ISTP-O-C は自分の判断も疑いながら試し続けます。A-C はトラブルの切り札、O-C は時間をかけて専門を深める人です。</p></details><details class="faq-i"><summary>ISTP-O-Cと相性がいいタイプは？</summary><p class="body-text">恋人としてはISTP-A-C、INTP-A-C、ESTP-A-C、仕事のパートナーとしてはENFP-A-C、INFP-A-C、ENTP-A-C、友人としてはISFP-A-C、ISTP-A-C、ISFP-O-Cが上位です。</p></details><details class="faq-i"><summary>ISTP-O-Cはどんな仕事で力を発揮しやすいですか？</summary><p class="body-text">実物と裁量があり、手順に縛られすぎない環境で力を発揮しやすく、実装、修理・改善、現場対応、専門技能といった役割を担いやすいタイプです。ISTP-O-Cの場合は、研究開発・専門技能向き。定点で進捗を出すと信頼が積み上がる。</p></details><details class="faq-i"><summary>ISTP-O-Cの恋愛傾向は？</summary><p class="body-text">思っていることを外に出さないまま、行動だけが変わります。相手はその変化に気づけません。かみ合いやすいのは、変化に気づける相手。言葉を待てる人となら、この人は少しずつ開きます。</p></details><details class="faq-i"><summary>ISTP-O-Cは「ISTP-OC」や「ISTP OC」と同じですか？</summary><p class="body-text">同じものです。ISTP-O-C・ISTP-OC・ISTP OC は、いずれも同じ組み合わせを指します。</p></details></div>
+    <div class="faq"><details class="faq-i"><summary>ISTP-O-Cとはどんなタイプですか？</summary><p class="body-text">ISTP-O-Cは「寡黙な手さばきモンスター」です。考えていることも試していることも外に出さず、ひとりで技術を掘り下げる人です。考えていることも試していることも、外に出さないタイプ。自分の判断を疑い、人にも見せないので、進んでいるのかどうかが誰にも分かりません。内側では相当な量を試していますが、それが表に出るのは形になってからです。</p></details><details class="faq-i"><summary>ISTP-O-Cがつまずきやすいのはどんな場面ですか？</summary><p class="body-text">問題の原因をほぼ突き止めているのに、確証が取れるまで報告せず、周りが別の方向で動き出してしまう。頼まれた作業を黙々と進めていたら、「進んでいないのでは」と心配される。やり方に迷ったとき、人に聞く前に自分で何通りも試して、時間を使いすぎる。</p></details><details class="faq-i"><summary>ISTP-O-CとISTP-A-Cの違いは何ですか？</summary><p class="body-text">どちらも人に相談せず、ひとりで手を動かします。ISTP-A-C は判断に迷いがなく最短で片づけ、ISTP-O-C は自分の判断も疑いながら試し続けます。A-C はトラブルの切り札、O-C は時間をかけて専門を深める人です。</p></details><details class="faq-i"><summary>ISTP-O-Cはどんな仕事で力を発揮しやすいですか？</summary><p class="body-text">実物と裁量があり、手順に縛られすぎない環境で力を発揮しやすく、実装、修理・改善、現場対応、専門技能といった役割を担いやすいタイプです。ISTP-O-Cの場合は、研究開発・専門技能向き。定点で進捗を出すと信頼が積み上がる。</p></details><details class="faq-i"><summary>ISTP-O-Cの恋愛傾向は？</summary><p class="body-text">思っていることを外に出さないまま、行動だけが変わります。相手はその変化に気づけません。かみ合いやすいのは、変化に気づける相手。言葉を待てる人となら、この人は少しずつ開きます。</p></details><details class="faq-i"><summary>ISTP-O-Cは「ISTP-OC」や「ISTP OC」と同じですか？</summary><p class="body-text">同じものです。ISTP-O-C・ISTP-OC・ISTP OC は、いずれも同じ組み合わせを指します。</p></details></div>
   </div>
 
   <div class="quizcta" data-when="new">
@@ -373,12 +366,8 @@ window.PAGE_CODE = "ISTP-O-C";
   <div class="quizcta" data-when="mine other">
     <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
     <a class="btn qc-btn" href="../../quiz/?restart=1">もう一度受ける</a>
-    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
+    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。</p>
   </div>
-
-  <p class="disclaimer">
-    この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
-  </p>
 
   </div>
 </section>
@@ -401,7 +390,7 @@ window.PAGE_CODE = "ISTP-O-C";
 <script src="../../assets/questions.js?v=0b31d093"></script>
 <script src="../../assets/engine.js?v=85f59244"></script>
 <script src="../../assets/share.js?v=09941720"></script>
-<script src="../../assets/type.js?v=91d38469"></script>
-<script src="../../assets/settings.js?v=bbd95f02"></script>
+<script src="../../assets/type.js?v=a2760e72"></script>
+<script src="../../assets/settings.js?v=a944bf2d"></script>
 </body>
 </html>

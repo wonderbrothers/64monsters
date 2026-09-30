@@ -132,14 +132,6 @@
     },
     {
       "@type": "Question",
-      "name": "ENFJ-A-Hと相性がいいタイプは？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "恋人としてはENFJ-O-H、ESFJ-O-H、INFJ-O-H、仕事のパートナーとしてはISTJ-O-H、ESTJ-O-H、ISFJ-O-H、友人としてはENTJ-O-H、ENFJ-O-H、ENTJ-A-Hが上位です。"
-      }
-    },
-    {
-      "@type": "Question",
       "name": "ENFJ-A-Hはどんな仕事で力を発揮しやすいですか？",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -168,7 +160,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=f6106a33">
+<link rel="stylesheet" href="../../assets/style.css?v=32cb09d9">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -224,34 +216,11 @@ window.PAGE_CODE = "ENFJ-A-H";
     <a href="#faq">よくある質問</a>
   </nav>
 
-  <div class="flatnote hidden" id="flatNote">
-    <p class="fn-h">6つの軸すべてが、立っていません。</p>
-    <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
-  </div>
-
-  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
-       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
-       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
-  <div class="locked hidden" id="secLocked">
-    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
-    <div class="lk-grid">
-      <div class="lk-item">
-        <p class="lk-t">6軸のスコア</p>
-        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
-        <p class="lk-n">同じ ENFJ-A-H でも、どの軸がどれだけ立っているかは人によって違います。</p>
-      </div>
-      <div class="lk-item">
-        <p class="lk-t">鑑定コード</p>
-        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
-        <p class="lk-n">結果を16文字にしたものです。別の端末に移すときと、<a href="../../friends/">Myフレンド</a>に登録してもらうときに渡します。</p>
-      </div>
-    </div>
-    <div class="lk-foot">
-      <a class="btn lk-btn" href="../../quiz/">90問を受けて、この2つを出す</a>
-      <p class="lk-note">約10分・登録不要。回答はブラウザの中だけで採点します。</p>
-    </div>
-  </div>
-
+  <!-- 結果表示用の枠は <template> に入れて、本文には含めない（2026-09-30）。
+       64枚に同じ文が並ぶので、ページの中身として読まれないようにする。
+       差し込むのは type.js：tplMine は自分の結果として開いたとき、
+       tplLocked は一度も受けていない人のときだけ。 -->
+  <template id="tplMine">
   <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
   <div class="sec split hidden" id="secToken">
     <h2>鑑定コード</h2>
@@ -268,10 +237,41 @@ window.PAGE_CODE = "ENFJ-A-H";
   <div class="sec split hidden" id="secGauge">
     <h2>6軸のスコア</h2>
     <p class="g-note">数値は、満点30に対するその極への寄りです。3以内は「立っていない」として扱います。</p>
+    <!-- 全軸拮抗の断りは、それを示すグラフの真上に置く（2026-09-30 たいし指摘） -->
+    <div class="flatnote hidden" id="flatNote">
+      <p class="fn-h">6つの軸すべてが、立っていません。</p>
+      <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。このページの解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
+    </div>
     <div class="gauges" id="gauges"></div>
     <button class="tablebtn" id="tableBtn">数値の一覧を表示</button>
     <div id="tableWrap" class="hidden"></div>
   </div>
+
+  </template>
+  <template id="tplLocked">
+  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
+       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
+       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
+  <div class="locked hidden" id="secLocked">
+    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
+    <div class="lk-grid">
+      <div class="lk-item">
+        <p class="lk-t">6軸のスコア</p>
+        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
+        <p class="lk-n">軸ごとの強さは、人によって違います。</p>
+      </div>
+      <div class="lk-item">
+        <p class="lk-t">鑑定コード</p>
+        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
+        <p class="lk-n">結果を16文字にしたもの。端末の移行と<a href="../../friends/">Myフレンド</a>に使います。</p>
+      </div>
+    </div>
+    <div class="lk-foot">
+      <a class="btn lk-btn" href="../../quiz/">90問を受けて、この2つを出す</a>
+    </div>
+  </div>
+
+  </template>
 
   <div class="sec split" id="about-type">
     <h2>ENFJ-A-H とは</h2>
@@ -305,16 +305,10 @@ window.PAGE_CODE = "ENFJ-A-H";
   <div class="sec split" id="strength">
     <h2>ENFJ-A-H の強みと、気をつけたいところ</h2>
     <div class="cols">
-      <div><p class="sub-h">ENFJ に共通する強み</p><ul class="list plus"><li>人を巻き込み、チームを一つの方向に束ねる</li><li>相手に合わせて伝え方を変えられる</li><li>難しい話も、関係を壊さずに切り出せる</li></ul></div>
-      <div><p class="sub-h">ENFJ に共通する注意点</p><ul class="list minus"><li>嫌われることを避けて、言うべきことを飲み込む</li><li>面倒を見すぎて疲弊する</li><li>評価や反応に揺さぶられやすい</li></ul></div>
+      <div><p class="sub-h">強み</p><p class="body-text">相手が自分でも気づいていない力を見つけ、そこを本人に信じさせられる。人が伸びる場そのものを作れます。</p></div>
+      <div><p class="sub-h">落とし穴</p><p class="body-text">引き受けた数だけ責任を感じて、抱えきれなくなる。増やす前に手放すものを決める——新しく受けるたびに一つ返すルールが効きます。</p></div>
     </div>
-    <div class="stbox">
-      <p class="stbox-h"><span class="mono">ENFJ-A-H</span> ならでは</p>
-      <div class="cols">
-        <div><p class="sub-h">このタイプの強み</p><p class="body-text">相手が自分でも気づいていない力を見つけ、そこを本人に信じさせられる。人が伸びる場そのものを作れます。</p></div>
-        <div><p class="sub-h">落とし穴</p><p class="body-text">引き受けた数だけ責任を感じて、抱えきれなくなる。増やす前に手放すものを決める——新しく受けるたびに一つ返すルールが効きます。</p></div>
-      </div>
-    </div>
+    <p class="g-note" style="margin-top:18px"><a href="../../t/ENFJ/#base-traits">ENFJ の4タイプに共通する強みと注意点</a></p>
   </div>
 
   <div class="sec split" id="stumble">
@@ -337,7 +331,6 @@ window.PAGE_CODE = "ENFJ-A-H";
       <div><p class="sub-h">担いやすい役割</p><p class="body-text">チーム運営、育成、渉外、ファシリテーション</p></div>
     </div>
     <p class="body-text" style="margin-top:22px">チームづくりの中心に。抱え込みすぎない役割分担が長期戦の鍵。</p>
-    <div class="jobs"><span>マネージャー</span><span>人材育成・研修</span><span>広報・アライアンス</span><span>教育・医療福祉</span></div>
   </div>
 
   <div class="sec split" id="relations">
@@ -362,7 +355,7 @@ window.PAGE_CODE = "ENFJ-A-H";
 
   <div class="sec split" id="faq">
     <h2>よくある質問</h2>
-    <div class="faq"><details class="faq-i"><summary>ENFJ-A-Hとはどんなタイプですか？</summary><p class="body-text">ENFJ-A-Hは「人を惹きつける伴走モンスター」です。相手の可能性を先に信じて本人に伝え、人が伸びる場をつくる人です。目の前の人の可能性を信じ、迷いなくそこへ火を入れていくタイプ。自分の見立てを疑わず、相手のことも疑わないので、言葉に強い推進力が乗ります。人が自然に集まってきますが、集まった全員の面倒をみようとして、いつのまにか自分の分の時間がなくなります。</p></details><details class="faq-i"><summary>ENFJ-A-Hがつまずきやすいのはどんな場面ですか？</summary><p class="body-text">新しい相談を引き受けた週に、前から約束していた自分の予定を削っている。チームの誰かが不調なとき、本人より先に解決策を用意して動いてしまう。自分が疲れていることを誰にも言えず、「大丈夫」と答え続ける。</p></details><details class="faq-i"><summary>ENFJ-A-HとENFJ-O-Hの違いは何ですか？</summary><p class="body-text">どちらも人を信じて開きます。ENFJ-A-H は「あなたならできる」と迷いなく背中を押し、ENFJ-O-H は全員の状態を気にかけて、応え方をその都度考え直します。A-H は推進力、O-H は細やかさが持ち味で、消耗しやすいのは O-H のほうです。</p></details><details class="faq-i"><summary>ENFJ-A-Hと相性がいいタイプは？</summary><p class="body-text">恋人としてはENFJ-O-H、ESFJ-O-H、INFJ-O-H、仕事のパートナーとしてはISTJ-O-H、ESTJ-O-H、ISFJ-O-H、友人としてはENTJ-O-H、ENFJ-O-H、ENTJ-A-Hが上位です。</p></details><details class="faq-i"><summary>ENFJ-A-Hはどんな仕事で力を発揮しやすいですか？</summary><p class="body-text">人の成長や関係づくりが成果につながる環境で力を発揮しやすく、チーム運営、育成、渉外、ファシリテーションといった役割を担いやすいタイプです。ENFJ-A-Hの場合は、チームづくりの中心に。抱え込みすぎない役割分担が長期戦の鍵。</p></details><details class="faq-i"><summary>ENFJ-A-Hの恋愛傾向は？</summary><p class="body-text">相手のいいところを見つけて、それを本人に返します。関係が始まる前から、この人はもう相手の味方です。かみ合いやすいのは、受け取ることが下手でない相手。褒め言葉をそのまま受け止められる人となら、この関係はよく続きます。</p></details><details class="faq-i"><summary>ENFJ-A-Hは「ENFJ-AH」や「ENFJ AH」と同じですか？</summary><p class="body-text">同じものです。ENFJ-A-H・ENFJ-AH・ENFJ AH は、いずれも同じ組み合わせを指します。</p></details></div>
+    <div class="faq"><details class="faq-i"><summary>ENFJ-A-Hとはどんなタイプですか？</summary><p class="body-text">ENFJ-A-Hは「人を惹きつける伴走モンスター」です。相手の可能性を先に信じて本人に伝え、人が伸びる場をつくる人です。目の前の人の可能性を信じ、迷いなくそこへ火を入れていくタイプ。自分の見立てを疑わず、相手のことも疑わないので、言葉に強い推進力が乗ります。人が自然に集まってきますが、集まった全員の面倒をみようとして、いつのまにか自分の分の時間がなくなります。</p></details><details class="faq-i"><summary>ENFJ-A-Hがつまずきやすいのはどんな場面ですか？</summary><p class="body-text">新しい相談を引き受けた週に、前から約束していた自分の予定を削っている。チームの誰かが不調なとき、本人より先に解決策を用意して動いてしまう。自分が疲れていることを誰にも言えず、「大丈夫」と答え続ける。</p></details><details class="faq-i"><summary>ENFJ-A-HとENFJ-O-Hの違いは何ですか？</summary><p class="body-text">どちらも人を信じて開きます。ENFJ-A-H は「あなたならできる」と迷いなく背中を押し、ENFJ-O-H は全員の状態を気にかけて、応え方をその都度考え直します。A-H は推進力、O-H は細やかさが持ち味で、消耗しやすいのは O-H のほうです。</p></details><details class="faq-i"><summary>ENFJ-A-Hはどんな仕事で力を発揮しやすいですか？</summary><p class="body-text">人の成長や関係づくりが成果につながる環境で力を発揮しやすく、チーム運営、育成、渉外、ファシリテーションといった役割を担いやすいタイプです。ENFJ-A-Hの場合は、チームづくりの中心に。抱え込みすぎない役割分担が長期戦の鍵。</p></details><details class="faq-i"><summary>ENFJ-A-Hの恋愛傾向は？</summary><p class="body-text">相手のいいところを見つけて、それを本人に返します。関係が始まる前から、この人はもう相手の味方です。かみ合いやすいのは、受け取ることが下手でない相手。褒め言葉をそのまま受け止められる人となら、この関係はよく続きます。</p></details><details class="faq-i"><summary>ENFJ-A-Hは「ENFJ-AH」や「ENFJ AH」と同じですか？</summary><p class="body-text">同じものです。ENFJ-A-H・ENFJ-AH・ENFJ AH は、いずれも同じ組み合わせを指します。</p></details></div>
   </div>
 
   <div class="quizcta" data-when="new">
@@ -373,12 +366,8 @@ window.PAGE_CODE = "ENFJ-A-H";
   <div class="quizcta" data-when="mine other">
     <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
     <a class="btn qc-btn" href="../../quiz/?restart=1">もう一度受ける</a>
-    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
+    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。</p>
   </div>
-
-  <p class="disclaimer">
-    この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
-  </p>
 
   </div>
 </section>
@@ -401,7 +390,7 @@ window.PAGE_CODE = "ENFJ-A-H";
 <script src="../../assets/questions.js?v=0b31d093"></script>
 <script src="../../assets/engine.js?v=85f59244"></script>
 <script src="../../assets/share.js?v=09941720"></script>
-<script src="../../assets/type.js?v=91d38469"></script>
-<script src="../../assets/settings.js?v=bbd95f02"></script>
+<script src="../../assets/type.js?v=a2760e72"></script>
+<script src="../../assets/settings.js?v=a944bf2d"></script>
 </body>
 </html>

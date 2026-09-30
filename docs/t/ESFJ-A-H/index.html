@@ -116,14 +116,6 @@
     },
     {
       "@type": "Question",
-      "name": "ESFJ-A-Hと相性がいいタイプは？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "恋人としてはESFJ-O-H、ENFJ-O-H、ISFJ-O-H、仕事のパートナーとしてはINTJ-O-H、ENTJ-O-H、INFJ-O-H、友人としてはESTJ-O-H、ESFJ-O-H、ESTJ-A-Hが上位です。"
-      }
-    },
-    {
-      "@type": "Question",
       "name": "ESFJ-A-Hはどんな仕事で力を発揮しやすいですか？",
       "acceptedAnswer": {
         "@type": "Answer",
@@ -152,7 +144,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=f6106a33">
+<link rel="stylesheet" href="../../assets/style.css?v=32cb09d9">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -207,34 +199,11 @@ window.PAGE_CODE = "ESFJ-A-H";
     <a href="#faq">よくある質問</a>
   </nav>
 
-  <div class="flatnote hidden" id="flatNote">
-    <p class="fn-h">6つの軸すべてが、立っていません。</p>
-    <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
-  </div>
-
-  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
-       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
-       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
-  <div class="locked hidden" id="secLocked">
-    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
-    <div class="lk-grid">
-      <div class="lk-item">
-        <p class="lk-t">6軸のスコア</p>
-        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
-        <p class="lk-n">同じ ESFJ-A-H でも、どの軸がどれだけ立っているかは人によって違います。</p>
-      </div>
-      <div class="lk-item">
-        <p class="lk-t">鑑定コード</p>
-        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
-        <p class="lk-n">結果を16文字にしたものです。別の端末に移すときと、<a href="../../friends/">Myフレンド</a>に登録してもらうときに渡します。</p>
-      </div>
-    </div>
-    <div class="lk-foot">
-      <a class="btn lk-btn" href="../../quiz/">90問を受けて、この2つを出す</a>
-      <p class="lk-note">約10分・登録不要。回答はブラウザの中だけで採点します。</p>
-    </div>
-  </div>
-
+  <!-- 結果表示用の枠は <template> に入れて、本文には含めない（2026-09-30）。
+       64枚に同じ文が並ぶので、ページの中身として読まれないようにする。
+       差し込むのは type.js：tplMine は自分の結果として開いたとき、
+       tplLocked は一度も受けていない人のときだけ。 -->
+  <template id="tplMine">
   <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
   <div class="sec split hidden" id="secToken">
     <h2>鑑定コード</h2>
@@ -251,10 +220,41 @@ window.PAGE_CODE = "ESFJ-A-H";
   <div class="sec split hidden" id="secGauge">
     <h2>6軸のスコア</h2>
     <p class="g-note">数値は、満点30に対するその極への寄りです。3以内は「立っていない」として扱います。</p>
+    <!-- 全軸拮抗の断りは、それを示すグラフの真上に置く（2026-09-30 たいし指摘） -->
+    <div class="flatnote hidden" id="flatNote">
+      <p class="fn-h">6つの軸すべてが、立っていません。</p>
+      <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。このページの解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
+    </div>
     <div class="gauges" id="gauges"></div>
     <button class="tablebtn" id="tableBtn">数値の一覧を表示</button>
     <div id="tableWrap" class="hidden"></div>
   </div>
+
+  </template>
+  <template id="tplLocked">
+  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
+       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
+       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
+  <div class="locked hidden" id="secLocked">
+    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
+    <div class="lk-grid">
+      <div class="lk-item">
+        <p class="lk-t">6軸のスコア</p>
+        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
+        <p class="lk-n">軸ごとの強さは、人によって違います。</p>
+      </div>
+      <div class="lk-item">
+        <p class="lk-t">鑑定コード</p>
+        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
+        <p class="lk-n">結果を16文字にしたもの。端末の移行と<a href="../../friends/">Myフレンド</a>に使います。</p>
+      </div>
+    </div>
+    <div class="lk-foot">
+      <a class="btn lk-btn" href="../../quiz/">90問を受けて、この2つを出す</a>
+    </div>
+  </div>
+
+  </template>
 
   <div class="sec split" id="about-type">
     <h2>ESFJ-A-H とは</h2>
@@ -284,16 +284,10 @@ window.PAGE_CODE = "ESFJ-A-H";
   <div class="sec split" id="strength">
     <h2>ESFJ-A-H の強みと、気をつけたいところ</h2>
     <div class="cols">
-      <div><p class="sub-h">ESFJ に共通する強み</p><ul class="list plus"><li>人間関係の潤滑油として機能する</li><li>段取りとおもてなしが行き届く</li><li>チームの実務を止めずに回す</li></ul></div>
-      <div><p class="sub-h">ESFJ に共通する注意点</p><ul class="list minus"><li>嫌われる恐れから、要求を飲みすぎる</li><li>評価や噂に振り回されやすい</li><li>異論を「和を乱すもの」と感じやすい</li></ul></div>
+      <div><p class="sub-h">強み</p><p class="body-text">人と人のあいだを、意識せずに埋められる。この人がいる場は、はじめから壁が低くなります。</p></div>
+      <div><p class="sub-h">落とし穴</p><p class="body-text">場を回すことに自分の時間を取られ、消耗する。ホスト役を誰かと分担すると、同じ質を保ったまま楽になります。</p></div>
     </div>
-    <div class="stbox">
-      <p class="stbox-h"><span class="mono">ESFJ-A-H</span> ならでは</p>
-      <div class="cols">
-        <div><p class="sub-h">このタイプの強み</p><p class="body-text">人と人のあいだを、意識せずに埋められる。この人がいる場は、はじめから壁が低くなります。</p></div>
-        <div><p class="sub-h">落とし穴</p><p class="body-text">場を回すことに自分の時間を取られ、消耗する。ホスト役を誰かと分担すると、同じ質を保ったまま楽になります。</p></div>
-      </div>
-    </div>
+    <p class="g-note" style="margin-top:18px"><a href="../../t/ESFJ/#base-traits">ESFJ の4タイプに共通する強みと注意点</a></p>
   </div>
 
 
@@ -312,7 +306,6 @@ window.PAGE_CODE = "ESFJ-A-H";
       <div><p class="sub-h">担いやすい役割</p><p class="body-text">チーム運営、顧客対応、社内調整、イベント</p></div>
     </div>
     <p class="body-text" style="margin-top:22px">チームの空気そのものを設計できる。役割を明確にすると疲れにくい。</p>
-    <div class="jobs"><span>営業・接客</span><span>人事・総務</span><span>イベント/コミュニティ運営</span><span>医療事務・教育</span></div>
   </div>
 
   <div class="sec split" id="relations">
@@ -337,7 +330,7 @@ window.PAGE_CODE = "ESFJ-A-H";
 
   <div class="sec split" id="faq">
     <h2>よくある質問</h2>
-    <div class="faq"><details class="faq-i"><summary>ESFJ-A-Hとはどんなタイプですか？</summary><p class="body-text">ESFJ-A-Hは「場をひらくおもてなしモンスター」です。誰も居心地悪くならない場を、迷いなく作っていくタイプ。人を疑わず先に開くので、初対面同士でも自然につながっていきます。空気そのものを設計できますが、全員に目を配ろうとするため、気づくと自分だけがずっと働いています。</p></details><details class="faq-i"><summary>ESFJ-A-Hと相性がいいタイプは？</summary><p class="body-text">恋人としてはESFJ-O-H、ENFJ-O-H、ISFJ-O-H、仕事のパートナーとしてはINTJ-O-H、ENTJ-O-H、INFJ-O-H、友人としてはESTJ-O-H、ESFJ-O-H、ESTJ-A-Hが上位です。</p></details><details class="faq-i"><summary>ESFJ-A-Hはどんな仕事で力を発揮しやすいですか？</summary><p class="body-text">チームで働き、人からの反応が返ってくる環境で力を発揮しやすく、チーム運営、顧客対応、社内調整、イベントといった役割を担いやすいタイプです。ESFJ-A-Hの場合は、チームの空気そのものを設計できる。役割を明確にすると疲れにくい。</p></details><details class="faq-i"><summary>ESFJ-A-Hの恋愛傾向は？</summary><p class="body-text">相手が心地よくいられる場を作ります。会う日の段取りから帰り道まで、全部考えています。かみ合いやすいのは、用意されたことに気づける相手。楽しかったと言葉にする人となら、この人は満たされます。</p></details><details class="faq-i"><summary>ESFJ-A-Hは「ESFJ-AH」や「ESFJ AH」と同じですか？</summary><p class="body-text">同じものです。ESFJ-A-H・ESFJ-AH・ESFJ AH は、いずれも同じ組み合わせを指します。</p></details></div>
+    <div class="faq"><details class="faq-i"><summary>ESFJ-A-Hとはどんなタイプですか？</summary><p class="body-text">ESFJ-A-Hは「場をひらくおもてなしモンスター」です。誰も居心地悪くならない場を、迷いなく作っていくタイプ。人を疑わず先に開くので、初対面同士でも自然につながっていきます。空気そのものを設計できますが、全員に目を配ろうとするため、気づくと自分だけがずっと働いています。</p></details><details class="faq-i"><summary>ESFJ-A-Hはどんな仕事で力を発揮しやすいですか？</summary><p class="body-text">チームで働き、人からの反応が返ってくる環境で力を発揮しやすく、チーム運営、顧客対応、社内調整、イベントといった役割を担いやすいタイプです。ESFJ-A-Hの場合は、チームの空気そのものを設計できる。役割を明確にすると疲れにくい。</p></details><details class="faq-i"><summary>ESFJ-A-Hの恋愛傾向は？</summary><p class="body-text">相手が心地よくいられる場を作ります。会う日の段取りから帰り道まで、全部考えています。かみ合いやすいのは、用意されたことに気づける相手。楽しかったと言葉にする人となら、この人は満たされます。</p></details><details class="faq-i"><summary>ESFJ-A-Hは「ESFJ-AH」や「ESFJ AH」と同じですか？</summary><p class="body-text">同じものです。ESFJ-A-H・ESFJ-AH・ESFJ AH は、いずれも同じ組み合わせを指します。</p></details></div>
   </div>
 
   <div class="quizcta" data-when="new">
@@ -348,12 +341,8 @@ window.PAGE_CODE = "ESFJ-A-H";
   <div class="quizcta" data-when="mine other">
     <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
     <a class="btn qc-btn" href="../../quiz/?restart=1">もう一度受ける</a>
-    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
+    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。</p>
   </div>
-
-  <p class="disclaimer">
-    この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
-  </p>
 
   </div>
 </section>
@@ -376,7 +365,7 @@ window.PAGE_CODE = "ESFJ-A-H";
 <script src="../../assets/questions.js?v=0b31d093"></script>
 <script src="../../assets/engine.js?v=85f59244"></script>
 <script src="../../assets/share.js?v=09941720"></script>
-<script src="../../assets/type.js?v=91d38469"></script>
-<script src="../../assets/settings.js?v=bbd95f02"></script>
+<script src="../../assets/type.js?v=a2760e72"></script>
+<script src="../../assets/settings.js?v=a944bf2d"></script>
 </body>
 </html>

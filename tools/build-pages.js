@@ -199,7 +199,7 @@ function quizCtaHTML(base, lead){
   <div class="quizcta" data-when="mine other">
     <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
     <a class="btn qc-btn" href="${base}quiz/?restart=1">もう一度受ける</a>
-    <p class="qc-note">受けた回ぶんの記録は <a href="${base}history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
+    <p class="qc-note">受けた回ぶんの記録は <a href="${base}history/">ヒストリー</a> に残ります。</p>
   </div>`;
 }
 
@@ -319,9 +319,8 @@ function siblingsOf(code){
 function typeFaq(code){
   const [bt, ao, hc] = code.split("-");
   const b = BASE[bt], s = SUB[code], x = EXTRA[code] || {};
-  const rank = R.rankAll(code);
-  const top3 = i => rank[i].slice(0, 3).map(x => x.code).join("、");
-  /* A / O・H / C の意味、同じベースコードの4つ、相性の計算方法は、以前ここで
+  /* 相性の上位は、すぐ上の「相性がいいタイプ」の節と同じ内容なので FAQ には置かない。
+     A / O・H / C の意味、同じベースコードの4つ、相性の計算方法は、以前ここで
      64枚（または32枚）に同じ答えを出していた。/axis/ と /about/ に任せて外した（2026-09-30）。
      代わりに extra.js の answer / scenes / vs があるコードは、その内容で答える。 */
   const vsKeys = x.vs ? Object.keys(x.vs) : [];
@@ -331,8 +330,6 @@ function typeFaq(code){
     ...(x.scenes ? [{ q: `${code}がつまずきやすいのはどんな場面ですか？`,
       a: x.scenes.map(sc => sc.s).join("") }] : []),
     ...vsKeys.slice(0, 1).map(c2 => ({ q: `${code}と${c2}の違いは何ですか？`, a: x.vs[c2] })),
-    { q: `${code}と相性がいいタイプは？`,
-      a: `恋人としては${top3(0)}、仕事のパートナーとしては${top3(1)}、友人としては${top3(2)}が上位です。` },
     { q: `${code}はどんな仕事で力を発揮しやすいですか？`,
       a: `${b.work.env}で力を発揮しやすく、${b.work.role}といった役割を担いやすいタイプです。${code}の場合は、${s.work}` },
     ...(x.love ? [{ q: `${code}の恋愛傾向は？`, a: `${x.love.lead}かみ合いやすいのは、${x.love.good}` }] : []),
@@ -462,34 +459,11 @@ function typePage(code){
     <a href="#faq">よくある質問</a>
   </nav>
 
-  <div class="flatnote hidden" id="flatNote">
-    <p class="fn-h">6つの軸すべてが、立っていません。</p>
-    <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。下の解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
-  </div>
-
-  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
-       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
-       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
-  <div class="locked hidden" id="secLocked">
-    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
-    <div class="lk-grid">
-      <div class="lk-item">
-        <p class="lk-t">6軸のスコア</p>
-        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
-        <p class="lk-n">同じ ${code} でも、どの軸がどれだけ立っているかは人によって違います。</p>
-      </div>
-      <div class="lk-item">
-        <p class="lk-t">鑑定コード</p>
-        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
-        <p class="lk-n">結果を16文字にしたものです。別の端末に移すときと、<a href="${base}friends/">Myフレンド</a>に登録してもらうときに渡します。</p>
-      </div>
-    </div>
-    <div class="lk-foot">
-      <a class="btn lk-btn" href="${base}quiz/">90問を受けて、この2つを出す</a>
-      <p class="lk-note">約10分・登録不要。回答はブラウザの中だけで採点します。</p>
-    </div>
-  </div>
-
+  <!-- 結果表示用の枠は <template> に入れて、本文には含めない（2026-09-30）。
+       64枚に同じ文が並ぶので、ページの中身として読まれないようにする。
+       差し込むのは type.js：tplMine は自分の結果として開いたとき、
+       tplLocked は一度も受けていない人のときだけ。 -->
+  <template id="tplMine">
   <!-- 自分の結果として開かれたときだけ出す。ギャラリーから来た人には数値が無い -->
   <div class="sec split hidden" id="secToken">
     <h2>鑑定コード</h2>
@@ -506,10 +480,41 @@ function typePage(code){
   <div class="sec split hidden" id="secGauge">
     <h2>6軸のスコア</h2>
     <p class="g-note">数値は、満点30に対するその極への寄りです。3以内は「立っていない」として扱います。</p>
+    <!-- 全軸拮抗の断りは、それを示すグラフの真上に置く（2026-09-30 たいし指摘） -->
+    <div class="flatnote hidden" id="flatNote">
+      <p class="fn-h">6つの軸すべてが、立っていません。</p>
+      <p class="fn-t">同じ答えが続いたときや、どちらとも言えない答えが多かったときにも出る結果です。このページの解説はそのまま表示していますが、しっくりこなければ、時間をあけてもう一度受けてみてください。</p>
+    </div>
     <div class="gauges" id="gauges"></div>
     <button class="tablebtn" id="tableBtn">数値の一覧を表示</button>
     <div id="tableWrap" class="hidden"></div>
   </div>
+
+  </template>
+  <template id="tplLocked">
+  <!-- 診断を受けていない人に、空いている枠のほうを見せる。
+       隠したままだと「鑑定コードというものがある」と知る機会がどこにも無い。
+       出し入れは type.js（自分の結果として開かれたときは、下の中身入りに入れ替わる） -->
+  <div class="locked hidden" id="secLocked">
+    <p class="lk-h">診断を受けると出るものが、2つあります。</p>
+    <div class="lk-grid">
+      <div class="lk-item">
+        <p class="lk-t">6軸のスコア</p>
+        <div class="gauges lk-gauges" id="lkGauges" aria-hidden="true"></div>
+        <p class="lk-n">軸ごとの強さは、人によって違います。</p>
+      </div>
+      <div class="lk-item">
+        <p class="lk-t">鑑定コード</p>
+        <div class="token-row"><code class="token lk-token" aria-hidden="true">64M-****-****-****-*</code></div>
+        <p class="lk-n">結果を16文字にしたもの。端末の移行と<a href="${base}friends/">Myフレンド</a>に使います。</p>
+      </div>
+    </div>
+    <div class="lk-foot">
+      <a class="btn lk-btn" href="${base}quiz/">90問を受けて、この2つを出す</a>
+    </div>
+  </div>
+
+  </template>
 
   <div class="sec split" id="about-type">
     <h2>${code} とは</h2>
@@ -535,16 +540,10 @@ ${aruaruSec}
   <div class="sec split" id="strength">
     <h2>${code} の強みと、気をつけたいところ</h2>
     <div class="cols">
-      <div><p class="sub-h">${bt} に共通する強み</p><ul class="list plus">${b.strengths.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
-      <div><p class="sub-h">${bt} に共通する注意点</p><ul class="list minus">${b.watch.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
+      <div><p class="sub-h">強み</p><p class="body-text">${esc(s.edge)}</p>${x && x.strengths ? `<ul class="list plus" style="margin-top:14px">${x.strengths.map(t => "<li>" + esc(t) + "</li>").join("")}</ul>` : ""}</div>
+      <div><p class="sub-h">落とし穴</p><p class="body-text">${esc(s.care)}</p>${x && x.watch ? `<ul class="list minus" style="margin-top:14px">${x.watch.map(t => "<li>" + esc(t) + "</li>").join("")}</ul>` : ""}</div>
     </div>
-    <div class="stbox">
-      <p class="stbox-h"><span class="mono">${code}</span> ならでは</p>
-      <div class="cols">
-        <div><p class="sub-h">このタイプの強み</p><p class="body-text">${esc(s.edge)}</p></div>
-        <div><p class="sub-h">落とし穴</p><p class="body-text">${esc(s.care)}</p></div>
-      </div>
-    </div>
+    <p class="g-note" style="margin-top:18px"><a href="${base}t/${bt}/#base-traits">${bt} の4タイプに共通する強みと注意点</a></p>
   </div>
 ${scenesSec}
 ${loveSec}
@@ -555,7 +554,6 @@ ${loveSec}
       <div><p class="sub-h">担いやすい役割</p><p class="body-text">${esc(b.work.role)}</p></div>
     </div>
     <p class="body-text" style="margin-top:22px">${esc(s.work)}</p>
-    <div class="jobs">${b.work.jobs.map(t => "<span>" + esc(t) + "</span>").join("")}</div>
   </div>
 
 ${relSec}  <div class="sec split" id="compat">
@@ -572,10 +570,6 @@ ${relSec}  <div class="sec split" id="compat">
   ${faqHTML(faqs, `t/${code}/`)}
 
   ${quizCtaHTML(base, `自分が ${code} かどうかは、90問で確かめられます。`)}
-
-  <p class="disclaimer">
-    この診断は、回答時点での自己認識を6つの軸で整理したものです。人の性格は状況や時期によって変わります。
-  </p>
 
   </div>
 </section>
@@ -935,6 +929,18 @@ ${cc.intro ? `  <div class="sec split">
   </div>
 
 ` : ""}${sections}
+
+  <!-- タイプページ（/t/<CODE>/）から移した、4タイプ共通の一覧（2026-09-30）。
+       同じ文が兄弟4枚に並んでいたので、ベースコードのページ1か所にまとめた -->
+  <div class="sec split" id="base-traits">
+    <h2>${bt} の4タイプに共通する強みと注意点</h2>
+    <div class="cols">
+      <div><p class="sub-h">強み</p><ul class="list plus">${b.strengths.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
+      <div><p class="sub-h">気をつけたいところ</p><ul class="list minus">${b.watch.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
+    </div>
+    <p class="sub-h" style="margin-top:26px">よく挙がる仕事</p>
+    <div class="jobs">${b.work.jobs.map(t => "<span>" + esc(t) + "</span>").join("")}</div>
+  </div>
 
   <div class="sec split">
     <h2>全16タイプとの相性</h2>
@@ -1703,6 +1709,54 @@ console.log(`手書きページのフッターを同期しました: ${HAND_PAGE
     FAQ_MISMATCH.forEach(w => console.warn("  ! " + w));
     process.exitCode = 1;
   } else console.log("FAQ の可視テキストと構造化データは一致しています");
+}
+
+/* ---- 64タイプページどうしの一致率を、ビルドのたびに測る ----
+   2026-09-24 からの検索落ちは、型で量産したページと判定された見立て（NOINDEX_NOTE）。
+   定型文を削って固有の原稿を足しているので、知らないうちに定型文が増えて戻らないよう毎回測る。
+   測り方: 本文（head・script・<template>・共通フッター・class="hidden" の枠を除く）から
+   コードとモンスター名を伏せ、ペアごとに「A の文字のうち、B にも出る12文字連続に含まれる割合」を取り、
+   全ペアの中央値を出す。similarity.json に、これまでで最も低い値を持つ。
+   それより1ポイント以上上がったら警告する（ビルドは止めない）。 */
+{
+  const names = [...CODES, ...CODES.map(c => c.replace(/-/g, "")), ...CODES.map(c => SUB[c].label),
+                 ...BASE_KEYS, ...BASE_KEYS.map(k => BASE[k].name)].sort((x, y) => y.length - x.length);
+  const dropHidden = html => {
+    const re = /<(div|p|nav)\b[^>]*class="(?:[^"]* )?hidden(?: [^"]*)?"[^>]*>/;
+    for (let m; (m = html.match(re)); ){
+      const tag = m[1]; let i = m.index + m[0].length, d = 1;
+      const o = new RegExp("<" + tag + "\\b|</" + tag + ">", "g"); o.lastIndex = i;
+      let x; while (d && (x = o.exec(html))){ d += x[0][1] === "/" ? -1 : 1; i = o.lastIndex; }
+      html = html.slice(0, m.index) + html.slice(i);
+    }
+    return html;
+  };
+  const textOf = html => {
+    let t = dropHidden(html.replace(/<head>[\s\S]*?<\/head>/, "").replace(/<script[\s\S]*?<\/script>/g, "")
+      .replace(/<template[\s\S]*?<\/template>/g, "").replace(/<footer class="site-footer">[\s\S]*?<\/footer>/, ""))
+      .replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/g, " ");
+    for (const n of names) t = t.split(n).join("＃");
+    return t.replace(/\s+/g, "");
+  };
+  const N = 12;
+  const T = pages.filter(p => /^t\/[A-Z]{4}-[AO]-[HC]\/index\.html$/.test(p.rel)).map(p => textOf(p.html));
+  const G = T.map(t => { const g = new Set(); for (let i = 0; i + N <= t.length; i++) g.add(t.slice(i, i + N)); return g; });
+  const cov = (t, g) => { const c = new Uint8Array(t.length); for (let i = 0; i + N <= t.length; i++) if (g.has(t.slice(i, i + N))) c.fill(1, i, i + N); let k = 0; c.forEach(v => k += v); return k / t.length; };
+  const all = [];
+  T.forEach((t, a) => G.forEach((g, b) => { if (a !== b) all.push(cov(t, g)); }));
+  all.sort((x, y) => x - y);
+  const med = Math.round(all[all.length >> 1] * 1000) / 10;
+  const SIM = path.join(ROOT, "similarity.json");
+  let best = null;
+  try { best = JSON.parse(fs.readFileSync(SIM, "utf8")).typePairMedian; } catch(e){}
+  if (best != null && med >= best + 1){
+    console.warn(`64タイプページの一致率が上がりました: ${med}%（これまでの最低 ${best}%）。64枚に同じ文を足していないか確認してください`);
+  } else {
+    console.log(`64タイプページの一致率（ペアの中央値）: ${med}%${best != null ? `（これまでの最低 ${best}%）` : ""}`);
+  }
+  if (best == null || med < best){
+    fs.writeFileSync(SIM, JSON.stringify({ typePairMedian: med, date: new Date().toISOString().slice(0, 10) }, null, 2) + "\n");
+  }
 }
 
 /* ---- sitemap の lastmod ----

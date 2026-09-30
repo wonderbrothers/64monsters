@@ -124,7 +124,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../../assets/style.css?v=f6106a33">
+<link rel="stylesheet" href="../../assets/style.css?v=32cb09d9">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -187,6 +187,18 @@ window.SITE_BASE = "../../";
       <ul class="verdicts"><li><span class="vd-h up">どの組み合わせでもかみ合う</span><span class="mono">ESTP</span><span class="mono">ESFP</span><span class="mono">ESTJ</span></li><li><span class="vd-h down">どの組み合わせでもかみ合わない</span><span class="mono">INFP</span><span class="mono">INTJ</span><span class="mono">INFJ</span></li></ul>
     <p class="g-note" style="margin-top:10px">ESFP を友人として見たとき、評価が入れ替わる相手はいません。ESTP・ESFP・ESTJとは4通りのどれでもかみ合い、INFP・INTJ・INFJとは4通りのどれでもかみ合いません。この用途だけは、ベースコードの段階で方向が決まります。</p>
     </div>
+
+  <!-- タイプページ（/t/<CODE>/）から移した、4タイプ共通の一覧（2026-09-30）。
+       同じ文が兄弟4枚に並んでいたので、ベースコードのページ1か所にまとめた -->
+  <div class="sec split" id="base-traits">
+    <h2>ESFP の4タイプに共通する強みと注意点</h2>
+    <div class="cols">
+      <div><p class="sub-h">強み</p><ul class="list plus"><li>緊張した場を一瞬でやわらげる</li><li>人の変化や表情によく気づく</li><li>行動が速く、体験から学べる</li></ul></div>
+      <div><p class="sub-h">気をつけたいところ</p><ul class="list minus"><li>面倒なことを先送りにしやすい</li><li>批判や無関心に落ち込みやすい</li><li>長期の管理業務が続かない</li></ul></div>
+    </div>
+    <p class="sub-h" style="margin-top:26px">よく挙がる仕事</p>
+    <div class="jobs"><span>接客・サービス</span><span>販売・イベント</span><span>タレント/インフルエンサー</span><span>保育・教育</span></div>
+  </div>
 
   <div class="sec split">
     <h2>全16タイプとの相性</h2>
@@ -267,7 +279,7 @@ window.SITE_BASE = "../../";
   <div class="quizcta" data-when="mine other">
     <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
     <a class="btn qc-btn" href="../../quiz/?restart=1">もう一度受ける</a>
-    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。前回との差を見ると、どの軸が自分の芯で、どの軸が状況で揺れるのかが分かります。</p>
+    <p class="qc-note">受けた回ぶんの記録は <a href="../../history/">ヒストリー</a> に残ります。</p>
   </div>
 
   <p class="disclaimer">相性の数値は、6軸の重みづけから計算した目安です。人の関係は、タイプだけで決まるものではありません。</p>
@@ -287,6 +299,6 @@ window.SITE_BASE = "../../";
 
 <script src="../../assets/types.js?v=ff983dbf"></script>
 <script src="../../assets/render.js?v=8f2b2584"></script>
-<script src="../../assets/settings.js?v=bbd95f02"></script>
+<script src="../../assets/settings.js?v=a944bf2d"></script>
 </body>
 </html>
