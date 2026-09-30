@@ -41,11 +41,11 @@ const PUBLISHER = "株式会社ワンダーブラザース";
 const sandbox = { window: {}, document: undefined };
 sandbox.window.window = sandbox.window;
 vm.createContext(sandbox);
-["assets/types.js", "assets/render.js", "assets/extra.js", "assets/compat-copy.js", "assets/base-copy.js"].forEach(f => {
+["assets/types.js", "assets/render.js", "assets/extra.js", "assets/compat-copy.js", "assets/base-copy.js", "assets/relations.js"].forEach(f => {
   vm.runInContext(fs.readFileSync(path.join(DOCS, f), "utf8"), sandbox, { filename: f });
 });
 const W = sandbox.window;
-const { BASE_TYPES: BASE, SUBTYPES: SUB, RENDER: R, AXES, EXTRA, COMPAT_COPY: CC, BASE_COPY: BC } = W;
+const { BASE_TYPES: BASE, SUBTYPES: SUB, RENDER: R, AXES, EXTRA, COMPAT_COPY: CC, BASE_COPY: BC, RELATIONS: REL } = W;
 const CODES = Object.keys(SUB);
 const BASE_KEYS = Object.keys(BASE);
 const SFX = ["A-H", "A-C", "O-H", "O-C"];
@@ -219,8 +219,13 @@ function tmNoteHTML(){
   return `<p class="disclaimer tm-note">${esc(TM_NOTE)}</p>`;
 }
 
-function ownNoteHTML(base){
-  return `<p class="disclaimer own-note">${esc(OWN_NOTE)} <a href="${base}about/">この診断について</a></p>`;
+/* 独自性の注記。末尾に about/ へのリンクは付けない。
+   すぐ下のサイト内リンクに同じ「この診断について」があり、フッターの中で
+   同じラベル・同じ行き先が2つ並んでいた。/about/ 自身では、そのうち片方が
+   aria-current の付いた自ページリンク、もう片方が素の自ページリンクになる。
+   行き先はサイト内リンクが持つので、注記は文章だけにする（2026-09-30）。 */
+function ownNoteHTML(){
+  return `<p class="disclaimer own-note">${esc(OWN_NOTE)}</p>`;
 }
 
 /* ---- 全ページ共通のフッター ----
@@ -233,7 +238,7 @@ function ownNoteHTML(base){
 function footHTML(base, current){
   return `<footer class="site-footer">
   <div class="wrap">
-    ${ownNoteHTML(base)}
+    ${ownNoteHTML()}
     ${siteNavHTML(base, current).split("\n").join("\n    ")}
     <p class="copy">© 2026 WONDER BROTHERS INC. All rights reserved.</p>
   </div>
@@ -247,12 +252,32 @@ function scripts(base, list){
 /* 可視のFAQ。ここに出ている文言と JSON-LD を必ず一致させる。
    例外は `ld:false` を付けた項目だけで、これは可視には出すが FAQPage には入れない。
    商標の打消しは読みに来た人に見せるもので、検索エンジンに差し出すものではない。 */
-function faqHTML(items){
-  return `<div class="sec split">
+function faqHTML(items, where){
+  checkFaq(items, where || "(ページ不明)");
+  return `<div class="sec split" id="faq">
     <h2>よくある質問</h2>
     <div class="faq">${items.map(q => `<details class="faq-i"><summary>${esc(q.q)}</summary><p class="body-text">${q.aHTML || esc(q.a)}</p></details>`).join("")}</div>
   </div>`;
 }
+/* 可視のFAQ（aHTML）と FAQPage（a）は同じ内容でなければならない。
+   リンクを足したいときに aHTML だけ書き換えて、構造化データ側に
+   一文足りない状態になっていたことがある（ベースコード別16枚）。
+   タグとリンクの表記ゆれだけを除いて突き合わせ、違えばビルドを失敗させる。 */
+const FAQ_MISMATCH = [];
+function faqTextOf(html){
+  return String(html)
+    .replace(/<[^>]+>/g, "")      // タグを外す
+    .replace(/[「」]/g, "")        // リンクを鉤括弧に置き換えている箇所を吸収
+    .replace(/\s+/g, "")
+    .trim();
+}
+function checkFaq(items, where){
+  items.forEach(q => {
+    if (!q.aHTML) return;
+    if (faqTextOf(q.aHTML) !== faqTextOf(q.a)) FAQ_MISMATCH.push(`${where}／${q.q}`);
+  });
+}
+
 function faqLD(items){
   return {
     "@context": "https://schema.org",
@@ -277,18 +302,44 @@ function crumbLD(items){
    タイプ個別ページ  /t/<CODE>/
    ============================================================ */
 
+/* 文の1つ目だけを取る。要約に使う。「。」が無ければそのまま返す */
+function firstSentence(t){
+  const i = String(t || "").indexOf("。");
+  return i < 0 ? String(t || "") : String(t).slice(0, i + 1);
+}
+
+/* 同じベースコードの4タイプ。並びは A-H / A-C / O-H / O-C で固定する */
+function siblingsOf(code){
+  const bt = code.split("-")[0];
+  return SFX.map(sf => bt + "-" + sf);
+}
+
+/* FAQ は「質問の直後に答えを置く」。可視の details と FAQPage の両方に同じ文が出る。
+   4文字の各記号には触れない。説明に使ってよいのは独自軸の A / O・H / C だけ。 */
 function typeFaq(code){
   const [bt, ao, hc] = code.split("-");
   const b = BASE[bt], s = SUB[code];
   const rank = R.rankAll(code);
   const top3 = i => rank[i].slice(0, 3).map(x => x.code).join("、");
+  const sibs = siblingsOf(code), others = sibs.filter(c => c !== code);
+  const one = others[0];
   return [
     { q: `${code}とはどんなタイプですか？`,
-      a: `${code}は「${s.label}」です。${b.tagline}という${bt}の性質に、自分への確信が${ao}（${aoName(ao)}）、人への構えが${hc}（${hcName(hc)}）の組み合わせが重なります。${s.desc}` },
+      a: `${code}は「${s.label}」です。64モンスターズが90問の回答から分類する64タイプのひとつで、ベースコード${bt}に、独自軸の${ao}（${aoName(ao)}）と${hc}（${hcName(hc)}）が重なります。${s.desc}` },
+    { q: `${code}の「${ao}」は何を表していますか？`,
+      a: `${ao}は、64モンスターズが独自に加えている「自分への確信」の軸です。${ao}＝${aoName(ao)}で、${pole("AO", ao).note}という意味です。もう一方の極は${ao === "A" ? "O（揺らぎ）" : "A（確信）"}で、この1文字が変わると同じベースコードでも現れ方が変わります。` },
+    { q: `${code}の「${hc}」は何を表していますか？`,
+      a: `${hc}は、64モンスターズが独自に加えている「人への構え」の軸です。${hc}＝${hcName(hc)}で、${pole("HC", hc).note}という意味です。ベースコードとは別に判定するので、どのベースコードの人にも${hc}と${hc === "H" ? "C" : "H"}の両方がいます。` },
+    { q: `${code}と同じ${bt}ベースコードのタイプには何がありますか？`,
+      a: `${sibs.join("、")}の4つです。ベースコードは同じで、独自軸の A / O（自分への確信）と H / C（人への構え）の組み合わせだけが違います。${code}は${ao}（${aoName(ao)}）と${hc}（${hcName(hc)}）、${one}は${one.split("-")[1]}（${aoName(one.split("-")[1])}）と${one.split("-")[2]}（${hcName(one.split("-")[2])}）です。` },
     { q: `${code}と相性がいいタイプは？`,
-      a: `用途によって変わります。恋人として噛み合うのは${top3(0)}、仕事のパートナーとしては${top3(1)}、友人としては${top3(2)}が上位です。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして、64タイプを順位づけしています。同じタイプ同士も相手として数えています。` },
-    { q: `${code}の「${ao}」と「${hc}」は何を表していますか？`,
-      a: `${ao}は自分への確信の軸で、${aoName(ao)}＝${pole("AO", ao).note}という意味です。${hc}は人への構えの軸で、${hcName(hc)}＝${pole("HC", hc).note}という意味です。同じ${bt}でも、この2文字が変わると現れ方が変わります。` },
+      a: `用途によって変わります。恋人として噛み合うのは${top3(0)}、仕事のパートナーとしては${top3(1)}、友人としては${top3(2)}が上位です。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして、64タイプを順位づけしています。同じタイプ同士も相手として数えています。設計した重みによる目安で、測定値ではありません。` },
+    { q: `${code}はどんな仕事で力を発揮しやすいですか？`,
+      a: `職種より先に環境で決まります。${b.work.env}で力を発揮しやすく、${b.work.role}といった役割を担いやすいタイプです。${code}の場合は、${s.work}よく挙がる領域は${b.work.jobs.slice(0, 5).join("、")}ですが、向き不向きを決めるものではありません。` },
+    { q: `${code}の恋愛傾向は？`,
+      a: (EXTRA[code] && EXTRA[code].love
+            ? `${EXTRA[code].love.lead}かみ合いやすいのは、${EXTRA[code].love.good}`
+            : `独自軸の${ao}（${aoName(ao)}）と${hc}（${hcName(hc)}）の組み合わせから見た傾向です。必ずそうなるというものではありません。`) },
     { q: `${code}は「${bt}-${ao}${hc}」や「${bt} ${ao}${hc}」と同じですか？`,
       a: `同じものです。${code}・${bt}-${ao}${hc}・${bt} ${ao}${hc}・${bt} ${ao} ${hc} は、いずれも同じ組み合わせを指します。区切り方はサービスや記事によって異なります。` }
   ];
@@ -326,24 +377,42 @@ function typePage(code){
 
   /* D の3節。原稿がある8枚だけ出る。extra.js に足せば、そのまま全64枚に広がる */
   const personaSec = !x ? "" : `
-  <div class="sec split">
+  <div class="sec split" id="persona">
     <h2>${code} はこんな人</h2>
-    <p class="sec-note">実在の人物ではなく、よく見かける役割と場面で書いています。</p>
+    <p class="body-text">${code} を、よく見かける役割と場面に置きかえると、次のような人です。</p>
     <ul class="list persona">${x.persona.map(t => "<li>" + esc(t) + "</li>").join("")}</ul>
+    <p class="g-note" style="margin-top:16px">実在の人物ではなく、役割と場面の類型で書いています。</p>
   </div>`;
 
   const aruaruSec = !x ? "" : `
-  <div class="sec split">
+  <div class="sec split" id="aruaru">
     <h2>${code} あるある</h2>
+    <p class="body-text">${code} の人が「自分のことだ」と言いやすい場面を5つ並べました。</p>
     <ul class="list aruaru">${x.aruaru.map(t => "<li>" + esc(t) + "</li>").join("")}</ul>
     <p class="g-note" style="margin-top:16px" data-when="new">当たっているかどうかは、実際に受けてみるのがいちばん早いです。</p>
     <p class="g-note" style="margin-top:16px" data-when="mine other">全部が当たるとは限りません。6軸の組み合わせから見た傾向です。</p>
   </div>`;
 
+  /* 人間関係。恋愛（love）・仕事（work）・相性（/compat/）と内容が重ならないよう、
+     ここは「家族・友人・職場の相手との、日々の距離の取り方」だけを書いている。
+     原稿は assets/relations.js。64タイプぶんある */
+  const rel = REL && REL[code];
+  const relSec = !rel ? "" : `  <div class="sec split" id="relations">
+    <h2>${code} の人間関係</h2>
+    <p class="body-text"><b>${code}</b>は、${esc(rel.lead)}</p>
+    <p class="g-note" style="margin-top:14px">恋愛とは分けて、家族・友人・職場の相手など、日々の関わりに出やすいところをまとめています。</p>
+    <div class="cols" style="margin-top:26px">
+      <div><p class="sub-h">すでに近い相手とのあいだで</p><p class="body-text">${esc(rel.near)}</p></div>
+      <div><p class="sub-h">まだ近くない相手とのあいだで</p><p class="body-text">${esc(rel.far)}</p></div>
+    </div>
+  </div>
+
+`;
+
   const loveSec = !x ? "" : `
-  <div class="sec split">
+  <div class="sec split" id="love">
     <h2>恋愛での ${code}</h2>
-    <p class="body-text">${esc(x.love.lead)}</p>
+    <p class="body-text"><b>${code}</b>は、${esc(x.love.lead)}</p>
     <div class="cols" style="margin-top:26px">
       <div><p class="sub-h">かみ合う相手</p><p class="body-text">${esc(x.love.good)}</p></div>
       <div><p class="sub-h">気をつけたいところ</p><p class="body-text">${esc(x.love.care)}</p></div>
@@ -367,6 +436,29 @@ function typePage(code){
     <p class="res-date hidden" id="rDate"></p>
     <p class="res-note">モンスター名は、6軸の組み合わせにつけた分類名です。軸ごとの表現ではありません。</p>
   </div>
+
+  <!-- 30秒要約。生成AIやAI要約はページ全体ではなく一部だけを取ることがあるので、
+       ここだけ読んでもタイプの意味が分かる状態にしておく。
+       1文目で「64モンスターズ独自の分類のひとつ」であることを先に言い切り、
+       そのあとに独自軸（A / O・H / C）での説明を続ける。
+       ベースコードの4文字は、記号ごとに意味を分解しない（2026-09-29 たいし決定）。 -->
+  <div class="tldr">
+    <p class="tldr-one"><span class="tldr-k">一言でいうと</span><span class="tldr-v">${esc(s.label)}　—　${ao}（${aoName(ao)}）× ${hc}（${hcName(hc)}）</span></p>
+    <p class="body-text"><b>${code}</b>は、64モンスターズが90問への回答から分類している64タイプのひとつです。ベースコード <span class="mono">${bt}</span> に、64モンスターズ独自軸の <b>${ao}</b>（${aoName(ao)}＝${pole("AO", ao).note}）と <b>${hc}</b>（${hcName(hc)}＝${pole("HC", hc).note}）を持つタイプとして表しています。</p>
+    <p class="body-text">${esc(firstSentence(s.desc))}${esc(firstSentence(s.edge))}いっぽうで、${esc(firstSentence(s.care))}</p>
+  </div>
+
+  <nav class="anchors" aria-label="このページの目次">
+    <a href="#about-type">${code}とは</a>
+    <a href="#code-structure">コードの構造</a>
+    <a href="#siblings">同じベースコード</a>
+    <a href="#strength">強み・つまずき</a>
+    <a href="#work">仕事</a>
+    <a href="#love">恋愛</a>
+    <a href="#relations">人間関係</a>
+    <a href="#compat">相性</a>
+    <a href="#faq">よくある質問</a>
+  </nav>
 
   <div class="flatnote hidden" id="flatNote">
     <p class="fn-h">6つの軸すべてが、立っていません。</p>
@@ -417,24 +509,56 @@ function typePage(code){
     <div id="tableWrap" class="hidden"></div>
   </div>
 
-  <div class="sec split">
+  <div class="sec split" id="about-type">
     <h2>${code} とは</h2>
-    <p class="body-text"><b>${code}</b>（${bt}-${ao}${hc}／${bt} ${ao}${hc} とも書かれます）は、<a href="${base}64types/">64タイプ性格診断</a>のうちの1つです。${bt}の4文字に、自分への確信を表す<a href="${base}axis/ao/">${ao}（${aoName(ao)}）</a>と、人への構えを表す<a href="${base}axis/hc/">${hc}（${hcName(hc)}）</a>が重なります。64モンスターズでは「${esc(s.label)}」と呼んでいます。</p>
-    <p class="g-note">この <code class="mono">${bt}</code> という4文字は、64モンスターズ独自の設問と採点による結果を表すものです。ほかの性格検査による判定を示すものではありません。<a href="${base}64types/">コードの読み方</a></p>
+    <p class="body-text"><b>${code}</b>（${bt}-${ao}${hc}／${bt} ${ao}${hc} とも書かれます）は、<a href="${base}64types/">64タイプ性格診断</a>のうちの1つです。ベースコード <code class="mono">${bt}</code> に、64モンスターズ独自の軸である、自分への確信を表す<a href="${base}axis/ao/">${ao}（${aoName(ao)}）</a>と、人への構えを表す<a href="${base}axis/hc/">${hc}（${hcName(hc)}）</a>が重なります。64モンスターズでは「${esc(s.label)}」と呼んでいます。</p>
+    <p class="g-note">ベースコードの <code class="mono">${bt}</code> は、64モンスターズ独自の設問と採点による結果を表すものです。ほかの性格検査による判定を示すものではありません。<a href="${base}64types/">コードの読み方</a></p>
     <p class="body-text">${esc(b.summary)}</p>
     <p class="body-text">${esc(s.desc)}</p>
   </div>
+
+  <!-- コードの構造。検索エンジンと生成AIに
+       「${code} は 64モンスターズのタイプコードで、ベースコードと独自軸2つでできている」
+       という関係をそのまま読ませるための節。定義リストで組む。
+       ベースコードの4文字は1文字ずつ分解しない。 -->
+  <div class="sec split" id="code-structure">
+    <h2>${code} のタイプコード</h2>
+    <p class="body-text">${code} は、ベースコード <span class="mono">${bt}</span> と、64モンスターズ独自軸の <b>${ao}</b>・<b>${hc}</b> の3つでできています。64モンスターズは独自の設問と採点ロジックで64タイプに分類していて、${code} を次の構造で表しています。</p>
+    <dl class="codestruct">
+      <div class="cst-row">
+        <dt>ベースコード</dt>
+        <dd><span class="cst-c mono">${bt}</span><span class="cst-n">90問への回答から算出されるベースコードです。一般に知られている記号体系と同じアルファベットを使いますが、設問・採点方法・結果の解釈はいずれも64モンスターズ独自のものです。</span></dd>
+      </div>
+      <div class="cst-row">
+        <dt>64モンスターズ独自軸 ・ 自分への確信</dt>
+        <dd><span class="cst-c mono">${ao}</span><span class="cst-n">${aoName(ao)}。${pole("AO", ao).note}。もう一方の極は ${ao === "A" ? "O（揺らぎ）" : "A（確信）"} です。<a href="${base}axis/ao/">AとOの違い</a></span></dd>
+      </div>
+      <div class="cst-row">
+        <dt>64モンスターズ独自軸 ・ 人への構え</dt>
+        <dd><span class="cst-c mono">${hc}</span><span class="cst-n">${hcName(hc)}。${pole("HC", hc).note}。もう一方の極は ${hc === "H" ? "C（慎重）" : "H（信頼）"} です。<a href="${base}axis/hc/">HとCの違い</a></span></dd>
+      </div>
+    </dl>
+    <p class="g-note" style="margin-top:16px">A / O と H / C は、ベースコードとは別に判定する64モンスターズ独自の軸です。コード全体の読み方は <a href="${base}64types/">64タイプ性格診断とは</a> にまとめています。</p>
+  </div>
 ${personaSec}
 ${aruaruSec}
-  <div class="sec split">
-    <h2>4つのサブタイプの中での位置</h2>
-    <div class="matrix">${R.matrixHTML(base, code)}</div>
-    <p class="g-note" style="margin-top:14px">同じ基本タイプでも、自分への確信（A / O）と人への構え（H / C）で現れ方が変わります。</p>
+  <!-- 比較の軸は A / O と H / C だけにする。ベースコードの4文字は説明材料に使わない -->
+  <div class="sec split" id="siblings">
+    <h2>${code} と同じベースコードを持つタイプ</h2>
+    <p class="body-text">${code} と同じベースコード <span class="mono">${bt}</span> を持つタイプは、${siblingsOf(code).join("、")} の4つです。違うのは独自軸の A / O（自分への確信）と H / C（人への構え）の2文字だけで、ベースコードは同じです。</p>
+    <ul class="sibs">${siblingsOf(code).map(c2 => {
+      const [, a2, h2] = c2.split("-");
+      return `<li${c2 === code ? ' class="on"' : ""}>${c2 === code
+        ? `<span class="sib-c mono">${c2}</span>`
+        : `<a class="sib-c mono" href="${base}t/${c2}/">${c2}</a>`}<span class="sib-l">${esc(SUB[c2].label)}</span><span class="sib-n">${a2}（${aoName(a2)}）× ${h2}（${hcName(h2)}）${c2 === code ? "　＝　いま見ているタイプ" : ""}</span></li>`;
+    }).join("")}</ul>
+    <div class="matrix" style="margin-top:22px">${R.matrixHTML(base, code)}</div>
+    <p class="g-note" style="margin-top:14px">ベースコードが同じでも、決めたあとに戻ってくるかどうか（A / O）と、人にまず開くかどうか（H / C）で現れ方が変わります。</p>
   </div>
 
-  <div class="sec split">
-    <h2>強みと、気をつけたいところ</h2>
-    <p class="sec-note">ここは基本タイプ（${bt}）に共通する性質です。</p>
+  <div class="sec split" id="strength">
+    <h2>${code} の強みと、気をつけたいところ</h2>
+    <p class="body-text">${code} の強みと落とし穴は、ベースコード <span class="mono">${bt}</span> に共通する性質の上に、${ao}（${aoName(ao)}）と${hc}（${hcName(hc)}）の出方が重なって決まります。まずベースコードに共通する部分から並べます。</p>
     <div class="cols">
       <div><p class="sub-h">強み</p><ul class="list plus">${b.strengths.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
       <div><p class="sub-h">気をつけたいところ</p><ul class="list minus">${b.watch.map(t => "<li>" + esc(t) + "</li>").join("")}</ul></div>
@@ -448,9 +572,9 @@ ${aruaruSec}
     </div>
   </div>
 ${loveSec}
-  <div class="sec split">
-    <h2>仕事で力を発揮しやすいところ</h2>
-    <p class="sec-note">このタイプに多く見られる傾向です。向き不向きを決めるものではありません。</p>
+  <div class="sec split" id="work">
+    <h2>${code} が力を発揮しやすい仕事・環境</h2>
+    <p class="body-text">${code} は、職種より先に環境で決まります。力を発揮しやすい環境と、担いやすい役割を並べました。多く見られる傾向であって、向き不向きを決めるものではありません。</p>
     <div class="cols">
       <div><p class="sub-h">力を発揮しやすい環境</p><p class="body-text">${esc(b.work.env)}</p></div>
       <div><p class="sub-h">担いやすい役割</p><p class="body-text">${esc(b.work.role)}</p></div>
@@ -459,9 +583,10 @@ ${loveSec}
     <div class="jobs">${b.work.jobs.map(t => "<span>" + esc(t) + "</span>").join("")}</div>
   </div>
 
-  <div class="sec split">
-    <h2>相性</h2>
-    <p class="sec-note">恋人・仕事・友人で、噛み合う相手は変わります。6軸の重みづけから計算した参考値で、測定した数値ではありません。実際の人間関係や将来の関係を判定・保証するものでもありません。</p>
+${relSec}  <div class="sec split" id="compat">
+    <h2>${code} と相性がいいタイプ</h2>
+    <p class="body-text">${code} と噛み合う相手は、恋人・仕事・友人で変わります。用途ごとの上位を並べました。</p>
+    <p class="g-note" style="margin-top:14px">6軸の重みづけから計算した参考値で、測定した数値ではありません。実際の人間関係や将来の関係を判定・保証するものでもありません。</p>
     <div>${R.topHTML(base, code, 5)}</div>
     <div class="pair-cta">
       <p class="pair-cta-txt">用途別のスコアと、どの軸が効いているかまで見るなら。</p>
@@ -471,7 +596,7 @@ ${loveSec}
     </div>
   </div>
 
-  ${faqHTML(faqs)}
+  ${faqHTML(faqs, `t/${code}/`)}
 
   ${quizCtaHTML(base, `${code} は診断結果の1つです。自分がどのタイプかは、受けてみると分かります。`)}
 
@@ -561,10 +686,12 @@ function compatPage(code){
   /* compat-copy.js の原稿。無いコードは従来の定型文に落ちる（16本ずつ足していける） */
   const cc = (CC && CC[code]) || {};
 
-  /* このコード自身の6軸。冒頭とFAQで使う。64通りすべて違う文になる */
-  const prof = R.axisProfile(code);
-  const profText  = prof.map(x => `${x.title}は${x.name}`).join("、");
-  const profShort = prof.map(x => `${x.letter}＝${x.name}`).join("・");
+  /* ここには以前 axisProfile() から
+       profText  = 「エネルギーの向きは内向、情報の受け取り方は直観、…」
+       profShort = 「I＝内向・N＝直観・T＝思考・J＝計画・A＝確信・H＝信頼」
+     を作って冒頭リードとFAQに出していた。コードを6つの記号に分解して
+     それぞれに意味を与える説明なので、両方とも廃止した（2026-09-30 たいし指示）。
+     ベースコードは「独自の設問と採点による結果」として扱い、記号ごとの定義はしない。 */
 
   /* 3用途の合計が低い3人。避けるための一覧ではなく、どこで擦れるかを先に置くための節 */
   const totals = {};
@@ -587,7 +714,7 @@ function compatPage(code){
     { q: `${code}と最も相性がいいのはどのタイプですか？`,
       a: `用途によって変わります。恋人として噛み合うのは${top3(0)}、仕事のパートナーとしては${top3(1)}、友人としては${top3(2)}が上位です。ひとつの答えにならないのは、同じ相手でも用途ごとに効く軸が違うからです。` },
     { q: `相性のスコアは何を根拠にしていますか？`,
-      a: `測定値ではありません。6つの軸それぞれについて「一致が効くか、違いが効くか」を用途別に重みづけし、かみ合っている軸の重みが全体の何割かを出しています。${code}は${profShort}なので、この6つが相手と揃うか外れるかで順位が決まります。設計した重みなので、数値だけでなく必ずどの軸が効いたかと一緒に見てください。` },
+      a: `測定値ではありません。64モンスターズ独自の相性計算ルールによる目安です。6つの軸それぞれについて「一致が効くか、違いが効くか」を用途別に重みづけし、かみ合っている軸の重みが全体の何割かを出しています。重みは用途ごとに違うので、同じ相手でも恋人・仕事・友人で評価が変わります。設計した重みなので、数値だけでなく必ずどの軸が効いたかと一緒に見てください。` },
     { q: `${code}同士の相性はどうですか？`,
       a: `${code}同士も相手として数えていて、恋人${same(0)}位・仕事${same(1)}位・友人${same(2)}位です。6つの軸がすべて同じになるので、一致が効く用途では上位に来て、違いが効く用途では下がります。同じタイプだから相性がいい、とも悪いとも決めていません。` },
     { q: `${code}と相性の悪いタイプはいますか？`,
@@ -626,7 +753,7 @@ function compatPage(code){
   <div class="page-head">
     <p class="eyebrow">compatibility</p>
     <h1 class="title">${code} の相性</h1>
-    <p class="lede">${code}（${esc(s.label)}）は、${esc(profText)}。この6つが相手とどう噛み合うかで、恋人・仕事のパートナー・友人それぞれの順位が決まります。6軸の重みづけから計算した目安であって、測定値ではありません。</p>
+    <p class="lede">${code}（${esc(s.label)}）の相性を、恋人・仕事のパートナー・友人の用途別にまとめました。6つの軸それぞれについて「一致が効くか、違いが効くか」を用途別に重みづけして、64タイプを順位づけしています。64モンスターズ独自の相性計算ルールによる目安であって、測定値ではありません。</p>
   </div>
 
 ${cc.stance ? `  <div class="sec split">
@@ -669,7 +796,7 @@ ${cc.works ? `  <div class="sec split">
       `<a class="chip" href="${base}t/${c}/compat/"><span class="thumb"><img src="${base}images/thumbs/${c}.webp" alt="" loading="lazy"></span><span class="c-txt"><span class="c1">${c}</span><span class="c2">${esc(SUB[c].label)}</span></span></a>`).join("")}</div>
   </div>
 
-  ${faqHTML(faqs)}
+  ${faqHTML(faqs, `t/${code}/compat/`)}
 
   ${quizCtaHTML(base, "相手のコードが分かれば、2人ぶんの内訳をその場で見られます。")}
 
@@ -751,7 +878,7 @@ function verdictHTML(bt, list, i){
     <p class="g-note" style="margin-top:10px">${bt} を${names[i]}として見たとき、${
       flips.length
         ? `${flips.length}タイプは相手のA/O・H/C次第で評価が入れ替わります。「${bt}と${flips[0]}は合う／合わない」と一言で言えないのはこのためです。`
-        : `評価が入れ替わる相手はいません。${always.length ? always.join("・") + "とは4通りのどれでもかみ合い、" : ""}${never.length ? never.join("・") + "とは4通りのどれでもかみ合いません。" : ""}この用途だけは、4文字の段階で方向が決まります。`
+        : `評価が入れ替わる相手はいません。${always.length ? always.join("・") + "とは4通りのどれでもかみ合い、" : ""}${never.length ? never.join("・") + "とは4通りのどれでもかみ合いません。" : ""}この用途だけは、ベースコードの段階で方向が決まります。`
     }</p>`;
 }
 
@@ -781,8 +908,10 @@ function baseCompatPage(bt){
     { q: `同じ${bt}でも相性が違うのはなぜですか？`,
       a: `自分への確信（A／O）と人への構え（H／C）が、関係のなかで最も摩擦を生む2つだからです。${bt}の場合、${flipAll.length ? `${flipAll.join("・")}との評価がここで入れ替わります。同じ${bt}でも、相手が${flipAll[0]}のどのサブタイプかで、かみ合う側にも、かみ合わない側にも振れます。` : `どの相手とも、この2つで順位が上下します。`}` },
     { q: `相性のスコアは何を根拠にしていますか？`,
-      aHTML: `測定値ではありません。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして出した目安です。4文字では2軸が決まらないため、1つの数値に丸めず、16通りの下限と上限を出しています。軸そのものの説明は <a href="${base}64types/">64タイプ性格診断とは</a> にあります。`,
-      a: `測定値ではありません。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして出した目安です。4文字では2軸が決まらないため、1つの数値に丸めず、16通りの下限と上限を出しています。` },
+      aHTML: `測定値ではありません。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして出した目安です。ベースコードだけでは独自軸の2つが決まらないため、1つの数値に丸めず、16通りの下限と上限を出しています。軸そのものの説明は <a href="${base}64types/">64タイプ性格診断とは</a> にあります。`,
+      /* aHTML（可視）と a（JSON-LD）は同じ内容にすること。
+         以前 aHTML だけ末尾の一文が長く、FAQPage と食い違っていた */
+      a: `測定値ではありません。6つの軸それぞれに「一致が効くか、違いが効くか」を用途別に重みづけして出した目安です。ベースコードだけでは独自軸の2つが決まらないため、1つの数値に丸めず、16通りの下限と上限を出しています。軸そのものの説明は「64タイプ性格診断とは」にあります。` },
     { q: `自分が${bt}のどれなのか、どう調べますか？`,
       a: `90問の診断を受けると、${subs.join("、")}のどれかが出ます。約10分・登録不要です。すでに${bt}だと分かっているなら、4つを読み比べるほうが早いこともあります。${lists[0][0].code !== bt ? `恋人としての上位が${lists[0][0].code}、仕事が${lists[1][0].code}` : `仕事としての上位が${lists[1][0].code}、友人が${lists[2][0].code}`}である理由も、自分のサブタイプが決まるとはっきりします。` }
   ];
@@ -821,6 +950,7 @@ function baseCompatPage(bt){
 
 ${cc.intro ? `  <div class="sec split">
     <h2>${bt} とはどんなタイプか</h2>
+    <p class="body-text"><b>${bt}</b>は、64モンスターズが90問への回答から算出しているベースコードのひとつです。ここから先は、64モンスターズ独自の設問と採点による分類についての説明で、ほかの性格検査による判定を示すものではありません。</p>
     <p class="body-text">${esc(cc.intro)}</p>
   </div>
 
@@ -848,7 +978,7 @@ ${cc.intro ? `  <div class="sec split">
     <p class="g-note" style="margin-top:14px">軸そのものの説明は <a href="${base}axis/ao/">AとOの違い</a> と <a href="${base}axis/hc/">HとCの違い</a> にあります。</p>
   </div>
 
-  ${faqHTML(faqs)}
+  ${faqHTML(faqs, `t/${bt}/`)}
 
   ${quizCtaHTML(base, "自分がどの4通りなのかが分かると、相性の幅が1つの数字になります。")}
 
@@ -867,7 +997,7 @@ ${scripts(base, ["types.js", "render.js", "settings.js"])}
 function galleryPage(){
   const base = "", url = ORIGIN + "/types.html";
   const title = `64タイプ一覧｜モンスターギャラリー｜${SITE}`;
-  const desc = "64モンスターズの全64タイプ一覧。4文字のコード×自分への確信（A / O）×人への構え（H / C）の64通りを、キャラクターと解説つきで並べています。";
+  const desc = "64モンスターズの全64タイプ一覧。ベースコード×自分への確信（A / O）×人への構え（H / C）の64通りを、キャラクターと解説つきで並べています。";
   const crumbs = [
     { name: SITE, href: base || "./", abs: ORIGIN + "/" },
     { name: "モンスターギャラリー", href: url, abs: url }
@@ -910,9 +1040,9 @@ function galleryPage(){
   <div class="page-head">
     <p class="eyebrow">index</p>
     <h1 class="title">モンスターギャラリー</h1>
-    <p class="lede">4文字のコード × 自分への確信（A / O）× 人への構え（H / C）で64通り。カードを開くと、そのタイプの解説が読めます。コードの読み方は <a href="64types/">64タイプ性格診断とは</a> にまとめています。</p>
+    <p class="lede">ベースコード × 自分への確信（A / O）× 人への構え（H / C）で64通り。カードを開くと、そのタイプの解説が読めます。コードの読み方は <a href="64types/">64タイプ性格診断とは</a> にまとめています。</p>
   </div>
-  <nav class="gjump" id="gjump" aria-label="基本タイプへ移動">${jump}</nav>
+  <nav class="gjump" id="gjump" aria-label="ベースコードへ移動">${jump}</nav>
   <div id="groups">
 ${groups}
   </div>
@@ -996,10 +1126,17 @@ ${scripts(base, ["questions.js", "types.js", "settings.js"])}
    来られなかった。64枚への内部リンクもここに集める。
    ============================================================ */
 
+/* 表に出すのは64モンスターズ独自の2軸（A / O・H / C）だけ。
+   ベースコードの4文字は、記号ごとに意味を定義して解説しない方針（2026-09-29 たいし決定）。
+   4文字は「90問の設問と独自の採点から算出されるベースコード」として扱い、
+   各記号が何を表すかの対応表は公開ページに置かない。
+   診断結果のゲージ・数値一覧・ヒストリー・保存画像のラベルは対象外（結果を読むためのUI）。 */
+const OWN_AXES = ["AO", "HC"];
+
 function axisTableHTML(){
   return `<div class="axtable"><table class="axt">
     <thead><tr><th>軸</th><th>一方の極</th><th>もう一方の極</th></tr></thead>
-    <tbody>${AXES.map(a => `<tr>
+    <tbody>${AXES.filter(a => OWN_AXES.includes(a.key)).map(a => `<tr>
       <td class="axt-t">${esc(a.title)}<span class="axt-k">${a.neg.l} / ${a.pos.l}</span></td>
       <td><b>${a.neg.l}・${esc(a.neg.name)}</b><span class="axt-n">${esc(a.neg.note)}</span></td>
       <td><b>${a.pos.l}・${esc(a.pos.name)}</b><span class="axt-n">${esc(a.pos.note)}</span></td>
@@ -1020,14 +1157,14 @@ function allTypesTableHTML(base){
 function hubPage(){
   const base = "../", url = ORIGIN + "/64types/";
   const title = `64タイプ性格診断とは？A/O・H/Cの意味とコードの読み方｜${SITE}`;
-  const desc = "90問の回答から6つの軸を算出し、いまの自己認識を64タイプとして表す独自の性格診断。INTJ-O-Hのようなコードの読み方、6つの軸の意味、64タイプの全一覧をまとめています。";
+  const desc = "90問の回答から6つの軸を算出し、いまの自己認識を64タイプとして表す独自の性格診断。INTJ-O-Hのようなコードの読み方、独自軸 A / O・H / C の意味、64タイプの全一覧をまとめています。";
   const crumbs = [
     { name: SITE, href: base, abs: ORIGIN + "/" },
     { name: "64タイプ性格診断とは", href: url, abs: url }
   ];
   const faqs = [
     { q: "64タイプ性格診断とは何ですか？",
-      a: "90問への回答から6つの軸を算出し、64通りのタイプとして表すものです。E / I・S / N・T / F・P / J の4組の記号に、自分への確信を表すA / Oと、人への構えを表すH / Cを独自に加えた6軸で、16 × 2 × 2 で64通りになります。各記号の意味、設問、採点方法、結果の解釈はいずれも64モンスターズ独自のものです。" },
+      a: "90問への回答から、64通りのタイプとして表すものです。16通りのベースコードに、自分への確信を表すA / Oと、人への構えを表すH / Cを独自に加えて、16 × 2 × 2 で64通りになります。設問、採点方法、結果の解釈はいずれも64モンスターズ独自のものです。" },
     { q: "A と O は何を表していますか？",
       a: "自分への確信の軸です。A（確信）は自分の判断を疑わず、迷いが短いこと。O（揺らぎ）は決めたあとも考え直し、揺れながら精度を上げることを表します。Oは自信がないという意味ではありません。" },
     { q: "H と C は何を表していますか？",
@@ -1055,23 +1192,23 @@ function hubPage(){
   <div class="page-head">
     <p class="eyebrow">about 64 types</p>
     <h1 class="title">64タイプ性格診断とは</h1>
-    <p class="lede">90問への回答から6つの軸を算出し、いまの自己認識を64通りのタイプとして表すものです。<code class="mono">INTJ-O-H</code> のように、E / I・S / N・T / F・P / J の4組の記号に、<b>自分への確信（A / O）</b>と<b>人への構え（H / C）</b>を加えて書きます。<b>各記号の意味・設問・採点方法・結果の解釈は、すべて64モンスターズ独自のものです。</b></p>
+    <p class="lede">90問への回答から、いまの自己認識を64通りのタイプとして表すものです。<code class="mono">INTJ-O-H</code> のように、<b>ベースコード</b>（<code class="mono">INTJ</code>）に、64モンスターズ独自の<b>自分への確信（A / O）</b>と<b>人への構え（H / C）</b>を加えて書きます。<b>設問・採点方法・結果の解釈は、すべて64モンスターズ独自のものです。</b></p>
   </div>
 
   <div class="sec split">
     <h2>コードの読み方</h2>
     <div class="codemap">
-      <div class="cm-part"><span class="cm-c mono">INTJ</span><span class="cm-t">4組の記号</span><span class="cm-n">エネルギーの向き・情報の受け取り方・判断の基準・外界への構え。一般に知られている記号体系と同じアルファベットを使いますが、各記号の定義と判定方法は64モンスターズ独自のものです。</span></div>
-      <div class="cm-part"><span class="cm-c mono">O</span><span class="cm-t">自分への確信</span><span class="cm-n">A（確信）か O（揺らぎ）。決めたあとに戻ってくるかどうかの軸です。<a href="${base}axis/ao/">くわしく</a></span></div>
-      <div class="cm-part"><span class="cm-c mono">H</span><span class="cm-t">人への構え</span><span class="cm-n">H（信頼）か C（慎重）。人にまず開くか、見きわめてから近づくかの軸です。<a href="${base}axis/hc/">くわしく</a></span></div>
+      <div class="cm-part"><span class="cm-c mono">INTJ</span><span class="cm-t">ベースコード</span><span class="cm-n">90問への回答から算出される、64モンスターズのベースコードです。一般に知られている記号体系と同じアルファベットを使いますが、設問・採点方法・結果の解釈はいずれも64モンスターズ独自のものです。</span></div>
+      <div class="cm-part"><span class="cm-c mono">O</span><span class="cm-t">独自軸・自分への確信</span><span class="cm-n">A（確信）か O（揺らぎ）。決めたあとに戻ってくるかどうかの軸です。<a href="${base}axis/ao/">くわしく</a></span></div>
+      <div class="cm-part"><span class="cm-c mono">H</span><span class="cm-t">独自軸・人への構え</span><span class="cm-n">H（信頼）か C（慎重）。人にまず開くか、見きわめてから近づくかの軸です。<a href="${base}axis/hc/">くわしく</a></span></div>
     </div>
   </div>
 
   <div class="sec split">
-    <h2>6つの軸</h2>
-    <p class="body-text">64モンスターズは、次の6つの軸で判定しています。上の4つは E / I・S / N・T / F・P / J の記号で表す軸、下の2つは64モンスターズが独自に加えた軸です。いずれも定義と設問、採点方法は独自のものです。</p>
+    <h2>64モンスターズ独自の2軸</h2>
+    <p class="body-text">ベースコードに、次の2つの軸を独自に加えています。この2つは日々の振る舞いにはっきり出るのに、ベースコードだけでは区別されません。</p>
     ${axisTableHTML()}
-    <p class="g-note" style="margin-top:16px">それぞれ満点30に対する寄りで測り、差が3以内のときは「立っていない」として扱います。</p>
+    <p class="g-note" style="margin-top:16px">満点30に対する寄りで測り、差が3以内のときは「立っていない」として扱います。ベースコードのほうも同じ90問から算出しますが、記号ごとに意味を定義して解説することはしていません。</p>
   </div>
 
   <div class="sec split">
@@ -1081,19 +1218,19 @@ function hubPage(){
   </div>
 
   <div class="sec split">
-    <h2>4文字だけでは分かれないところ</h2>
-    <p class="body-text">4文字だけでは、同じ<code class="mono">INTJ</code>でも現れ方がまるで違う人が同じ箱に入ります。決めたあとに戻ってくるかどうか、人にまず開くかどうか。この2つは、日々の振る舞いにはっきり出るのに、4文字では区別されません。64モンスターズは、この2つを独自の軸として立てて見ています。</p>
+    <h2>ベースコードだけでは分かれないところ</h2>
+    <p class="body-text">ベースコードだけでは、同じ<code class="mono">INTJ</code>でも現れ方がまるで違う人が同じ箱に入ります。決めたあとに戻ってくるかどうか、人にまず開くかどうか。この2つは、日々の振る舞いにはっきり出るのに、ベースコードでは区別されません。64モンスターズは、この2つを独自の軸として立てて見ています。</p>
     <p class="body-text">たとえば <a href="${base}t/INTJ-A-H/">INTJ-A-H</a> と <a href="${base}t/INTJ-O-C/">INTJ-O-C</a> は、同じ INTJ でも、旗を掲げて人を巻き込む人と、ひとりで深く潜っていく人に分かれます。<a href="${base}t/INTJ-A-H/">4タイプの違いを並べて見る</a>のがいちばん早いです。</p>
   </div>
 
   <div class="sec split">
     <h2>64タイプの一覧</h2>
-    <p class="body-text">4文字の組み合わせごとに、A / O × H / C の4通りを並べています。</p>
+    <p class="body-text">ベースコードごとに、A / O × H / C の4通りを並べています。</p>
     ${allTypesTableHTML(base)}
     <p class="g-note" style="margin-top:20px">キャラクターつきで見るなら <a href="${base}types.html">モンスターギャラリー</a> へ。</p>
   </div>
 
-  ${faqHTML(faqs)}
+  ${faqHTML(faqs, `64types/`)}
 
   ${quizCtaHTML(base, "自分のコードが分からないときは、90問に答えると出ます。")}
 
@@ -1115,7 +1252,7 @@ const AXIS_PAGES = {
        極の意味は lede と「2つの極」の節で受ける */
     h1: "AとOの違い",
     lede: "A＝確信、O＝揺らぎ。64タイプの5文字目にあたる軸です。決めたあとに戻ってくるかどうかを見ています。A が正しくてOが劣る、という軸ではありません。",
-    misread: "Oは「自信がない」という意味ではありません。決めたあとにもう一度確かめる幅を持っている、という意味です。同じ4文字でも、Oのほうが検討を重ねるぶん、出来上がりの精度が高くなる場面は多くあります。逆にAは、迷いが短いぶん、動き出しが速くなります。",
+    misread: "Oは「自信がない」という意味ではありません。決めたあとにもう一度確かめる幅を持っている、という意味です。同じベースコードでも、Oのほうが検討を重ねるぶん、出来上がりの精度が高くなる場面は多くあります。逆にAは、迷いが短いぶん、動き出しが速くなります。",
     tellA: ["決めたことを、あとから思い返さない", "反対されても判断そのものは揺れない", "根拠を聞かれると、説明より先に結論が出ている"],
     tellO: ["決めたあとに「あの前提でよかったか」と戻る", "人の指摘を素直に取り込める", "締め切りが外から来ないと、検討が終わらない"]
   },
@@ -1123,7 +1260,7 @@ const AXIS_PAGES = {
     slug: "hc", key: "HC", crumb: "HとCの違い",
     h1: "HとCの違い",
     lede: "H＝信頼、C＝慎重。64タイプの6文字目にあたる軸です。人にまず開くか、見きわめてから近づくかを見ています。どちらが社交的か、という軸ではありません。",
-    misread: "Cは「人が嫌い」でも「内向的」でもありません。開く相手を選んでいる、という意味です。外向型（E）でC、内向型（I）でHの人はふつうにいます。人と会う量の話ではなく、会った人にどこから入るかの話です。",
+    misread: "Cは「人が嫌い」でも「人見知り」でもありません。開く相手を選んでいる、という意味です。H / C はベースコードとは別に判定する64モンスターズ独自の軸なので、どのベースコードの人にもHとCの両方がいます。人と会う量の話ではなく、会った人にどこから入るかの話です。",
     tellA: ["初対面でも、先に自分のことを話せる", "頼まれごとを、相手を測らずに引き受ける", "裏切られてからでないと、疑わない"],
     tellO: ["相手を見てから、出す情報の量を決める", "打ち解けるまでに時間がかかると言われる", "信用した相手にだけ、急に深く関わる"]
   }
@@ -1137,7 +1274,7 @@ function axisPage(kind){
   const L1 = kind === "AO" ? ax.neg : ax.pos;
   const L2 = kind === "AO" ? ax.pos : ax.neg;
   const title = `${A.h1}｜${ax.title}の軸（${L1.name}と${L2.name}）｜${SITE}`;
-  const desc = clip(`${L1.l}と${L2.l}の違いは何か。${ax.title}の軸で、${L1.l}＝${L1.name}、${L2.l}＝${L2.name}です。同じ4文字のタイプにどう効くのかを、見分け方と64タイプへのリンクつきでまとめました。`, 122);
+  const desc = clip(`${L1.l}と${L2.l}の違いは何か。${ax.title}の軸で、${L1.l}＝${L1.name}、${L2.l}＝${L2.name}です。同じベースコードのタイプにどう効くのかを、見分け方と64タイプへのリンクつきでまとめました。`, 122);
   const crumbs = [
     { name: SITE, href: base, abs: ORIGIN + "/" },
     { name: "64タイプ性格診断とは", href: base + "64types/", abs: ORIGIN + "/64types/" },
@@ -1157,7 +1294,7 @@ function axisPage(kind){
     publisher: { "@type": "Organization", name: PUBLISHER, url: "https://wonder-bros.com" }
   };
 
-  /* 16の基本タイプそれぞれで、この軸の2通りを並べる。もう一方の軸は H / A に固定して比較を揃える */
+  /* 16のベースコードそれぞれで、この軸の2通りを並べる。もう一方の軸は H / A に固定して比較を揃える */
   const fix = kind === "AO" ? "H" : "A";
   const pairs = BASE_KEYS.map(k => {
     const c1 = kind === "AO" ? `${k}-${L1.l}-${fix}` : `${k}-${fix}-${L1.l}`;
@@ -1197,13 +1334,13 @@ function axisPage(kind){
   </div>
 
   <div class="sec split">
-    <h2>同じ4文字で、${L1.l}と${L2.l}を並べる</h2>
-    <p class="body-text">この軸が変わると、同じ基本タイプでも呼び名が変わります。もう一方の軸は${fix}に固定して並べました。</p>
+    <h2>同じベースコードで、${L1.l}と${L2.l}を並べる</h2>
+    <p class="body-text">この軸が変わると、同じベースコードでも呼び名が変わります。もう一方の軸は${fix}に固定して並べました。</p>
     <div class="axpairs">${pairs}</div>
     <p class="g-note" style="margin-top:20px">64通りすべては <a href="${base}64types/">64タイプ性格診断とは</a> と <a href="${base}types.html">モンスターギャラリー</a> にあります。</p>
   </div>
 
-  ${faqHTML(faqs)}
+  ${faqHTML(faqs, `axis/${A.slug}/`)}
 
   ${quizCtaHTML(base, `自分が${L1.l}と${L2.l}のどちらかは、90問に答えると出ます。`)}
 
@@ -1579,6 +1716,12 @@ console.log(`手書きページのフッターを同期しました: ${HAND_PAGE
   }
   if (warn.length){ console.warn("共通パーツの欠け:"); warn.forEach(w => console.warn(w)); process.exitCode = 1; }
   else console.log("共通パーツ（パンくず・見出し・共通フッター）の欠けはありません");
+
+  if (FAQ_MISMATCH.length){
+    console.warn("FAQ の可視テキストと FAQPage が食い違っています:");
+    FAQ_MISMATCH.forEach(w => console.warn("  ! " + w));
+    process.exitCode = 1;
+  } else console.log("FAQ の可視テキストと構造化データは一致しています");
 }
 
 /* ---- sitemap の lastmod ----

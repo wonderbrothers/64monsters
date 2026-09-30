@@ -143,11 +143,22 @@
     if (lk){
       /* 本物のゲージは1軸3行あるが、ここで伝えたいのは「6本ぶん空いている」
          ことだけなので1行に畳む。上に置く枠なので、高さは短いほどいい。 */
+      /* ここは「まだ受けていない人」に見せる枠なので、診断結果の表示ではなく
+         サイト側の説明にあたる。ベースコードを決める4軸は名前だけを出し、
+         記号のペア（E / I など）は出さない。独自軸（A / O・H / C）は
+         64モンスターズが定義しているものなので記号も出す。
+         ・診断済みの人のゲージ・数値一覧（上の if (sc) の中）は変更しない
+         ・ヒストリーの表・保存画像も変更しない
+         ・window.AXES 自体も変更しない（ここで出し分けるだけ）
+         空でも <span> を残すのは、6行の右端を揃えるため。中身は空なので
+         読み上げにも何も出ない（枠全体が aria-hidden でもある）。 */
+      var OWN_AXES = { AO:1, HC:1 };
       lk.innerHTML = AXES.map(function(a){
+        var own = OWN_AXES[a.key] === 1;
         return '<div class="lk-row">' +
           '<span class="lk-ax">' + a.title + '</span>' +
           '<span class="lk-track"></span>' +
-          '<span class="lk-l">' + a.neg.l + ' / ' + a.pos.l + '</span>' +
+          '<span class="lk-l">' + (own ? a.neg.l + ' / ' + a.pos.l : '') + '</span>' +
           '</div>';
       }).join("");
     }

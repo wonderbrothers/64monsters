@@ -16,8 +16,13 @@
   var THUMB = function(code){ return R.thumb(B, code); };
   var TURL  = function(code){ return R.typeUrl(B, code); };
 
-  /* ---------- 軸の一覧 ---------- */
-  $("axisList").innerHTML = AXES.map(function(a){
+  /* ---------- 軸の一覧 ----------
+     出すのは64モンスターズ独自の2軸（A / O・H / C）だけ。
+     ベースコードを決める4つは、記号ごとに意味を定義して並べない方針
+     （2026-09-30 たいし指示。/64types/ の表と同じ扱いにそろえる）。
+     診断結果のゲージ・数値一覧・ヒストリー・保存画像のラベルは対象外。 */
+  var OWN_AXES = ["AO", "HC"];
+  $("axisList").innerHTML = AXES.filter(function(a){ return OWN_AXES.indexOf(a.key) >= 0; }).map(function(a){
     return '<div class="axis-row" data-ax="' + a.key + '">' +
       '<div class="pair"><span class="dot" aria-hidden="true"></span>' +
         '<span class="l">' + a.neg.l + '</span><span class="sep">/</span><span class="r">' + a.pos.l + '</span></div>' +
@@ -29,7 +34,7 @@
   }).join("");
 
   /* ---------- キャラクターの帯 ---------- */
-  /* 16の基本タイプを1枚ずつ。絵は各タイプの A-H を代表に使う。
+  /* 16のベースコードを1枚ずつ。絵は各タイプの A-H を代表に使う。
      行き先は4文字のページ /t/<BASE>/。カードに出しているのは4文字（INTJ）と
      そのタイプ名なので、A-H のページへ送ると、押したものと違うページが開く
      （2026-09-21 たいし指摘）。絵の代表と行き先は別に考える。 */

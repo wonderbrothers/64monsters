@@ -253,6 +253,71 @@ button{ font:inherit; color:inherit; background:none; border:none; cursor:pointe
 .scoretable th{ color:var(--ink-3); font-weight:400; font-size:var(--fs-sm); letter-spacing:.1em; }
 
 /* 2×2 サブタイプ・マトリクス */
+
+/* ---- 個別タイプページ：30秒要約・目次・コードの構造・同じベースコード ----
+   生成AIの要約はページ全体ではなく一節だけを取ることがあるので、
+   冒頭だけ読んでもタイプの意味が分かるようにしてある。 */
+.tldr{
+  margin-top:26px; padding:22px 22px 24px;
+  border:var(--bw) solid var(--line); border-radius:calc(var(--r) * 3);
+  background:var(--surface-2);
+}
+.tldr-one{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px;
+  margin:0 0 16px; padding-bottom:14px; border-bottom:1px solid var(--line-2);
+}
+.tldr-k{ font-size:var(--fs-sm); color:var(--ink-3); letter-spacing:.08em; white-space:nowrap; }
+.tldr-v{ font-family:var(--f-disp); font-weight:700; font-size:var(--fs-lg); line-height:1.5; }
+
+/* ページ内の目次。固定はしない（モバイルで本文を削るため）。
+   横に溢れるぶんはスワイプで送る。スクロールバーは出さない */
+.anchors{
+  display:flex; gap:8px; margin-top:18px; padding-bottom:4px;
+  overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch;
+}
+.anchors::-webkit-scrollbar{ display:none; }
+.anchors a{
+  flex:none; padding:8px 14px; border:1px solid var(--line-2); border-radius:var(--r-full);
+  font-size:var(--fs-sm); color:var(--ink-2); text-decoration:none; white-space:nowrap;
+}
+.anchors a:hover{ border-color:var(--line); color:var(--ink); }
+
+/* アンカーで飛んだとき、見出しがヘッダーの下に潜らないようにする */
+.sec[id]{ scroll-margin-top:84px; }
+
+/* コードの構造。定義リストで組む（何がベースコードで、何が独自軸か） */
+.codestruct{ margin-top:20px; display:grid; gap:0; }
+.cst-row{
+  display:grid; grid-template-columns:1fr; gap:6px;
+  padding:18px 0; border-top:1px solid var(--line-2);
+}
+.cst-row:last-child{ border-bottom:1px solid var(--line-2); }
+.codestruct dt{ font-size:var(--fs-sm); color:var(--ink-3); letter-spacing:.06em; }
+.codestruct dd{ margin:0; display:flex; align-items:baseline; gap:14px; }
+.cst-c{ flex:none; min-width:3.6em; font-size:var(--fs-lg); font-weight:700; }
+/* 本文と同じ大きさにする（14pxだと説明が読みにくく、
+   以前は相性カードの .cs-n（20px・mono）と名前が衝突して20pxで出ていた） */
+.cst-n{ font-size:var(--fs-base); line-height:2.05; color:var(--ink-2); }
+
+/* 同じベースコードの4タイプ */
+.sibs{ list-style:none; margin:20px 0 0; padding:0; display:grid; gap:0; }
+.sibs li{
+  display:grid; grid-template-columns:auto 1fr; gap:4px 16px; align-items:baseline;
+  padding:14px 0; border-top:1px solid var(--line-2);
+}
+.sibs li:last-child{ border-bottom:1px solid var(--line-2); }
+.sibs li.on{ background:var(--surface-2); }
+.sib-c{ font-weight:700; color:var(--ink); text-decoration:none; }
+a.sib-c:hover{ text-decoration:underline; text-underline-offset:4px; }
+.sib-l{ font-size:var(--fs-md); }
+.sib-n{ grid-column:1 / -1; font-size:var(--fs-sm); color:var(--ink-3); line-height:1.8; }
+
+@media (min-width:761px){
+  .cst-row{ grid-template-columns:15em 1fr; gap:0 20px; align-items:baseline; }
+  .sibs li{ grid-template-columns:auto 1fr auto; }
+  .sibs .sib-n{ grid-column:auto; text-align:right; }
+}
+
 .matrix{ display:grid; grid-template-columns:64px 1fr 1fr; gap:8px; align-items:stretch; }
 .matrix .hd{ font-size:var(--fs-sm); color:var(--ink-3); letter-spacing:.06em; display:grid; place-items:center; padding:4px; text-align:center; }
 .matrix .side{ place-items:center start; line-height:1.5; }
@@ -1439,6 +1504,9 @@ html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
 .band-dark .sec-title{ color:var(--on-brand); }
 .sec-title{ font-size:clamp(1.5rem, 4.4vw, 2.5rem); font-weight:900; line-height:1.35; margin:14px 0 0; }
 .sec-lede{ margin-top:16px; color:var(--ink-3); font-size:var(--fs-md); line-height:1.9; max-width:var(--measure); }
+/* 軸一覧の上に置く小見出し。「これは独自に加えた2軸です」と示すためのもの */
+.sec-sub{ margin-top:28px; font-size:var(--fs-sm); letter-spacing:.08em; color:var(--ink-3); }
+.band-dark .sec-sub{ color:var(--paper); opacity:.72; }
 .more{
   display:inline-flex; align-items:center; gap:10px; margin-top:26px;
   font-family:var(--f-en); font-weight:900; font-size:var(--fs-base); letter-spacing:.04em;
@@ -1804,13 +1872,14 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
   border:var(--bw) solid var(--line); border-radius:var(--r-box); background:var(--surface);
 }
 .lk-h{ font-size:var(--fs-lg); font-weight:700; line-height:1.6; }
-.lk-grid{ display:grid; grid-template-columns:1fr 1fr; gap:30px 36px; margin-top:22px; align-items:start; }
+.lk-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:30px 36px; margin-top:22px; align-items:start; }
 .lk-t{ font-size:var(--fs-md); font-weight:700; letter-spacing:.04em; }
 .lk-n{ margin-top:14px; font-size:var(--fs-sm); line-height:1.8; color:var(--ink-3); }
 .lk-gauges{ display:grid; gap:9px; margin-top:14px; }
-.lk-row{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px; }
+.lk-row{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:center; gap:12px; }
 .lk-ax{ font-size:var(--fs-sm); color:var(--ink-3); }
-.lk-l{ font-family:var(--f-mono); font-size:var(--fs-sm); color:var(--ink-3); white-space:nowrap; }
+/* 記号を出さない行でも右端の位置を揃えるため、空でも幅を確保する */
+.lk-l{ font-family:var(--f-mono); font-size:var(--fs-sm); color:var(--ink-3); white-space:nowrap; min-width:3.4em; text-align:right; }
 .lk-track{ height:8px; border:1px dashed var(--line); border-radius:2px; }
 .lk-token{
   margin-top:14px; color:var(--ink-3); background:transparent;
@@ -1821,7 +1890,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .lk-note{ font-size:var(--fs-sm); line-height:1.8; color:var(--ink-3); }
 @media (max-width:760px){
   .locked{ padding:24px 18px; }
-  .lk-grid{ grid-template-columns:1fr; gap:26px; }
+  .lk-grid{ grid-template-columns:minmax(0,1fr); gap:26px; }
   .lk-foot{ display:block; }
   .lk-btn{ display:flex; width:100%; }
   .lk-note{ margin-top:12px; }
@@ -2023,6 +2092,8 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .picker-note a,
 .cm-n a,
 .lk-n a,
+.cst-n a,
+.sib-n a,
 .qc-note a{
   color:var(--ink);
   text-decoration:underline;
@@ -2040,6 +2111,8 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .picker-note a:hover,
 .cm-n a:hover,
 .lk-n a:hover,
+.cst-n a:hover,
+.sib-n a:hover,
 .qc-note a:hover{ text-decoration-color:var(--ink); }
 /* 濃い帯の上の本文リンク。地色が反転するので、色は本文から受け継ぐ */
 .how-d a{
