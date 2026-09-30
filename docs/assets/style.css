@@ -389,6 +389,8 @@ a.sib-c:hover{ text-decoration:underline; text-underline-offset:4px; }
 #about .sec .list li{ font-size:var(--fs-base); color:var(--ink-2); }
 #about .body-text + .body-text{ margin-top:16px; }
 #about .list + .body-text{ margin-top:16px; }
+/* 小見出しで区切る節（どうやって作ったか）。前の段落に張りつかないよう、上を段落の間より大きく空ける */
+#about .body-text + .sub-h{ margin-top:40px; }
 .about-foot{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:34px; }
 @media (max-width:560px){
   .about-foot{ flex-direction:column; align-items:stretch; }
