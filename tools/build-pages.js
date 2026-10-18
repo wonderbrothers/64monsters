@@ -1567,13 +1567,21 @@ ${scripts(base, ["types.js", "render.js", "settings.js"])}
    型で量産したページと判定された見立てで、同じ型どうしの一致率が高い
    相性64枚（48%）と4文字16枚（51%）を検索対象から外した。
    ページと内部リンクは残す（診断した人の導線は変えない）。noindex: true を付けたものは
-   head が noindex, follow になり、canonical を出さず、sitemap にも載らない。 */
+   head が noindex, follow になり、canonical を出さず、sitemap にも載らない。
+
+   SITEMAP_WHILE_NOINDEX（2026-10-18）
+   ただしこの80枚は、noindex が Google に読まれるまでの間だけ sitemap に載せる。
+   10/12 時点で noindex を読まれたのは80枚中2枚だけ。Googlebot の来訪が1日0〜20件に落ちていて、
+   sitemap に無いページはさらに後回しになるため。lastmod は noindex を付けた 2026-09-30。
+   元に戻す条件: GSC の「noindex タグによって除外されました」が80前後になったら
+   sitemapWhileNoindex を外す（目安は11月中）。 */
+const NOINDEX_SINCE = "2026-09-30";
 for (const code of CODES){
   pages.push({ rel: `t/${code}/index.html`,        loc: `${ORIGIN}/t/${code}/`,        pri: "0.7", html: typePage(code) });
-  pages.push({ rel: `t/${code}/compat/index.html`, loc: `${ORIGIN}/t/${code}/compat/`, pri: "0.6", html: compatPage(code), noindex: true });
+  pages.push({ rel: `t/${code}/compat/index.html`, loc: `${ORIGIN}/t/${code}/compat/`, pri: "0.6", html: compatPage(code), noindex: true, sitemapWhileNoindex: true });
 }
 BASE_KEYS.forEach(bt => {
-  pages.push({ rel: `t/${bt}/index.html`, loc: `${ORIGIN}/t/${bt}/`, pri: "0.85", html: baseCompatPage(bt), noindex: true });
+  pages.push({ rel: `t/${bt}/index.html`, loc: `${ORIGIN}/t/${bt}/`, pri: "0.85", html: baseCompatPage(bt), noindex: true, sitemapWhileNoindex: true });
 });
 
 pages.push({ rel: "types.html",         loc: `${ORIGIN}/types.html`,  pri: "0.9", html: galleryPage() });
@@ -1783,7 +1791,8 @@ const STATIC = [
 
 const all = [
   ...STATIC.map(s => ({ loc: s.loc, pri: s.pri, src: fs.readFileSync(path.join(DOCS, s.rel), "utf8") })),
-  ...pages.filter(p => !p.noindex).map(p => ({ loc: p.loc, pri: p.pri, src: p.html }))
+  ...pages.filter(p => !p.noindex || p.sitemapWhileNoindex)
+    .map(p => ({ loc: p.loc, pri: p.pri, src: p.html, since: p.sitemapWhileNoindex ? NOINDEX_SINCE : null }))
 ];
 
 const now = today();
@@ -1791,7 +1800,9 @@ let moved = 0;
 const urls = all.map(u => {
   const h = hashOf(u.src);
   const prev = lm[u.loc];
-  if (!prev || prev.hash !== h){ lm[u.loc] = { hash: h, date: now }; moved++; }
+  /* sitemap に戻した noindex ページは、記録が無ければ noindex を付けた日を出す（中身はその日から変わっていない） */
+  if (!prev && u.since){ lm[u.loc] = { hash: h, date: u.since }; }
+  else if (!prev || prev.hash !== h){ lm[u.loc] = { hash: h, date: now }; moved++; }
   return { loc: u.loc, pri: u.pri, lastmod: lm[u.loc].date };
 });
 
@@ -1814,7 +1825,8 @@ console.log(`sitemap.xml を更新しました: ${urls.length} URL（うち中�
    黙って公開しないための関所。1つでも外れたらビルドを止める。
      ・index 対象のページ … canonical が自分自身のURL（https / 末尾スラッシュ / クエリなし）
      ・title と description … 空でない・index 対象のページ同士で重複しない
-     ・sitemap.xml … index 対象のページだけを、漏れなく載せている（noindex・404 は載せない） */
+     ・sitemap.xml … index 対象のページだけを、漏れなく載せている（noindex・404 は載せない）
+       例外は SITEMAP_WHILE_NOINDEX の80枚だけ（noindex のまま一時的に載せる） */
 {
   const walk = (d = "") => fs.readdirSync(path.join(DOCS, d), { withFileTypes: true })
     .flatMap(e => {
@@ -1847,7 +1859,8 @@ console.log(`sitemap.xml を更新しました: ${urls.length} URL（うち中�
   }
   const inMap = new Set(urls.map(u => u.loc));
   for (const u of indexable) if (!inMap.has(u)) bad.push(`  ✗ sitemap に無い: ${u}`);
-  for (const u of inMap) if (!indexable.has(u)) bad.push(`  ✗ sitemap に index 対象外のURLがある: ${u}`);
+  const whileNoindex = new Set(pages.filter(p => p.sitemapWhileNoindex).map(p => p.loc));
+  for (const u of inMap) if (!indexable.has(u) && !whileNoindex.has(u)) bad.push(`  ✗ sitemap に index 対象外のURLがある: ${u}`);
   if (bad.length) throw new Error("検索向けの基本に不備があります:\n" + bad.join("\n"));
   console.log(`title・description・canonical・sitemap の整合を確認しました（index 対象 ${indexable.size} ページ）`);
 }
