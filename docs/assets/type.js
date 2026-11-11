@@ -139,6 +139,71 @@
     });
   }
 
+  /* ---------- 前回との違い ----------
+     この結果の記録（rec）の、一つ前の記録と軸ごとに比べる。
+     文字（letter）は engine.js と同じく sum > 0 で正の極。3以内は「立っていない」。
+     1回の差は断定しない（注記は静的に置いてある）。 */
+  var DIFF_BIG = 10;   /* 満点30のうち、これ以上の差を「大きく動いた」とする */
+  if (sc && E && rec){
+    var allH = E.getHistory(), ri = -1;
+    for (var k = allH.length - 1; k >= 0; k--){ if (allH[k].t === rec.t){ ri = k; break; } }
+    var prev = ri > 0 ? allH[ri - 1] : null;
+    if (prev && prev.sum) renderDiff(prev, rec);
+  }
+  function poleNum(a, v){ return v === 0 ? "0" : (v > 0 ? a.pos.name : a.neg.name) + " " + Math.abs(v); }
+  function q(s){ return "「" + s + "」"; }
+  function renderDiff(p, c){
+    var rows = AXES.map(function(a){
+      var pv = p.sum[a.key], cv = c.sum[a.key];
+      if (typeof pv !== "number" || typeof cv !== "number") return null;
+      var flip = (pv > 0) !== (cv > 0);
+      return { a:a, p:pv, c:cv, d:Math.abs(cv - pv), flip:flip,
+               weakFlip: flip && Math.abs(pv) <= 3 && Math.abs(cv) <= 3 };
+    }).filter(Boolean);
+    if (!rows.length) return;
+
+    var s = [];
+    var pLab = SUB[p.code] ? SUB[p.code].label : "";
+    s.push(p.code === CODE
+      ? "前回（" + fmtDate(p.t) + "）も、同じ " + CODE + " でした。"
+      : "前回（" + fmtDate(p.t) + "）は " + p.code + (pLab ? "（" + pLab + "）" : "") + " でした。");
+    var flips = rows.filter(function(r){ return r.flip && !r.weakFlip; });
+    var weak = rows.filter(function(r){ return r.weakFlip; });
+    if (flips.length){
+      s.push("極が入れ替わったのは" + flips.map(function(r){
+        return q(r.a.title) + "（" + poleNum(r.a, r.p) + " → " + poleNum(r.a, r.c) + "）";
+      }).join("と") + "です。");
+    }
+    if (weak.length){
+      s.push(weak.map(function(r){ return q(r.a.title); }).join("と") +
+        "も極が入れ替わりましたが、前回も今回も「立っていない」範囲です。");
+    }
+    var sorted = rows.slice().sort(function(x, y){ return y.d - x.d; }), top = sorted[0];
+    var big = sorted.filter(function(r){ return !r.flip && r.d >= DIFF_BIG; });
+    if (big.length){
+      s.push((flips.length ? "極は同じままで、大きく動いたのは" : "大きく動いたのは") + big.map(function(r){
+        return q(r.a.title) + "（" + poleNum(r.a, r.p) + " → " + poleNum(r.a, r.c) + "）";
+      }).join("、") + "です。");
+    }
+    if (!flips.length && !weak.length && top.d < DIFF_BIG){
+      s.push("6つの軸とも、前回から大きくは動いていません（差がいちばん大きい軸でも " + top.d + "）。");
+    }
+    $("diffLead").textContent = s.join("");
+
+    $("diffTable").innerHTML =
+      '<thead><tr><th>軸</th><th>前回</th><th>今回</th><th style="text-align:right">差</th></tr></thead><tbody>' +
+      rows.map(function(r){
+        var tag = r.flip ? '<span class="df-tag">入れ替わり</span>'
+                : (r.d >= DIFF_BIG ? '<span class="df-tag">大きく動いた</span>' : "");
+        return '<tr' + (r.flip || r.d >= DIFF_BIG ? ' class="df-on"' : '') + '>' +
+          '<td class="df-ax">' + r.a.title + '</td>' +
+          '<td>' + poleNum(r.a, r.p) + '</td>' +
+          '<td>' + poleNum(r.a, r.c) + '</td>' +
+          '<td class="n">' + r.d + tag + '</td></tr>';
+      }).join("") + '</tbody>';
+    $("secDiff").classList.remove("hidden");
+  }
+
   /* ---------- まだ出ていないもの（診断前） ----------
      数値も鑑定コードも、自分の結果として開いたときにしか出ない。
      これまでは節ごと隠していたので、受けていない人には

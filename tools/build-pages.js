@@ -491,6 +491,17 @@ function typePage(code){
     <div id="tableWrap" class="hidden"></div>
   </div>
 
+  <!-- 前回との違い（2026-11-11）。一つ前の記録があるときだけ type.js が出す。
+       1回の差を断定しない。測りかたのぶれの可能性を必ず添える -->
+  <div class="sec split hidden" id="secDiff">
+    <h2>前回との違い</h2>
+    <div>
+      <p class="body-text" id="diffLead"></p>
+      <table class="scoretable difftable" id="diffTable"></table>
+      <p class="g-note">1回だけの差は、測りかたのぶれの場合もあります。2〜3回受けると、どの軸が動きやすいかが見えてきます。これまでの動きは <a href="${base}history/">ヒストリー</a> でまとめて見られます。</p>
+    </div>
+  </div>
+
   </template>
   <template id="tplLocked">
   <!-- 診断を受けていない人に、空いている枠のほうを見せる。

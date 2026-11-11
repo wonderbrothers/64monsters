@@ -101,6 +101,77 @@
     }).join("");
   }
 
+  /* ---------- 芯と揺れ ----------
+     3回以上たまったら、軸ごとに4つに分けて文章にする。
+     ・揺れる … 立っていない範囲（3以内）を除いて両方の極に出た、または振れ幅が16以上
+     ・芯     … 反対の極に一度も出ておらず、3回に2回以上が同じ極
+     ・均衡   … 半分以上の回が立っていない
+     ・途中   … どれでもない（片側寄りだが、立っていない回が多め）
+     1回の増減ではなく、並び全体で見る。断定はしない。 */
+  var CORE_MIN = 3, TIE = 3, WIDE = 16;
+  function classify(a, vals){
+    var n = vals.length, pos = 0, neg = 0;
+    vals.forEach(function(v){ if (v > TIE) pos++; else if (v < -TIE) neg++; });
+    var mid = n - pos - neg;
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals), range = hi - lo;
+    var side = pos >= neg ? a.pos : a.neg, maj = Math.max(pos, neg);
+    var r = { a:a, n:n, pos:pos, neg:neg, mid:mid, range:range, side:side, maj:maj };
+    if ((pos && neg) || range >= WIDE) r.kind = "sway";
+    else if (maj * 3 >= n * 2) r.kind = "core";
+    else if (mid * 2 >= n) r.kind = "even";
+    else r.kind = "mid";
+    return r;
+  }
+  /* 極の説明（note）を添えるのは独自の2軸だけ。ベースコードの4軸は極の名前にとどめる
+     （claude-notes/trademark-mbti.md） */
+  var OWN = { AO:1, HC:1 };
+  var KIND = { core:"芯", sway:"揺れる", mid:"途中", even:"均衡" };
+  function coreText(r){
+    var a = r.a;
+    if (r.kind === "core")
+      return esc(r.side.name) + "に" + r.n + "回中" + r.maj + "回出ていて、反対の" +
+        esc((r.side === a.pos ? a.neg : a.pos).name) + "には一度も出ていません（振れ幅 " + r.range + "）。" +
+        (OWN[a.key] ? esc(r.side.note) + "、という傾向が、" : "") + "状況によらず続いている軸です。";
+    if (r.kind === "sway")
+      return (r.pos && r.neg
+        ? esc(a.neg.name) + "に" + r.neg + "回、" + esc(a.pos.name) + "に" + r.pos + "回出ています（振れ幅 " + r.range + "）。"
+        : "いつも" + esc(r.side.name) + "の側ですが、強さが大きく動いています（振れ幅 " + r.range + "）。") +
+        "時期や状況で、出方が変わりやすい軸かもしれません。";
+    if (r.kind === "even")
+      return r.n + "回中" + r.mid + "回が「立っていない」範囲です。どちらの極にも強くは寄らない軸です。";
+    return esc(r.side.name) + "寄りですが、「立っていない」回も" + r.mid + "回あります。もう何回か受けると、芯か揺れかが見えてきます。";
+  }
+  /* 「A」「B」「C」→「A」「B」と「C」 */
+  function listJ(a){ return a.length < 2 ? a.join("") : a.slice(0, -1).join("") + "と" + a[a.length - 1]; }
+  function renderCore(h){
+    if (h.length < CORE_MIN){
+      $("core").innerHTML = '<p class="body-text">記録が' + CORE_MIN + '回たまると、どの軸が芯で、どの軸が揺れるのかをここにまとめます（あと' +
+        (CORE_MIN - h.length) + '回）。時間をあけて受けるほど、違いが見えやすくなります。</p>';
+      $("coreRule").classList.add("hidden");
+      return;
+    }
+    $("coreRule").classList.remove("hidden");
+    var order = { core:0, sway:1, mid:2, even:3 };
+    var rs = AXES.map(function(a){
+      var vals = h.map(function(x){ return x.sum[a.key]; }).filter(function(v){ return typeof v === "number"; });
+      return vals.length >= CORE_MIN ? classify(a, vals) : null;
+    }).filter(Boolean).sort(function(x, y){ return order[x.kind] - order[y.kind]; });
+    if (!rs.length){ $("core").innerHTML = ""; return; }
+
+    var cores = rs.filter(function(r){ return r.kind === "core"; }),
+        sways = rs.filter(function(r){ return r.kind === "sway"; });
+    var lead = [];
+    if (cores.length) lead.push("今のところ、あなたの芯は" + listJ(cores.map(function(r){ return "「" + esc(r.side.name) + "」"; })) + "です。");
+    if (sways.length) lead.push("揺れやすいのは" + listJ(sways.map(function(r){ return "「" + esc(r.a.title) + "」"; })) + "です。");
+    if (!lead.length) lead.push("まだ、はっきりした芯も揺れも出ていません。");
+
+    $("core").innerHTML = '<p class="body-text core-lead">' + lead.join("") + '</p>' +
+      '<ul class="corelist">' + rs.map(function(r){
+        return '<li class="cl-' + r.kind + '"><p class="cl-h"><span class="cl-tag">' + KIND[r.kind] + '</span>' +
+          esc(r.a.title) + '</p><p class="cl-t">' + coreText(r) + '</p></li>';
+      }).join("") + '</ul>';
+  }
+
   /* ---------- 記録の表（新しい順） ----------
      削除の列は、ふだんは出さない。読むための表に消すボタンが並んでいると
      押し間違いが起きるし、見た目も落ち着かない。「記録を選んで削除」を
@@ -203,6 +274,7 @@
     $("recWrap").classList.toggle("hidden", !has);   /* 表だけ隠す。貼り付け欄は残す */
     if (!has){ $("table").innerHTML = ""; return; }
     renderTiles(h);
+    renderCore(h);
     renderStrips(h);
     renderTable(h);
   }

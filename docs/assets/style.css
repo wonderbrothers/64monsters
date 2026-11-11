@@ -949,6 +949,20 @@ body.modal-open{ overflow:hidden; }
   max-width:var(--panel-w);
 }
 /* 6軸のスコアの節の中（説明文とグラフのあいだ）に置く */
+/* 前回との違い（結果ページ） */
+.difftable td.df-ax{ white-space:normal; }
+.difftable tr.df-on td{ color:var(--ink); font-weight:500; }
+.df-tag{
+  display:inline-block; margin-left:8px; font-family:var(--f-body); font-size:var(--fs-xs);
+  font-weight:400; padding:3px 7px; border-radius:999px; border:1px solid var(--line-2); color:var(--ink-2);
+}
+#secDiff .g-note{ margin-top:14px; }
+@media (max-width:560px){
+  /* 狭い幅では印を数値の下に回して、軸の名前の列を空ける */
+  .difftable th, .difftable td{ padding:8px 6px; }
+  .difftable td.n{ text-align:right; }
+  .df-tag{ display:block; width:max-content; margin:4px 0 0 auto; }
+}
 #secGauge .flatnote{ margin:18px 0 22px; max-width:none; }
 .fn-h{ font-size:var(--fs-base); font-weight:700; }
 .fn-t{ font-size:var(--fs-md); color:var(--ink-2); line-height:1.9; margin-top:8px; }
@@ -1184,6 +1198,21 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
   .hist-tiles{ grid-template-columns:1fr 1fr; }
   .htile-wide{ grid-column:1 / -1; }
 }
+
+/* 芯と揺れ（ヒストリー） */
+.core-lead{ font-weight:500; }
+.corelist{ list-style:none; margin:16px 0 18px; padding:0; display:grid; gap:12px; }
+.corelist li{ border:1px solid var(--line); border-radius:calc(var(--r) * 2); background:var(--surface); padding:14px 16px; }
+.cl-h{ display:flex; align-items:center; gap:10px; font-size:var(--fs-md); font-weight:500; }
+.cl-tag{
+  flex:none; font-size:var(--fs-xs); letter-spacing:.06em; line-height:1;
+  padding:5px 9px; border-radius:999px; border:1px solid var(--line-2); color:var(--ink-2);
+}
+/* 種類は文字で示す。色だけに頼らない。芯は塗り、揺れるは太枠で見分けられるようにする */
+.cl-core .cl-tag{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
+.cl-sway .cl-tag{ border:1.5px solid var(--ink); color:var(--ink); }
+.cl-mid .cl-tag, .cl-even .cl-tag{ color:var(--ink-3); }
+.cl-t{ margin-top:8px; font-size:var(--fs-md); color:var(--ink-2); line-height:1.8; }
 
 /* 軸ごとのばらつき */
 /* クラス名はトップのキャラクター帯（.strip）と衝突させない */
