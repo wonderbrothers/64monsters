@@ -420,6 +420,7 @@ function typePage(code){
   </div>`;
 
   return headHTML({ title, desc, url, base, ogimg, ogalt: `${s.label}（${code}）`,
+                    noindex: !INDEX_TYPES.has(code),
                     pageCode: code, ld: [ldPage, crumbLD(crumbs), faqLD(faqs)] }) +
 `<section id="result">
   <div class="wrap">
@@ -1576,8 +1577,21 @@ ${scripts(base, ["types.js", "render.js", "settings.js"])}
    元に戻す条件: GSC の「noindex タグによって除外されました」が80前後になったら
    sitemapWhileNoindex を外す（目安は11月中）。 */
 const NOINDEX_SINCE = "2026-09-30";
+
+/* INDEX_TYPES（2026-11-11）
+   書き直した版を読まれたうえでも外され（INTJ-A-H、10/18 クロール）、登録済みは 10/24 に 21 まで減った。
+   ページ単位ではなくサイト全体の評価と判断し、検索に出すタイプページを15枚に絞る。
+   選び方: 急落前28日（8/31〜9/27）の表示回数の上位15枚（需要があり、原稿もいちばん厚い）。
+   残り49枚は noindex, follow（ページとリンクは残す）。noindex が読まれるまで sitemap にも載せる。
+   評価が戻ったら、中身のそろったページから INDEX_TYPES に足して戻す。 */
+const INDEX_TYPES = new Set([
+  "INTJ-A-H", "INFP-O-H", "INFJ-O-H", "INTJ-O-H", "ENTP-O-H",
+  "ENTP-O-C", "ENFJ-A-H", "INFJ-A-H", "ENFP-A-H", "ENTJ-O-H",
+  "ISTP-O-C", "INTJ-O-C", "ENFJ-O-H", "INTP-A-H", "INFP-A-C"
+]);
 for (const code of CODES){
-  pages.push({ rel: `t/${code}/index.html`,        loc: `${ORIGIN}/t/${code}/`,        pri: "0.7", html: typePage(code) });
+  const idx = INDEX_TYPES.has(code);
+  pages.push({ rel: `t/${code}/index.html`,        loc: `${ORIGIN}/t/${code}/`,        pri: "0.7", html: typePage(code), noindex: !idx, sitemapWhileNoindex: !idx });
   pages.push({ rel: `t/${code}/compat/index.html`, loc: `${ORIGIN}/t/${code}/compat/`, pri: "0.6", html: compatPage(code), noindex: true, sitemapWhileNoindex: true });
 }
 BASE_KEYS.forEach(bt => {
@@ -1826,7 +1840,7 @@ console.log(`sitemap.xml を更新しました: ${urls.length} URL（うち中�
      ・index 対象のページ … canonical が自分自身のURL（https / 末尾スラッシュ / クエリなし）
      ・title と description … 空でない・index 対象のページ同士で重複しない
      ・sitemap.xml … index 対象のページだけを、漏れなく載せている（noindex・404 は載せない）
-       例外は SITEMAP_WHILE_NOINDEX の80枚だけ（noindex のまま一時的に載せる） */
+       例外は sitemapWhileNoindex を付けたページだけ（相性64・4文字16・INDEX_TYPES 以外のタイプ49。noindex のまま一時的に載せる） */
 {
   const walk = (d = "") => fs.readdirSync(path.join(DOCS, d), { withFileTypes: true })
     .flatMap(e => {
@@ -1843,8 +1857,12 @@ console.log(`sitemap.xml を更新しました: ${urls.length} URL（うち中�
     const noindex = /noindex/.test(robots) || rel === "404.html";
     if (rel === "404.html" && !/noindex/.test(robots)) bad.push(`  ✗ 404.html … noindex が無い`);
     /* 相性ページと4文字ページは noindex のまま（NOINDEX_NOTE）。うっかり戻したら止める */
-    const mustNoindex = /^t\/[A-Z]{4}-[AO]-[HC]\/compat\/index\.html$/.test(rel) || /^t\/[A-Z]{4}\/index\.html$/.test(rel);
+    /* タイプページは INDEX_TYPES の15枚だけ index、残りは noindex（INDEX_TYPES の注記） */
+    const typeM = rel.match(/^t\/([A-Z]{4}-[AO]-[HC])\/index\.html$/);
+    const mustNoindex = /^t\/[A-Z]{4}-[AO]-[HC]\/compat\/index\.html$/.test(rel) || /^t\/[A-Z]{4}\/index\.html$/.test(rel)
+      || (typeM && !INDEX_TYPES.has(typeM[1]));
     if (mustNoindex && !noindex) bad.push(`  ✗ ${rel} … noindex のはずのページが index 対象になっている`);
+    if (typeM && INDEX_TYPES.has(typeM[1]) && noindex) bad.push(`  ✗ ${rel} … INDEX_TYPES のページが noindex になっている`);
     if (mustNoindex && /<link rel="canonical"/.test(html)) bad.push(`  ✗ ${rel} … noindex なのに canonical がある`);
     if (noindex) continue;
     const title = pick(html, /<title>([^<]*)<\/title>/);
