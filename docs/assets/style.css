@@ -1489,17 +1489,22 @@ html[data-theme="dark"] .site-foot .wb-dark{ display:block; }
 .site-foot .logo-dark{ display:none; }
 html[data-theme="dark"] .site-foot .logo-light{ display:none; }
 html[data-theme="dark"] .site-foot .logo-dark{ display:block; }
-.site-foot + .copy{ margin-top:20px; text-align:left; }
+/* ロゴ（左）と、著作権表示・版（右）を1行に並べる。.foot-row は settings.js が作る。
+   以前はロゴ・著作権・版を左に縦積みしていて、右側が空いていた（2026-11-11 たいし指摘） */
+.foot-row{ display:flex; align-items:center; justify-content:space-between; gap:16px 32px; margin-top:40px; }
+.foot-row .site-foot{ margin-top:0; }
+.foot-row .copy{ margin-top:0; text-align:right; }
 .copy{ font-family:var(--f-mono); color:var(--ink-3); }
 .ver{ opacity:1; color:var(--ink-3); }
-.site-foot + .copy + .ver{ text-align:left; }
 /* ロゴが中央に来る幅（ヘッダーをハンバーガーに切り替えるのと同じ 900px）では、
    著作権表示と版も中央に寄せる。.ver は .copy の中の要素なので継承される。
    フッターのロゴは flex で中央にする。block の直下に置いた justify-self は
    Safari が見ないので、それに頼ると iPhone だけ左寄りになる */
 @media (max-width:900px){
   .site-foot{ justify-content:center; }
-  .site-foot + .copy{ text-align:center; }
+  /* 狭い幅では1行に収まらないので、ロゴの下に著作権・版を中央で積む */
+  .foot-row{ flex-direction:column; gap:20px; }
+  .foot-row .copy{ text-align:center; }
   /* 足回りはひとかたまりなので、リンクもロゴ・著作権と同じタイミングで中央に寄せる */
   .sitenav ul{ justify-content:center; }
 }

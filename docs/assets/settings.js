@@ -21,8 +21,8 @@
      BUILD は docs/ の中身のハッシュ。問い合わせを受けたとき、
      その人が見ているものを1つに特定するために出している。
      BUILT は「ビルドを回した日」ではなく「中身が最後に変わった日」。 */
-  var VERSION = "1.19.0";
-  var BUILD   = "3c6c01a";
+  var VERSION = "1.19.1";
+  var BUILD   = "ac4111f";
   var BUILT   = "2026-11-11";
 
   var MYKEY = KEY + ".mytype";
@@ -107,10 +107,15 @@
     '</div>';
   document.body.insertBefore(head, document.body.firstChild);
 
-  /* ---------- フッターのロゴ（著作権表示の上に置くだけ） ---------- */
+  /* ---------- フッターのロゴ ----------
+     ロゴ（左）と、著作権表示・版（右）を1行に並べる（2026-11-11 たいし指定）。
+     .copy は静的HTMLにあるので、ここで .foot-row に包んでロゴと並べる。
+     版（.ver）はこのあと .copy の中に足されるので、一緒に右へ寄る。 */
   (function(){
     var copy = document.querySelector(".copy");
     if (!copy || !copy.parentNode) return;
+    var row = document.createElement("div");
+    row.className = "foot-row";
     var f = document.createElement("div");
     f.className = "site-foot";
     f.innerHTML =
@@ -121,7 +126,9 @@
         '<img class="wb wb-light" src="' + B + 'assets/wb-logo.svg?v=709c3fb5" alt="" width="176" height="30">' +
         '<img class="wb wb-dark" src="' + B + 'assets/wb-logo-dark.svg?v=edbe16fe" alt="" width="176" height="30">' +
       '</a>';
-    copy.parentNode.insertBefore(f, copy);
+    copy.parentNode.insertBefore(row, copy);
+    row.appendChild(f);
+    row.appendChild(copy);
   })();
 
   /* ---------- 表示設定のUI（1つだけ作って使い回す） ---------- */
