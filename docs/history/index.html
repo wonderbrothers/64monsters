@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@500&family=Montserrat+Alternates:wght@900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="../assets/style.css?v=53d85a65">
+<link rel="stylesheet" href="../assets/style.css?v=7f4b2d8c">
 <script>
 /* 表示設定を描画前に反映（ちらつき防止） */
 (function(){try{var d=document.documentElement,t=localStorage.getItem("shindan64.v1.theme"),f=localStorage.getItem("shindan64.v1.fs");if(t!=="dark"&&t!=="light"){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";}d.setAttribute("data-theme",t);d.setAttribute("data-fs",(f==="s"||f==="l")?f:"m");}catch(e){}})();
@@ -69,6 +69,7 @@
           分け方：「立っていない」範囲（3以内）を除いて、両方の極に出たことがある軸か、振れ幅が16以上の軸を「揺れる」としています。
           反対の極に一度も出ておらず、3回に2回以上が同じ極の軸が「芯」です。
           記録が増えると、分け方が変わることがあります。
+          くわしい読み方は <a href="../retake/">受け直すと結果が変わるのはなぜ？</a> にあります。
         </p>
       </div>
     </div>
@@ -83,6 +84,17 @@
         <b>幅の広い軸は、変化ではなく測定のばらつきの可能性もあります。</b>
         数回受けて自分の振れ幅を掴むまでは、1回の増減を意味づけしないでください。
       </p>
+    </div>
+
+    <!-- 出会ったモンスター（2026-11-11）。これまでに出たタイプを図鑑のように並べる。
+         まだ出ていないタイプは薄く出す。いつもの自分と、たまに出る自分が姿で分かる -->
+    <div class="sec split">
+      <h2>出会ったモンスター</h2>
+      <div>
+        <p class="body-text" id="dexLead"></p>
+        <ul class="dex" id="dex"></ul>
+        <p class="g-note">薄く出ているのは、まだ診断で出ていないモンスターです。押すと、そのタイプの解説を読めます。</p>
+      </div>
     </div>
 
   </div>
@@ -123,6 +135,7 @@
       <button class="btn ghost" id="importBtn2">JSONを読み込む</button>
       <a class="btn ghost" href="../quiz/?restart=1">もう一度受ける</a>
     </div>
+    <div class="remind-slot"></div>
     <p class="hist-danger"><button type="button" class="hist-clear" id="clearBtn">すべての記録を削除する</button></p>
   </div>
 
@@ -166,9 +179,9 @@
 
 <script src="../assets/questions.js?v=0b31d093"></script>
 <script src="../assets/types.js?v=ff983dbf"></script>
-<script src="../assets/render.js?v=8f2b2584"></script>
+<script src="../assets/render.js?v=c33bbbbb"></script>
 <script src="../assets/engine.js?v=85f59244"></script>
-<script src="../assets/history.js?v=73d5a289"></script>
-<script src="../assets/settings.js?v=993e98c5"></script>
+<script src="../assets/history.js?v=22fe2daf"></script>
+<script src="../assets/settings.js?v=0c35841a"></script>
 </body>
 </html>

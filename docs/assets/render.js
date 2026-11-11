@@ -249,6 +249,76 @@
     return { purposes:st, best:best };
   }
 
+  /* ---------- 次に受ける日（カレンダーの予定ファイル .ics） ----------
+     予定ファイルはブラウザの中で作って保存してもらうだけ。サーバーには何も送らない。
+     予定には結果（コードや数値）を書かない。カレンダーが同期される先に結果を出さないため。
+     ヒストリーと自分の結果ページの両方で使うので、枠の HTML と動きをここに1つだけ置く。 */
+  var REMIND_OPTS = [ { d:14, t:"2週間後" }, { d:30, t:"1か月後" }, { d:90, t:"3か月後" } ];
+  function remindHTML(id){
+    return '<div class="remind">' +
+      '<label class="remind-l" for="' + id + '">次に受ける日</label>' +
+      '<div class="remind-row">' +
+        '<select id="' + id + '" class="remind-sel">' +
+          REMIND_OPTS.map(function(o, i){ return '<option value="' + o.d + '"' + (i === 1 ? " selected" : "") + '>' + o.t + '</option>'; }).join("") +
+        '</select>' +
+        '<button type="button" class="btn ghost remind-btn">カレンダーに入れる</button>' +
+      '</div>' +
+      '<p class="g-note remind-n" aria-live="polite">予定のファイル（.ics）を保存します。予定に診断の結果は書き込みません。</p>' +
+    '</div>';
+  }
+  function icsDate(d){
+    var p = function(n){ return (n < 10 ? "0" : "") + n; };
+    return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate());
+  }
+  function icsFile(days, origin){
+    var now = new Date(), start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + days);
+    var end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 1);
+    var stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+    var url = origin + "/quiz/?restart=1";
+    return [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//WONDER BROTHERS//64monsters//JA", "CALSCALE:GREGORIAN",
+      "BEGIN:VEVENT",
+      "UID:" + now.getTime() + "-" + days + "@64monsters.wonder-bros.com",
+      "DTSTAMP:" + stamp,
+      "DTSTART;VALUE=DATE:" + icsDate(start),
+      "DTEND;VALUE=DATE:" + icsDate(end),
+      "SUMMARY:64モンスターズをもう一度受ける",
+      "DESCRIPTION:受け直すと、芯の軸と揺れる軸が見えてきます。\\n" + url,
+      "URL:" + url,
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:64モンスターズをもう一度受ける", "TRIGGER:PT9H", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR", ""
+    ].map(icsFold).join("\r\n");
+  }
+  /* 1行は75バイトまで（RFC 5545）。超える行は、次の行頭に空白を置いて折り返す。
+     日本語は1文字3バイトなので、文字の途中で切らないよう文字単位で数える */
+  function icsFold(line){
+    var out = [], cur = "", bytes = 0, lim = 75;
+    for (var i = 0; i < line.length; i++){
+      var ch = line.charAt(i), code = line.charCodeAt(i);
+      if (code >= 0xD800 && code <= 0xDBFF){ ch += line.charAt(++i); }
+      var b = encodeURIComponent(ch).replace(/%[0-9A-F]{2}/g, "x").length;
+      if (bytes + b > lim){ out.push(cur); cur = " "; bytes = 1; lim = 75; }
+      cur += ch; bytes += b;
+    }
+    out.push(cur);
+    return out.join("\r\n");
+  }
+  function bindRemind(box, onSave){
+    if (!box) return;
+    var sel = box.querySelector(".remind-sel"), btn = box.querySelector(".remind-btn"), note = box.querySelector(".remind-n");
+    btn.addEventListener("click", function(){
+      var days = parseInt(sel.value, 10) || 30;
+      var blob = new Blob([icsFile(days, "https://64monsters.wonder-bros.com")], { type:"text/calendar;charset=utf-8" });
+      var u = URL.createObjectURL(blob), a = document.createElement("a");
+      a.href = u; a.download = "64monsters-next.ics";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(u); }, 1000);
+      var day = new Date(); day.setDate(day.getDate() + days);
+      note.textContent = (day.getMonth() + 1) + "月" + day.getDate() + "日の予定を保存しました。ファイルを開くと、カレンダーに追加できます。";
+      if (onSave) onSave(days);
+    });
+  }
+
   root.RENDER = {
     thumb:thumb, typeUrl:typeUrl, pairUrl:pairUrl, flip:flip,
     matrixHTML:matrixHTML, chipHTML:chipHTML, topHTML:topHTML,
@@ -256,6 +326,7 @@
     axisProfile:axisProfile, pairReasons:pairReasons,
     baseSpread:baseSpread, baseRank:baseRank, bandIndex:bandIndex, BAND_ORDER:BAND_ORDER,
     PURPOSE_SHORT:PURPOSE_SHORT, PURPOSE_LEAD:PURPOSE_LEAD,
-    purposeScores:purposeScores, letterMap:letterMap
+    purposeScores:purposeScores, letterMap:letterMap,
+    remindHTML:remindHTML, bindRemind:bindRemind
   };
 })(typeof window !== "undefined" ? window : globalThis);

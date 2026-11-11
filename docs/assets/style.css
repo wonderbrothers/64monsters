@@ -396,6 +396,10 @@ a.sib-c:hover{ text-decoration:underline; text-underline-offset:4px; }
 #about .list + .body-text{ margin-top:16px; }
 /* 小見出しで区切る節（どうやって作ったか）。前の段落に張りつかないよう、上を段落の間より大きく空ける */
 #about .body-text + .sub-h{ margin-top:40px; }
+/* /retake/ … 小見出しで区切る節。前の段落とのあいだを段落どうしより広く */
+#retake .body-text + .sub-h{ margin-top:30px; }
+#retake .sub-h + .body-text{ margin-top:8px; }
+#retake .sec .list li{ font-size:var(--fs-base); color:var(--ink-2); }
 .about-foot{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:34px; }
 @media (max-width:560px){
   .about-foot{ flex-direction:column; align-items:stretch; }
@@ -1214,6 +1218,23 @@ html[data-theme="dark"] .drawer-logo .logo-dark{ display:block; }
 .cl-mid .cl-tag, .cl-even .cl-tag{ color:var(--ink-3); }
 .cl-t{ margin-top:8px; font-size:var(--fs-md); color:var(--ink-2); line-height:1.8; }
 
+/* 出会ったモンスター（ヒストリー） */
+.dex{ list-style:none; margin:16px 0 14px; padding:0; display:grid; grid-template-columns:repeat(auto-fill, minmax(60px, 1fr)); gap:12px 8px; }
+.dex-i a{ display:flex; flex-direction:column; align-items:center; gap:3px; text-decoration:none; color:var(--ink-3); position:relative; }
+.dex-i .thumb{ border-radius:10px; }
+/* まだ出ていないモンスターは薄く出す。画像は背景つきなので黒く塗ると四角になる。
+   色を抜いて薄くし、姿だけは分かるようにする */
+.dex-i:not(.met) .thumb img{ filter:grayscale(1) contrast(.7); opacity:.28; }
+.dex-i.met a{ color:var(--ink); }
+.dex-code{ font-size:10px; letter-spacing:0; white-space:nowrap; }
+.dex-n{ font-size:var(--fs-xs); color:var(--ink-3); }
+.dex-i.met .dex-n{ color:var(--ink-2); font-weight:500; }
+.dex-tag{
+  font-size:10px; line-height:1; padding:3px 6px; border-radius:999px;
+  background:var(--ink); color:var(--paper);
+}
+.dex-i a:hover .dex-code, .dex-i a:focus-visible .dex-code{ text-decoration:underline; }
+
 /* 軸ごとのばらつき */
 /* クラス名はトップのキャラクター帯（.strip）と衝突させない */
 .axstrips{ display:grid; gap:26px; }
@@ -1942,6 +1963,28 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
 .modal-acts .btn{ flex:1 1 auto; justify-content:center; padding:13px 20px; font-size:var(--fs-md); }
 .modal-body .body-text + .g-note{ margin-top:12px; }
 
+/* ---- 次に受ける日（予定ファイル）。下部の導線とヒストリーで共通 ---- */
+.remind-slot:empty{ display:none; }
+.remind{ margin-top:24px; padding-top:20px; border-top:1px solid var(--line-2); text-align:center; }
+.remind-l{ display:block; font-size:var(--fs-md); font-weight:500; }
+.remind-row{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:12px; }
+.remind-sel{
+  font:inherit; font-size:var(--fs-md); color:var(--ink);
+  -webkit-appearance:none; appearance:none;
+  border:1.5px solid var(--line); border-radius:var(--r-btn);
+  padding:11px 40px 11px 20px; background-color:var(--surface);
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%, currentColor calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(-45deg, transparent 50%, currentColor 50%, currentColor calc(50% + 1.5px), transparent calc(50% + 1.5px));
+  background-position:right 24px center, right 18px center;
+  background-size:7px 7px, 7px 7px; background-repeat:no-repeat;
+}
+.remind-n{ margin-top:10px; font-size:var(--fs-sm); }
+.hist-actions .remind{ max-width:520px; margin-left:auto; margin-right:auto; }
+@media (max-width:560px){
+  .remind-row{ flex-direction:column; align-items:stretch; }
+}
+
 /* ---- 診断への導線 ---- */
 .quizcta{
   margin:44px 0 8px; padding:32px 24px; text-align:center;
@@ -2110,7 +2153,7 @@ html[data-theme="dark"] h1.res-label .rl-name{ font-weight:900; }
    about / pair / friends / history もこの .page-head を使う。
    独自の head クラスを新しく作らないこと（以前 .about-head / .pair-head /
    .hist-head の3種類に分かれていて、ページごとに余白が違っていた）。 */
-#hub, #axis, #compat, #list{ padding-bottom:40px; }
+#hub, #axis, #compat, #list, #retake{ padding-bottom:40px; }
 /* 見出しの次が .sec（上下40px）でないページは、そのぶんの間を自分で持つ */
 .page-head.gap{ margin-bottom:30px; }
 .page-head{ margin-top:34px; padding-bottom:28px; margin-bottom:8px; }

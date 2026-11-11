@@ -200,6 +200,7 @@ function quizCtaHTML(base, lead){
     <p class="qc-lead">同じ人でも、受けるたびに数値は動きます。</p>
     <a class="btn qc-btn" href="${base}quiz/?restart=1">もう一度受ける</a>
     <p class="qc-note">受けた回ぶんの記録は <a href="${base}history/">ヒストリー</a> に残ります。</p>
+    <div class="remind-slot"></div>
   </div>`;
 }
 
@@ -498,7 +499,7 @@ function typePage(code){
     <div>
       <p class="body-text" id="diffLead"></p>
       <table class="scoretable difftable" id="diffTable"></table>
-      <p class="g-note">1回だけの差は、測りかたのぶれの場合もあります。2〜3回受けると、どの軸が動きやすいかが見えてきます。これまでの動きは <a href="${base}history/">ヒストリー</a> でまとめて見られます。</p>
+      <p class="g-note">1回だけの差は、測りかたのぶれの場合もあります。2〜3回受けると、どの軸が動きやすいかが見えてきます（<a href="${base}retake/">結果が変わる理由</a>）。これまでの動きは <a href="${base}history/">ヒストリー</a> でまとめて見られます。</p>
     </div>
   </div>
 
@@ -1201,7 +1202,7 @@ function hubPage(){
     <h2>64モンスターズ独自の2軸</h2>
     <p class="body-text">ベースコードに、次の2つの軸を独自に加えています。この2つは日々の振る舞いにはっきり出るのに、ベースコードだけでは区別されません。</p>
     ${axisTableHTML()}
-    <p class="g-note" style="margin-top:16px">満点30に対する寄りで測り、差が3以内のときは「立っていない」として扱います。ベースコードのほうも同じ90問から算出しますが、記号ごとに意味を定義して解説することはしていません。</p>
+    <p class="g-note" style="margin-top:16px">満点30に対する寄りで測り、差が3以内のときは「立っていない」として扱います。ベースコードのほうも同じ90問から算出しますが、記号ごとに意味を定義して解説することはしていません。受け直すと数値が動く理由と、記録の読み方は <a href="${base}retake/">受け直すと結果が変わるのはなぜ？</a> にまとめています。</p>
   </div>
 
   <div class="sec split">
@@ -1340,6 +1341,128 @@ function axisPage(kind){
 </section>
 
 ${footHTML(base, A.slug)}
+${scripts(base, ["types.js", "settings.js"])}
+</body>
+</html>
+`;
+}
+
+/* ---- 受け直すと結果が変わる理由（/retake/、2026-11-11） ----
+   「受けるたびに今の自分が分かる」を打ち出す説明ページ。ヒストリーの「芯と揺れ」の読み方の本体。
+   ・受け直したときの一致の度合いは集計していない（回答をサーバーに送らないため）。数字で言い切らない
+   ・例に使うのは独自の2軸（A/O・H/C）だけ。ベースコードの4軸の極は説明しない（trademark-mbti.md）
+   ・記録の例は架空。実在の人の記録ではないと明記する */
+function retakePage(){
+  const base = "../", url = `${ORIGIN}/retake/`;
+  const AO = AX("AO"), HC = AX("HC");
+  const title = `診断を受け直すと結果が変わるのはなぜ？芯と揺れの見方｜${SITE}`;
+  const desc = `同じ人が受け直しても、性格診断の数値は動きます。64モンスターズは、それを前提に、何回か受けて「動かない軸（芯）」と「動く軸（揺れ）」を見分ける作りにしています。数値が動く理由と、記録の読み方をまとめました。`;
+  const crumbs = [
+    { name: SITE, href: base, abs: ORIGIN + "/" },
+    { name: "結果が変わる理由", href: url, abs: url }
+  ];
+  const faqs = [
+    { q: "受けるたびにタイプが変わるのは、診断が当てにならないということですか？",
+      a: "数値が動くことは、はじめから前提にしています。何度受けても同じ側に出る軸と、受けるたびに動く軸の両方が、あなたについての手がかりです。ただし64モンスターズは回答をサーバーに送らないため、受け直したときにどのくらい一致するかを集計していません。数字で精度を示すことはできないので、ご自身の記録で確かめてください。" },
+    { q: "どのくらい間をあけて受ければいいですか？",
+      a: "2週間から1か月ほどあけるのがおすすめです。続けて受けると、前の答えを覚えていて、それに合わせて答えやすくなります。自分の結果ページとヒストリーから、次に受ける日をカレンダーに入れられます。" },
+    { q: "前の結果と今の結果、どちらが本当の自分ですか？",
+      a: "どちらも、その時点のあなたです。1回の結果を正解として選ぶより、何回か受けたときに残る傾向を芯として読むほうが、実際のふるまいに近くなります。" },
+    { q: "記録はどこに保存されますか？",
+      a: "使っているブラウザの中だけです。サーバーには送っていません。別の端末やブラウザで受けた分は、ヒストリーの書き出しと読み込み、または鑑定コードでまとめられます。" }
+  ];
+  const ldPage = {
+    "@context": "https://schema.org", "@type": "WebPage",
+    name: title, url, inLanguage: "ja", description: desc,
+    isPartOf: { "@type": "WebSite", name: SITE, url: ORIGIN + "/" },
+    publisher: { "@type": "Organization", name: PUBLISHER, url: "https://wonder-bros.com" }
+  };
+  /* 架空の記録（4回）。人への構えは同じ側にとどまり、自分への確信は両側に出る例 */
+  const ex = [
+    { d: "1回目", ao: -6, hc: 12 },
+    { d: "2回目", ao: 4,  hc: 9 },
+    { d: "3回目", ao: -2, hc: 14 },
+    { d: "4回目", ao: 8,  hc: 10 }
+  ];
+  const pn = (a, v) => v === 0 ? "0" : `${v > 0 ? a.pos.name : a.neg.name} ${Math.abs(v)}`;
+  const exRows = ex.map(r => `<tr><td>${r.d}</td><td class="n">${pn(AO, r.ao)}</td><td class="n">${pn(HC, r.hc)}</td></tr>`).join("");
+
+  return headHTML({ title, desc, url, base, ogimg: ORIGIN + "/images/ogp.png",
+                    ld: [ldPage, crumbLD(crumbs), faqLD(faqs)] }) +
+`<section id="retake" class="wrap">
+  ${crumbHTML(crumbs)}
+  <div class="page-head">
+    <p class="eyebrow">retake</p>
+    <h1 class="title">受け直すと結果が変わるのはなぜ？</h1>
+    <p class="lede">同じ人が受け直しても、診断の数値は動きます。64モンスターズは、それを前提に作っています。1回の結果を決まったラベルとして読むのではなく、何回か受けて、動かない軸（芯）と動く軸（揺れ）を見分けるための診断です。</p>
+  </div>
+
+  <div class="sec split">
+    <h2>数値が動く3つの理由</h2>
+    <div>
+      <p class="sub-h">1. 迷った設問の答えが変わる</p>
+      <p class="body-text">1つの軸は15問で決まり、1問ごとに −2 から +2 までの点が入ります。「どちらかといえば」と「どちらでもない」のあいだで迷った設問は、受けるたびに答えが変わりやすく、1問で1〜2点動きます。迷う設問が多い軸ほど、数値は動きます。</p>
+      <p class="sub-h">2. 答えるときの状態が違う</p>
+      <p class="body-text">忙しさや疲れ、いま担っている役割、最近あった出来事。設問の場面を思い浮かべるとき、その時の状況に引っぱられます。同じ人でも、繁忙期と休みのあとでは答えが変わることがあります。</p>
+      <p class="sub-h">3. 本当に変わっていく部分がある</p>
+      <p class="body-text">仕事や住まい、人間関係が変わると、ふるまいの癖が変わることがあります。どの軸が動きやすいかは、人によって違います。</p>
+      <p class="g-note" style="margin-top:16px">1と2は測りかたのぶれ、3は本当の変化です。1回の結果だけでは、この2つを見分けられません。だから何回か受けます。</p>
+    </div>
+  </div>
+
+  <div class="sec split">
+    <h2>「立っていない」軸</h2>
+    <div>
+      <p class="body-text">数値は、満点30に対して、どちらの極にどれだけ寄っているかです。差が3以内のときは「立っていない」として扱い、どちらとも決めつけません。</p>
+      <p class="body-text" style="margin-top:16px">立っていない軸では、受け直すとコードの文字が入れ替わることがよくあります。数点の差で決まっているので、文字が変わっても大きな意味はありません。</p>
+    </div>
+  </div>
+
+  <div class="sec split">
+    <h2>芯と揺れの見方</h2>
+    <div>
+      <p class="body-text">下は、ある人が4回受けたときの記録の例です（架空の記録です）。独自の2軸だけを抜き出しています。</p>
+      <table class="scoretable">
+        <thead><tr><th>回</th><th style="text-align:right">${esc(AO.title)}</th><th style="text-align:right">${esc(HC.title)}</th></tr></thead>
+        <tbody>${exRows}</tbody>
+      </table>
+      <p class="body-text" style="margin-top:20px"><b>${esc(HC.title)}は芯です。</b>4回とも${esc(HC.pos.name)}の側に出ていて、振れ幅は5です。この人は、${esc(HC.pos.note)}傾向が、状況によらず続いていると読めます。</p>
+      <p class="body-text" style="margin-top:16px"><b>${esc(AO.title)}は揺れています。</b>${esc(AO.neg.name)}と${esc(AO.pos.name)}の両方に出ていて、振れ幅は14です。決めたあとに考え直すかどうかが、時期や状況で変わる人なのかもしれません。</p>
+      <p class="g-note" style="margin-top:16px"><a href="${base}history/">ヒストリー</a>では、記録が3回たまると、軸ごとに次のように分けて表示します。「立っていない」範囲（3以内）を除いて両方の極に出たことがある軸か、振れ幅が16以上の軸は「揺れる」。反対の極に一度も出ておらず、3回に2回以上が同じ極の軸は「芯」です。</p>
+    </div>
+  </div>
+
+  <div class="sec split">
+    <h2>1回の変化の読み方</h2>
+    <div>
+      <ul class="list">
+        <li>1回の差を、変化と決めない。差が10以上あっても、まず測りかたのぶれを疑う</li>
+        <li>2回続けて同じ向きに動いたら、変化かもしれないと考えはじめる</li>
+        <li>立っていない軸の文字の入れ替わりは、数えない</li>
+        <li>前回と違うモンスターが出ても、もうひとりの自分が出てきた、くらいに受け取る</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec split">
+    <h2>受け直すときのコツ</h2>
+    <div>
+      <ul class="list">
+        <li>2週間から1か月ほど、間をあける</li>
+        <li>前回の答えを思い出そうとしない</li>
+        <li>迷ったら「どちらでもない」に寄せすぎず、少しでも近いほうを選ぶ</li>
+        <li>結果は使っているブラウザの中だけに残る。別の端末で受けた分は、ヒストリーで1つにまとめる</li>
+      </ul>
+    </div>
+  </div>
+
+  ${faqHTML(faqs, "retake/")}
+
+  ${quizCtaHTML(base, "まずは1回目を。全90問、約10分です。")}
+
+</section>
+
+${footHTML(base, "")}
 ${scripts(base, ["types.js", "settings.js"])}
 </body>
 </html>
@@ -1613,6 +1736,7 @@ pages.push({ rel: "types.html",         loc: `${ORIGIN}/types.html`,  pri: "0.9"
 pages.push({ rel: "64types/index.html", loc: `${ORIGIN}/64types/`,    pri: "0.9", html: hubPage() });
 pages.push({ rel: "axis/ao/index.html", loc: `${ORIGIN}/axis/ao/`,    pri: "0.8", html: axisPage("AO") });
 pages.push({ rel: "axis/hc/index.html", loc: `${ORIGIN}/axis/hc/`,    pri: "0.8", html: axisPage("HC") });
+pages.push({ rel: "retake/index.html",  loc: `${ORIGIN}/retake/`,     pri: "0.7", html: retakePage() });
 pages.push({ rel: "privacy/index.html", loc: `${ORIGIN}/privacy/`,    pri: "0.3", html: privacyPage() });
 pages.push({ rel: "terms/index.html",   loc: `${ORIGIN}/terms/`,      pri: "0.3", html: termsPage() });
 

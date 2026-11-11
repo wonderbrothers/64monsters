@@ -204,6 +204,16 @@
     $("secDiff").classList.remove("hidden");
   }
 
+  /* ---------- 次に受ける日 ----------
+     下部の「もう一度受ける」の枠（mine / other のときだけ見える）に入れる。
+     中身は render.js が作る。クローラには空の枠だけが見える */
+  if (window.RENDER && window.RENDER.remindHTML && hasTaken()){
+    Array.prototype.forEach.call(document.querySelectorAll(".remind-slot"), function(el, i){
+      el.innerHTML = window.RENDER.remindHTML("remindSel" + i);
+      window.RENDER.bindRemind(el, function(days){ track("remind_save", { days: days, from: "type" }); });
+    });
+  }
+
   /* ---------- まだ出ていないもの（診断前） ----------
      数値も鑑定コードも、自分の結果として開いたときにしか出ない。
      これまでは節ごと隠していたので、受けていない人には

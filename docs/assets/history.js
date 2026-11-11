@@ -172,6 +172,33 @@
       }).join("") + '</ul>';
   }
 
+  /* ---------- 出会ったモンスター ----------
+     64体を並べ、出たことのあるタイプは姿と回数、まだのタイプは薄く出す。
+     いちばん多く出たタイプに「いつもの」、最新に「最新」の印を付ける（文字で示す。色だけに頼らない）。 */
+  function renderDex(h){
+    var cnt = {}, lastCode = h[h.length - 1].code;
+    h.forEach(function(r){ cnt[r.code] = (cnt[r.code] || 0) + 1; });
+    var codes = Object.keys(SUB), met = Object.keys(cnt);
+    var most = met.slice().sort(function(a, b){ return cnt[b] - cnt[a]; })[0];
+    var tie = met.filter(function(c){ return cnt[c] === cnt[most]; }).length > 1;
+    var lead = "64体のうち、" + met.length + "体に出会いました。";
+    if (h.length >= 2 && !tie) lead += "いちばん多く出ているのは " + esc(most) + "（" + esc(SUB[most].label) + "、" + cnt[most] + "回）です。";
+    if (met.length > 1) lead += "ほかの姿は、時期や状況で出てくる、もうひとりのあなたかもしれません。";
+    $("dexLead").innerHTML = lead;
+    $("dex").innerHTML = codes.map(function(c){
+      var n = cnt[c] || 0, tags = [];
+      if (n && c === most && !tie && h.length >= 2) tags.push("いつもの");
+      if (c === lastCode) tags.push("最新");
+      return '<li class="dex-i' + (n ? " met" : "") + '"><a href="' + B + "t/" + c + '/">' +
+        '<span class="thumb"><img src="' + R.thumb(B, c) + '" alt="" loading="lazy" width="96" height="96"></span>' +
+        '<span class="dex-code mono">' + esc(c) + '</span>' +
+        (n ? '<span class="dex-n">' + n + '回</span>' : '<span class="sr-only">まだ出ていない</span>') +
+        tags.map(function(t){ return '<span class="dex-tag">' + t + '</span>'; }).join("") +
+        '<span class="sr-only">' + esc(SUB[c].label) + '</span>' +
+      '</a></li>';
+    }).join("");
+  }
+
   /* ---------- 記録の表（新しい順） ----------
      削除の列は、ふだんは出さない。読むための表に消すボタンが並んでいると
      押し間違いが起きるし、見た目も落ち着かない。「記録を選んで削除」を
@@ -276,6 +303,7 @@
     renderTiles(h);
     renderCore(h);
     renderStrips(h);
+    renderDex(h);
     renderTable(h);
   }
 
@@ -382,6 +410,12 @@
     btn.classList.remove("armed");
     E.track("history_clear", {});
     paint();
+  });
+
+  /* 次に受ける日（予定ファイル）。中身と動きは render.js */
+  Array.prototype.forEach.call(document.querySelectorAll(".remind-slot"), function(el, i){
+    el.innerHTML = R.remindHTML("remindSel" + i);
+    R.bindRemind(el, function(days){ E.track("remind_save", { days: days, from: "history" }); });
   });
 
   paint();
